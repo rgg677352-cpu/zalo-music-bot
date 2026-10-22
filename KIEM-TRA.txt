@@ -1,13 +1,22 @@
-Kiểm tra bản 1.0.0 — 2026-10-22
+Kiểm tra bản 1.0.1 — 2026-10-22
 
-- Node.js 24, Linux x64: npm install thành công.
-- yt-dlp 2026.10.21: chạy được; binary được xác minh SHA-256 lúc cài.
-- FFmpeg 7.0.2 static: chạy được.
-- 5 bài kiểm tra tự động qua: gửi voice đúng nhóm, bỏ tin lặp, dọn file khi lỗi,
-  giới hạn nhóm/người dùng, đầu vào và giới hạn thời lượng.
-- Thử tải SoundCloud: Carefree / Kevin MacLeod, 205.186 giây.
-- Đầu ra AAC: 2.580.346 byte, đã xóa sau khi kiểm tra.
+- 11 bài kiểm tra tự động đã qua: gửi voice đúng nhóm, bỏ tin lặp, dọn file khi lỗi,
+  giới hạn nhóm/người dùng, kiểm tra đầu vào, thông báo lỗi theo bước,
+  ẩn URL/credential, chỉ thử CA hệ thống khi lỗi TLS và giữ xác minh HTTPS.
+- npm run doctor: yt-dlp 2026.10.21 và FFmpeg 7.0.2 chạy được trên Linux x64 / Node 24.
+- Thử tên dancing in the dark: tải/chuyển AAC thành công, 373.602 byte.
+  Kết quả đầu tiên là bản SoundCloud 30 giây, không phải toàn bài.
+- Link SoundCloud mobile Độ Tộc 2 (đã bỏ index.mjs dính cuối):
+  tải/chuyển AAC thành công, 201.077 giây, 2.514.275 byte.
+- Link có index.mjs dính cuối tái hiện được lỗi Unsupported URL ở bản cũ;
+  bản mới báo rõ link sai trước khi gọi công cụ tải.
+- Các file âm thanh thử đã được xóa.
 
-Chưa thử đăng nhập/gửi tin Zalo thật hoặc triển khai trên Botkeep.
-ZIP không chứa cookie, QR, phiên đăng nhập, nhạc, node_modules hoặc công cụ native.
-Khi cài npm, các dependency và công cụ native được tải từ nguồn chính thức.
+Log người dùng cho biết đăng nhập Zalo và nhận lệnh đã hoạt động trên Botkeep.
+Chưa trực tiếp truy cập container Botkeep của người dùng để xác nhận nguyên nhân
+MEDIA_PROCESS_FAILED 1 ở đó. Bản cũ đã bỏ chi tiết stderr; bản mới hiển thị lỗi
+đã ẩn thông tin nhạy cảm để phân biệt mạng, TLS, nguồn và runtime.
+Không khẳng định bản cập nhật giải quyết được hạn chế mạng/tài nguyên của host.
+
+ZIP không có cookie, QR, phiên đăng nhập, nhạc, node_modules hoặc binary.
+Giữ thư mục data/ khi thay code; không gửi session.json để chẩn đoán.

@@ -47,6 +47,7 @@ Gõ trong nhóm:
 !nhac Em Đừng Khóc Chillies
 !scl https://soundcloud.com/ten-tac-gia/ten-bai-hat
 !id
+!kiemtra
 ```
 
 Dòng `!scl` trên là mẫu cú pháp; thay bằng link bài hát thật. Tìm bằng tên sẽ lấy
@@ -78,6 +79,25 @@ ID trước khi bật danh sách cho phép.
 
 ## 5. Lỗi thường gặp
 
+### Cập nhật từ bản 1.0.0 lên 1.0.1
+
+Stop bot, tải `zalo-music-bot-1.0.1.zip`, giải nén đè các file code hiện có rồi Start.
+Giữ nguyên `data/` và các biến Environment; không xóa `data/session.json` để sửa lỗi nhạc.
+Nếu chức năng triển khai lại của host xóa toàn bộ môi trường thì phải quét QR lại.
+Khi chạy đúng bản mới, Console hiện **Zalo Music Bot 1.0.1**.
+
+Gõ `!kiemtra` trong nhóm để kiểm tra công cụ và kết nối SoundCloud mà không tải
+toàn bộ bài. Gõ `!kiemtra dancing in the dark` để kiểm tra tìm bài cụ thể.
+Hoặc chạy `npm run doctor -- --network` nếu host cho nhập lệnh shell.
+
+Lỗi mới có dạng `[tim-nhac / yt-dlp / TLS]` hoặc
+`[tai-nhac / yt-dlp / SOURCE_FORBIDDEN]`; Console có chi tiết đã ẩn URL và credential.
+Các mã HTTP 403/429, lỗi mạng hay giới hạn container cần xử lý theo lỗi thực tế;
+bản cập nhật không đảm bảo vượt qua được hạn chế của host/nguồn nhạc.
+
+`!scl dancing in the dark` là lệnh tìm theo tên hợp lệ. Với link SoundCloud,
+không nối thêm tên file như `index.mjs` ở cuối link.
+
 - **Không có `package.json`**: giải nén ZIP đúng thư mục chính, bỏ thư mục bao ngoài.
 - **Không tải được công cụ khi cài npm**: host cần truy cập npm và GitHub Releases;
   xem lỗi cài đặt, thử lại. Không dùng `--ignore-scripts` vì sẽ bỏ bước cài công cụ.
@@ -96,7 +116,7 @@ ID trước khi bật danh sách cho phép.
 
 ## Kiểm chứng và giới hạn
 
-Có kiểm tra thư viện, công cụ nhạc và 5 bài kiểm tra luồng gửi voice bằng API giả lập.
+Có kiểm tra thư viện, công cụ nhạc và 11 bài kiểm tra luồng gửi voice/chẩn đoán bằng API giả lập.
 Đã tải thử bài “Carefree” từ SoundCloud và chuyển thành AAC thành công trên Linux x64.
 Chưa đăng nhập tài khoản người dùng, chưa gửi nhạc vào nhóm Zalo thật và chưa
 triển khai trên Botkeep của bạn. Khả năng chạy thực tế còn phụ thuộc tài nguyên,

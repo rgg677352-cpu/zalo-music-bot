@@ -3,6 +3,8 @@ import { mkdirSync, existsSync, readFileSync, writeFileSync, renameSync, rmSync 
 import { fileURLToPath } from 'node:url';
 import { Zalo, LoginQRCallbackEventType } from 'zca-js';
 import { createHandler } from './src/handler.mjs';
+import { checkTools } from './src/music.mjs';
+import { diagnosticMessage } from './src/process.mjs';
 
 const dataDir = fileURLToPath(new URL('./data/', import.meta.url));
 const sessionPath = `${dataDir}session.json`;
@@ -52,6 +54,15 @@ async function login() {
 }
 
 try {
+  console.log('Zalo Music Bot 1.0.1 — đang kiểm tra công cụ nhạc...');
+  try {
+    const tools = await checkTools();
+    console.log(`yt-dlp ${tools.ytVersion}; FFmpeg OK.`);
+  } catch (error) {
+    console.error(diagnosticMessage(error));
+    if (error.detail) console.error('Chi tiết:', error.detail);
+    console.error('Bot vẫn đăng nhập được; dùng !kiemtra để kiểm tra lại công cụ.');
+  }
   const api = await login();
   const handler = createHandler(api, {
     prefix, maxDuration, groups: list(process.env.ALLOWED_GROUP_IDS), users: list(process.env.ALLOWED_USER_IDS),
