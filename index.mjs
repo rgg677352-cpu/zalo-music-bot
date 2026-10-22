@@ -54,7 +54,7 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.0.1 — đang kiểm tra công cụ nhạc...');
+  console.log('Zalo Music Bot 1.1.0 — voice + ảnh bài hát, chat gọn.');
   try {
     const tools = await checkTools();
     console.log(`yt-dlp ${tools.ytVersion}; FFmpeg OK.`);

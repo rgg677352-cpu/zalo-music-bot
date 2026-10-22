@@ -1,45 +1,57 @@
-# Bot nhạc Zalo — SoundCloud → tin nhắn thoại
+# Bot nhạc Zalo — voice kèm ảnh, chat gọn
 
-**[Tải bản 1.0.1 để upload lên Botkeep](https://github.com/rgg677352-cpu/zalo-music-bot/raw/refs/heads/main/zalo-music-bot-1.0.1.zip)**
+**[Tải bản 1.1.0 để upload lên Botkeep](https://github.com/rgg677352-cpu/zalo-music-bot/raw/refs/heads/main/zalo-music-bot-1.1.0.zip)**
 
-Bản gọn dùng Node.js và zca-js: đăng nhập Zalo qua QR, tìm hoặc nhận link SoundCloud, chuyển âm thanh sang AAC rồi gửi bằng `sendVoice` vào nhóm.
+Node.js 22/24 · SoundCloud · đăng nhập Zalo bằng QR.
 
-## Chạy trên Botkeep
+## Một yêu cầu, hai tin nhắn
 
-1. Tải file ZIP bằng link trên và chọn runtime **Node.js 22 hoặc 24**.
-2. Upload ZIP, giữ `package.json` ngay thư mục chính.
-3. Install command: `npm ci`. Start command: `npm start`.
-4. Khi Console báo QR sẵn sàng, mở **Files → data → qr.png**, quét và xác nhận trên Zalo.
-5. Khi bot sẵn sàng, gõ `!help` hoặc `!nhac Em Đừng Khóc Chillies` trong nhóm.
+Bot gửi **một voice và một ảnh thông tin bài hát**: bìa SoundCloud, tên bài, nghệ sĩ,
+thời lượng. Không gửi tin “đang tải”, link chữ gây preview, hoặc thông báo “bot bận”.
+Ảnh hỗ trợ chữ tiếng Việt. Nếu nguồn không có bìa, ảnh dùng hình đĩa nhạc mặc định.
 
-Tài khoản bot phải ở trong nhóm và có quyền gửi tin. Mặc định bot nghe trong mọi nhóm có tài khoản bot; có thể giới hạn bằng biến Environment, xem [hướng dẫn](HUONG-DAN.md).
+- Xử lý lần lượt, tối đa một bài đang chạy và hai bài chờ.
+- Bỏ yêu cầu trùng trong 30 giây, giới hạn mỗi người một yêu cầu trong 10 giây.
+- Lỗi chỉ báo ngắn trong nhóm, tối đa một thông báo lỗi mỗi nhóm trong 30 giây.
+  Chi tiết kỹ thuật vẫn có trong Console.
+- Nếu voice đã gửi mà ảnh lỗi, chỉ thêm một dòng tên bài; không gửi voice lại.
+
+## Cài và cập nhật
+
+1. Chọn Node.js 22/24, upload và giải nén ZIP để `package.json` nằm ngoài cùng.
+2. Install command: `npm ci`; Start command: `npm start`.
+3. Console phải hiện **Zalo Music Bot 1.1.0**.
+4. Khi QR sẵn sàng, mở **Files → data → qr.png**, quét và xác nhận bằng Zalo.
+5. Tài khoản bot phải ở trong nhóm và có quyền gửi tin.
+
+Bản 1.1.0 có dependency tạo ảnh mới. Cần cập nhật cả `package.json`,
+`package-lock.json`, thư mục `src`, `scripts` và các file code; chạy lại cài dependency.
+Giữ `data/` và Environment khi cập nhật, không xóa phiên đăng nhập để sửa lỗi nhạc.
+Nếu host khôi phục code cũ mỗi lần Start, cần cập nhật nguồn triển khai trong bảng điều khiển.
 
 ## Lệnh
 
 ```text
-!help
-!nhac tên bài hát - ca sĩ
+!nhac Em Đừng Khóc Chillies
 !scl link-bài-hát-SoundCloud
+!help
 !id
 !kiemtra
 ```
 
-Mỗi lần xử lý một bài, tối đa 10 phút. Tên bài và link được gửi thành tin nhắn chữ kèm voice; chưa tạo thẻ ảnh SoundCloud.
+`!nhac` và `!scl` đều nhận tên hoặc link. Tìm theo tên lấy kết quả đầu tiên,
+có thể là bản nghe thử; muốn đúng bản hãy dùng link bài hát cụ thể.
+Tối đa 10 phút/bài. Chỉ phản hồi lệnh trong nhóm.
 
 ## Kiểm chứng
 
-Đã cài dependency, chạy 11 bài kiểm tra tự động và thử tải/chuyển SoundCloud sang AAC trên Linux x64. Chưa trực tiếp kiểm tra trên container Botkeep của người dùng. Người dùng đã xác nhận đăng nhập Zalo và nhận lệnh được, nhưng bản cũ báo lỗi công cụ trên host. Xem [kết quả kiểm tra](KIEM-TRA.txt).
+18 bài kiểm tra tự động về gửi voice + ảnh, hàng đợi/chống trùng, lỗi một phần,
+chữ tiếng Việt, giới hạn ảnh và chẩn đoán. Đã tạo ảnh PNG có bìa SoundCloud thật
+trên Linux x64. Chưa trực tiếp xác nhận gửi ảnh/voice trên tài khoản Zalo và
+container Botkeep của người dùng. Xem [kết quả kiểm tra](KIEM-TRA.txt).
 
-## Bản 1.0.1
+Đây là API Zalo cá nhân không chính thức. Không đưa cookie, `data/session.json`,
+QR còn hiệu lực hoặc `.env` thật lên GitHub. ZIP không chứa thông tin đăng nhập.
 
-- Báo rõ bước, công cụ, nguyên nhân và chi tiết lỗi đã ẩn URL/credential.
-- Dùng kho chứng chỉ mặc định, chỉ thử CA hệ thống khi có lỗi xác minh HTTPS; không tắt TLS.
-- Đặt thư mục tạm của công cụ độc lập trong thư mục ứng dụng thay vì phụ thuộc `/tmp` của container.
-- Chuẩn hóa link SoundCloud mobile và từ chối link bị dính tên file code.
-- Có `!kiemtra` trong nhóm và `npm run doctor -- --network` để kiểm tra ngay trên host.
-
-Khi cập nhật, giữ `data/` và Environment. Console phải hiện **Zalo Music Bot 1.0.1**.
-
-Đây là API Zalo cá nhân không chính thức; khả năng hoạt động và giới hạn tài khoản phụ thuộc nền tảng. Không đưa `data/session.json`, QR còn hiệu lực hoặc cookie lên GitHub. ZIP không chứa dữ liệu đăng nhập.
-
-Xem [HUONG-DAN.md](HUONG-DAN.md) để cấu hình, đăng nhập QR và xử lý lỗi. ZIP là bản đóng gói 1.0.1; GitHub **Code → Download ZIP** có thêm thư mục bao ngoài, nên khi upload Botkeep hãy dùng link tải trực tiếp ở đầu trang.
+Xem [HUONG-DAN.md](HUONG-DAN.md). Khi upload Botkeep dùng ZIP ở link đầu trang;
+GitHub Code → Download ZIP có thêm thư mục bao ngoài.

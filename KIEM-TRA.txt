@@ -1,22 +1,23 @@
-Kiểm tra bản 1.0.1 — 2026-10-22
+Kiểm tra bản 1.1.0 — 2026-10-22
 
-- 11 bài kiểm tra tự động đã qua: gửi voice đúng nhóm, bỏ tin lặp, dọn file khi lỗi,
-  giới hạn nhóm/người dùng, kiểm tra đầu vào, thông báo lỗi theo bước,
-  ẩn URL/credential, chỉ thử CA hệ thống khi lỗi TLS và giữ xác minh HTTPS.
-- npm run doctor: yt-dlp 2026.10.21 và FFmpeg 7.0.2 chạy được trên Linux x64 / Node 24.
-- Thử tên dancing in the dark: tải/chuyển AAC thành công, 373.602 byte.
-  Kết quả đầu tiên là bản SoundCloud 30 giây, không phải toàn bài.
-- Link SoundCloud mobile Độ Tộc 2 (đã bỏ index.mjs dính cuối):
-  tải/chuyển AAC thành công, 201.077 giây, 2.514.275 byte.
-- Link có index.mjs dính cuối tái hiện được lỗi Unsupported URL ở bản cũ;
-  bản mới báo rõ link sai trước khi gọi công cụ tải.
-- Các file âm thanh thử đã được xóa.
+18 bài kiểm tra tự động đã qua trên Node.js 24 / Linux x64:
+- Một yêu cầu chỉ phát sinh một voice và một ảnh; không có tin đang tải hoặc link chữ.
+- Hàng đợi chạy lần lượt, bỏ yêu cầu trùng và giữ giới hạn nhóm/người dùng.
+- Dọn file kể cả khi gửi lỗi. Ảnh lỗi sau voice không làm gửi voice lại.
+- Tin lỗi trong nhóm ngắn và bị giới hạn; chi tiết kỹ thuật giữ trong Console.
+- Tin help của bot không tự kích hoạt lệnh mới khi selfListen bật.
+- Tạo PNG có chữ tiếng Việt và metadata đúng để gửi ảnh từ Buffer qua zca-js.
+- Ảnh bìa chỉ tải từ CDN HTTPS SoundCloud, giới hạn dung lượng, có hình dự phòng.
+- Chẩn đoán TLS/runtime, ẩn URL và thông tin nhạy cảm trong log.
 
-Log người dùng cho biết đăng nhập Zalo và nhận lệnh đã hoạt động trên Botkeep.
-Chưa trực tiếp truy cập container Botkeep của người dùng để xác nhận nguyên nhân
-MEDIA_PROCESS_FAILED 1 ở đó. Bản cũ đã bỏ chi tiết stderr; bản mới hiển thị lỗi
-đã ẩn thông tin nhạy cảm để phân biệt mạng, TLS, nguồn và runtime.
-Không khẳng định bản cập nhật giải quyết được hạn chế mạng/tài nguyên của host.
+npm run doctor: yt-dlp 2026.10.21, FFmpeg 7.0.2 và bộ tạo PNG/font chạy được.
+Đã tạo ảnh PNG 1080x380 từ metadata bài Carefree, có bìa thật và nghệ sĩ Kevin MacLeod.
+Font Be Vietnam Pro 132.948 byte, SHA-256 kiểm tra lúc cài; giấy phép đi kèm assets/.
 
-ZIP không có cookie, QR, phiên đăng nhập, nhạc, node_modules hoặc binary.
-Giữ thư mục data/ khi thay code; không gửi session.json để chẩn đoán.
+Chưa trực tiếp truy cập container Botkeep hoặc gửi ảnh/voice trong nhóm Zalo thật.
+Luồng gửi tin được kiểm tra bằng API giả lập; ảnh đã được xem trực quan ở môi trường phát triển.
+ZIP không chứa cookie, QR, session.json, .env thật, nhạc, node_modules hoặc binary.
+Giữ data/ và Environment khi cập nhật; cần cài dependency mới bằng npm ci.
+
+Kiểm tra tích hợp: tải bài Carefree và chuyển AAC thật, tạo ảnh có bìa thật,
+đưa qua handler với API Zalo giả lập. Đầu ra đúng [voice, image], không có tin chữ phụ.

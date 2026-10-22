@@ -86,6 +86,8 @@ export async function prepareMusic(input, maxDuration = 600) {
     return {
       audioPath,
       title: String(track.title || 'Nhạc SoundCloud').replace(/[\r\n]/g, ' ').slice(0, 180),
+      artist: String(track.artist || track.uploader || track.creator || 'SoundCloud').slice(0, 100),
+      thumbnail: track.thumbnail || track.thumbnails?.at(-1)?.url || null,
       url: track.webpage_url,
       duration: track.duration,
       cleanup: () => rm(directory, { recursive: true, force: true }),
