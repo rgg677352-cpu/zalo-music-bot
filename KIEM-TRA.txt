@@ -1,0 +1,13 @@
+Kiểm tra bản 1.0.0 — 2026-10-22
+
+- Node.js 24, Linux x64: npm install thành công.
+- yt-dlp 2026.10.21: chạy được; binary được xác minh SHA-256 lúc cài.
+- FFmpeg 7.0.2 static: chạy được.
+- 5 bài kiểm tra tự động qua: gửi voice đúng nhóm, bỏ tin lặp, dọn file khi lỗi,
+  giới hạn nhóm/người dùng, đầu vào và giới hạn thời lượng.
+- Thử tải SoundCloud: Carefree / Kevin MacLeod, 205.186 giây.
+- Đầu ra AAC: 2.580.346 byte, đã xóa sau khi kiểm tra.
+
+Chưa thử đăng nhập/gửi tin Zalo thật hoặc triển khai trên Botkeep.
+ZIP không chứa cookie, QR, phiên đăng nhập, nhạc, node_modules hoặc công cụ native.
+Khi cài npm, các dependency và công cụ native được tải từ nguồn chính thức.
