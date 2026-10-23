@@ -8,20 +8,26 @@ const clean = value => String(value || '').normalize('NFC').replace(/[\u0000-\u0
 const xml = value => clean(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]);
 
 export function durationLabel(seconds) {
-  const total = Math.max(0, Math.floor(Number(seconds) || 0));
+  const value = Number(seconds);
+  const total = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
   return `${Math.floor(total / 60).toString().padStart(2, '0')}:${(total % 60).toString().padStart(2, '0')}`;
 }
 
 function titleLines(title) {
   const words = clean(title || 'Nhạc SoundCloud').split(/\s+/);
-  const lines = [''];
-  for (const word of words) {
-    const last = lines.length - 1;
-    if (`${lines[last]} ${word}`.trim().length <= 30) lines[last] = `${lines[last]} ${word}`.trim();
-    else if (lines.length < 2) lines.push(word);
-    else { lines[last] = `${lines[last].slice(0, 28)}…`; break; }
+  const lines = []; let line = '';
+  const fit = value => Array.from(value).length <= 30;
+  const clip = value => Array.from(value).slice(0, 29).join('') + '…';
+  for (let i = 0; i < words.length; i++) {
+    const joined = line ? `${line} ${words[i]}` : words[i];
+    if (fit(joined)) { line = joined; continue; }
+    if (!line) { line = clip(words[i]); }
+    else if (lines.length === 0) { lines.push(line); line = fit(words[i]) ? words[i] : clip(words[i]); continue; }
+    else { line = clip(joined); break; }
+    if (lines.length === 1 || i < words.length - 1 && line.endsWith('…')) break;
   }
-  return lines.map(line => line.length > 32 ? `${line.slice(0, 29)}…` : line);
+  if (line) lines.push(line);
+  return lines.slice(0, 2);
 }
 
 export async function coverDataUrl(value, fetcher = fetch) {

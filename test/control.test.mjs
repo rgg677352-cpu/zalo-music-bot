@@ -23,7 +23,7 @@ test('chỉ chủ tài khoản setup; mọi thành viên nhóm chính điều kh
   const f = fixture(t);
   await f.c.handle(f.event('!setup')); assert.equal(f.c.snapshot().mainGroup, null);
   await f.c.handle(f.event('!setup', '100', 'owner')); assert.equal(f.c.snapshot().mainGroup, '100');
-  await f.c.handle(f.event('!list')); assert.match(f.calls.at(-1).text, /Nhóm 200\nID: 200/);
+  await f.c.handle(f.event('!list')); assert.match(f.calls.at(-1).text, /Nhóm 200\n200/);
   const n = f.calls.length; await f.c.handle(f.event('!gui 200 | hello', '200')); assert.equal(f.calls.length, n);
   await f.c.handle(f.event('!gui 200 | hello')); assert.deepEqual(f.calls.at(-2), { text: 'hello', group: '200' });
   await f.c.handle(f.event('!gui 999 | hello')); assert.match(f.calls.at(-1).text, /ID nhóm không hợp lệ/);
@@ -63,7 +63,7 @@ test('handler chặn cả nhạc bên ngoài nhóm chính và bỏ giới hạn 
   await h(f.event('!setup', '100', 'owner')); const n = f.calls.length;
   await h(f.event('!nhac test', '200')); await h(f.event('!id', '200')); assert.equal(f.calls.length, n);
   await h(f.event('!id')); assert.match(f.calls.at(-1).text, /ID nhóm: 100/);
-  assert.match(controlHelp(), /30s \| 5 \| 10m/);
+  assert.match(controlHelp(), /30m \| 4 \| 2h/);
 });
 
 test('luân phiên câu riêng, giữ vị trí qua restart và nghỉ, hết mới quay lại đầu', async t => {
@@ -76,16 +76,14 @@ test('luân phiên câu riêng, giữ vị trí qua restart và nghỉ, hết m�
   assert.deepEqual(f.calls.filter(x => x.group === '200').map(x => x.text), ['Câu A','Câu B','Câu C','Câu A']);
 });
 
-test('bộ mẫu có sẵn và lỗi nhập câu trống/tiền tố được phát hiện', async t => {
+test('chỉ dùng câu người nhập, cho phép chữ @, chặn câu trống và lệnh', async t => {
   const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
-  await f.c.handle(f.event('!mau')); assert.match(f.calls.at(-1).text, /@tichcuc/);
-  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | @tichcuc'));
-  assert.equal(f.c.snapshot().jobs[0].messages.length, 8);
+  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | @mọi người chào nhé || Câu tiếp'));
+  assert.equal(f.c.snapshot().jobs[0].messages.length, 2);
+  assert.equal(f.c.snapshot().jobs[0].messages[0], '@mọi người chào nhé');
   await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | A || !setup'));
   await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | A || '));
-  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | @khongco'));
   assert.equal(f.c.snapshot().jobs.length, 1);
-  assert.match(f.calls.at(-1).text, /mẫu không tồn tại/);
 });
 
 test('lịch bản 1.2.0 vẫn đọc và gửi bình thường', async t => {
@@ -95,4 +93,75 @@ test('lịch bản 1.2.0 vẫn đọc và gửi bình thường', async t => {
   const { writeFileSync } = await import('node:fs'); writeFileSync(f.opts.statePath, JSON.stringify(state));
   const restored = createControl(f.api, f.opts); f.at(1000); await restored.tick();
   assert.equal(f.calls.at(-1).text, 'Nội dung cũ');
+});
+
+test('lệnh không có msgId vẫn nhận độc lập, ID sự kiện trùng chỉ xử lý một lần', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  const a = f.event('!gui 200 | A'), b = f.event('!gui 200 | B'); delete a.data.msgId; delete b.data.msgId;
+  await f.c.handle(a); await f.c.handle(b);
+  assert.deepEqual(f.calls.filter(x => x.group === '200').map(x => x.text), ['A', 'B']);
+});
+
+test('list phân trang, không tải tên toàn bộ và không gửi nhiều trang cùng lúc', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  f.api.getAllGroups = async () => ({ gridVerMap: Object.fromEntries(Array.from({ length: 25 }, (_, i) => [String(i + 100), '1'])) });
+  let looked = 0; f.api.getGroupInfo = async ids => { looked += ids.length; return { gridInfoMap: {} }; };
+  const before = f.calls.length; await f.c.handle(f.event('!list')); assert.equal(f.calls.length, before + 1); assert.equal(looked, 8);
+  assert.match(f.calls.at(-1).text, /1\/4/); assert.match(f.calls.at(-1).text, /!list 2/);
+  // Lệnh xem lặp quá nhanh không phát sinh thêm phản hồi.
+  await f.c.handle(f.event('!list')); assert.equal(f.calls.length, before + 1);
+  f.at(2000); await f.c.handle(f.event('!list 9')); assert.match(f.calls.at(-1).text, /Trang không hợp lệ/);
+});
+
+test('đổi nhóm chính khi đang lấy danh sách không trả nội dung về nhóm cũ', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  let release; f.api.getAllGroups = () => new Promise(resolve => { release = resolve; });
+  const pending = f.c.handle(f.event('!list')); await new Promise(r => setImmediate(r));
+  await f.c.handle(f.event('!setup', '200', 'owner')); const n = f.calls.length;
+  release({ gridVerMap: { '100': '1' } }); await pending; assert.equal(f.calls.length, n);
+});
+
+test('stop giữa một lượt gửi không để scheduler gửi tiếp các lịch còn lại', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  await f.c.handle(f.event('!tudong 200 | 1s | 1 | 0s | A'));
+  await f.c.handle(f.event('!tudong 200 | 1s | 1 | 0s | B'));
+  let release; const dispatched = [];
+  f.api.sendMessage = (text, group) => { dispatched.push({ text, group }); return new Promise(r => { release = r; }); };
+  f.at(1000); const pending = f.c.tick(); await new Promise(r => setImmediate(r)); f.c.stop(); release(); await pending;
+  assert.equal(dispatched.length, 1);
+});
+
+test('SDK treo làm lịch đó dừng, lịch khác vẫn xử lý, không thử gửi lại', async t => {
+  const f = fixture(t); const c = createControl(f.api, { ...f.opts, requestTimeout: 10 });
+  await c.handle(f.event('!setup', '100', 'owner')); await c.handle(f.event('!tudong 200 | 1s | 1 | 0s | A'));
+  const original = f.api.sendMessage; f.api.sendMessage = (text, group) => group === '200' ? new Promise(() => {}) : original(text, group);
+  f.at(1000); await c.tick(); assert.equal(c.snapshot().jobs[0].paused, true);
+  f.at(2000); await c.tick(); assert.equal(f.calls.filter(x => /đã dừng vì/.test(x.text)).length, 1);
+});
+
+test('file lịch sai số đếm hoặc trùng mã bị chặn, không ghi đè file lỗi', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner')); await f.c.handle(f.event('!tudong 200 | 1s | 2 | 0s | A'));
+  const { writeFileSync, readFileSync } = await import('node:fs');
+  const state = f.c.snapshot(); state.jobs[0].sent = -1; const raw = JSON.stringify(state); writeFileSync(f.opts.statePath, raw);
+  assert.throws(() => createControl(f.api, f.opts), { code: 'CONTROL_STATE_INVALID' }); assert.equal(readFileSync(f.opts.statePath, 'utf8'), raw);
+});
+
+test('đổi PREFIX không làm hỏng dữ liệu cũ; nội dung trùng tiền tố mới tự dừng', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner')); await f.c.handle(f.event('!tudong 200 | 1s | 2 | 0s | /setup'));
+  const c = createControl(f.api, { ...f.opts, prefix: '/' }); f.at(1000); await c.tick();
+  assert.equal(c.snapshot().jobs[0].paused, true); assert.equal(f.calls.filter(x => x.group === '200').length, 0);
+});
+
+test('đổi nhóm chính hủy cả bài đang tải lẫn bài xếp hàng, vẫn dọn file', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  let release, prepared = 0, cleaned = 0, uploaded = 0;
+  const waiting = new Promise(r => { release = r; });
+  f.api.uploadAttachment = async () => { uploaded++; return []; };
+  const handler = createHandler(f.api, { prefix: '!', maxDuration: 600, groups: new Set(), users: new Set() }, async () => {
+    prepared++; await waiting; return { audioPath: '/tmp/fixture.aac', cleanup: async () => cleaned++ };
+  }, { control: f.c });
+  const first = handler(f.event('!nhac A', '100', 'member1'));
+  const second = handler(f.event('!nhac B', '100', 'member2'));
+  await new Promise(r => setImmediate(r)); await f.c.handle(f.event('!setup', '200', 'owner')); release();
+  await Promise.all([first, second]); assert.equal(prepared, 1); assert.equal(cleaned, 1); assert.equal(uploaded, 0);
 });

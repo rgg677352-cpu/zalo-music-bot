@@ -1,76 +1,87 @@
-# Bot Zalo 1.2.1: nhóm điều khiển, lịch gửi/nghỉ và nhạc
+# Bot Zalo 1.3.0
 
 ## Cập nhật trên Botkeep
 
-1. Stop bot. Giữ nguyên thư mục `data` và cấu hình riêng `.env`.
-2. Upload `zalo-music-bot-1.2.1.zip`, giải nén và ghi đè **toàn bộ code** ở thư mục chính. ZIP chứa thẳng `index.mjs`, `package.json`, `src`, `scripts`... Không để code nằm trong một thư mục con.
-3. ZIP chỉ nằm trong Files thì chưa cập nhật. Cần dùng mục Extract/Unarchive của host. Console chạy bot không phải Terminal để gõ lệnh shell.
-4. Start; kiểm tra Console hiện `Zalo Music Bot 1.2.1` và `BOT SẴN SÀNG 1.2.1`.
-5. Nếu chưa có dependencies thì dùng quy trình cài `npm ci` của host. Bản này không thêm dependency so với 1.1.0.
+1. Stop bot. Giữ nguyên thư mục `data` và `.env` riêng của bạn.
+2. Upload `zalo-music-bot-1.3.0.zip`. Chọn Extract/Unarchive và ghi đè **toàn bộ code ở thư mục chính**. Cạnh `package.json` phải có `index.mjs`, `src`, `scripts`.
+3. Chỉ upload ZIP chưa cập nhật bot. Console đang chạy bot không phải Terminal để nhập lệnh shell.
+4. Start. Console phải hiện `Zalo Music Bot 1.3.0`.
+5. Nếu chưa cài dependency thì chạy quy trình cài `npm ci` của host. Bản này không thêm dependency so với 1.1.0–1.2.1.
 
-## Chọn nhóm chính
+## Bắt đầu
 
-Dùng **chính tài khoản Zalo đăng nhập bot** nhắn `!setup` trong nhóm muốn làm nhóm chính. Từ đó, mọi thành viên nhóm chính đều dùng được tất cả lệnh điều khiển, không cần cấu hình UID. Các nhóm khác không nhận lệnh, kể cả lệnh nhạc.
+Dùng chính tài khoản Zalo đăng nhập bot nhắn `!setup` trong nhóm chính. Mọi thành viên nhóm này đều điều khiển được. Nhóm khác không nhận lệnh, kể cả nhạc.
 
-Chỉ tài khoản bot được dùng `!setup` để tránh thành viên nhóm khác tự chuyển nhóm chính. Đổi nhóm chính sẽ tạm dừng mọi lịch cũ. Gọi `!setup` lại ở nhóm chính hiện tại không dừng lịch.
+Chỉ tài khoản đăng nhập bot được chọn/đổi nhóm chính. Đổi nhóm chính sẽ dừng các lịch cũ và hủy yêu cầu nhạc đang chờ. Tin đã bắt đầu gửi có thể vẫn đến sau khi đổi nhóm/dừng lịch. Dùng `!help` để đọc hướng dẫn ngay trong Zalo.
 
-`ALLOWED_GROUP_IDS` và `ALLOWED_USER_IDS` cũ không áp dụng trong chế độ nhóm chính này. Muốn hạn chế người điều khiển, hãy quản lý thành viên nhóm chính.
+Hai biến cũ `ALLOWED_GROUP_IDS` và `ALLOWED_USER_IDS` không áp dụng ở chế độ nhóm chính. Hãy quản lý thành viên nhóm chính nếu cần giới hạn quyền điều khiển.
 
-## Tên và ID nhóm
-
-Gõ `!list` tại nhóm chính để lấy tên và ID nhóm mà tài khoản bot tham gia. Dùng ID đầy đủ, không dùng số thứ tự. Nếu Zalo không trả tên thì bot vẫn hiện ID. `!id` hiện ID nhóm đang nhắn và UID người nhắn.
-
-## Gửi một lần
+## Chọn nhóm và gửi một lần
 
 ```text
+!list
+!list 2
+!id
 !gui 123456789 | Chào mọi người
 ```
 
-Thay `123456789` bằng ID từ `!list`. Tài khoản bot phải là thành viên có quyền nhắn ở nhóm đích.
+`!list` hiện tên và ID, 8 nhóm/trang. Dùng ID đầy đủ, không dùng số thứ tự. Bot chỉ lấy thông tin của trang đang xem. Nếu Zalo không trả tên thì vẫn hiện ID.
 
-## Lịch gửi lặp và thời gian nghỉ
+Thay `123456789` bằng ID thật. Tài khoản bot phải tham gia nhóm đích và được phép nhắn. Bot gửi nguyên nội dung, không thêm chữ ký, quảng cáo hay lời dẫn.
+
+## Lịch gửi với nội dung tự soạn
 
 ```text
-!tudong ID_NHOM | khoảng gửi | số lần mỗi đợt | nghỉ | nội dung
-!tudong 123456789 | 30s | 5 | 10m | Nhớ uống nước nhé
+!tudong ID_NHOM | khoảng gửi | số lượt/đợt | nghỉ | nội dung
+!tudong 123456789 | 30m | 4 | 2h | Câu một || Câu hai || Câu ba
 ```
 
-Ví dụ trên: lần đầu sau 30 giây, các lần sau cách nhau 30 giây. Đủ 5 lần thì nghỉ 10 phút rồi gửi đợt mới, tiếp tục cho tới khi dừng/xóa lịch. Nghỉ thay khoảng chờ giữa hai đợt. Đặt nghỉ `0s` để luôn dùng khoảng gửi, không nghỉ thêm.
+Ví dụ: sau 30 phút gửi câu một, thêm 30 phút gửi câu hai, rồi câu ba, rồi quay lại câu một. Đủ 4 lượt thì nghỉ 2 giờ rồi gửi câu hai. Vị trí câu được giữ qua lần nghỉ, restart và lệnh tiếp tục.
 
-Đơn vị `s` giây, `m` phút, `h` giờ; khoảng gửi ít nhất 1 giây, mỗi giá trị tối đa 7 ngày. Nhập `90s` thay cho `1m30s`. Số lần mỗi đợt từ 1–1000. Mỗi lịch gửi vào một nhóm; tối đa 100 lịch đã lưu. Nội dung chữ dài 1–4000 ký tự, không bắt đầu bằng tiền tố lệnh để tránh tự gọi lệnh. Dấu `|` trong phần nội dung được giữ nguyên.
+- `s` giây, `m` phút, `h` giờ. Dùng `90s` thay `1m30s`.
+- Khoảng gửi ít nhất 1 giây; mỗi khoảng tối đa 7 ngày. Giờ gửi phụ thuộc mạng và host.
+- Nghỉ thay khoảng chờ giữa hai đợt. `0s` nghĩa là luôn dùng khoảng gửi.
+- 1–1000 lượt/đợt; tối đa 100 lịch, mỗi lịch một nhóm đích.
+- Tối đa 50 câu/lịch, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự.
+- Hai dấu `||` tách câu. Một dấu `|` trong nội dung được giữ. Không để câu trống giữa dấu tách.
+- Nội dung bắt đầu bằng `@` được gửi nguyên văn, không còn tra bộ mẫu. Đây chỉ là chữ, không tự tạo mention thành viên.
+- Không bắt đầu câu bằng tiền tố lệnh hiện tại (mặc định `!`) để tránh bot tự gọi lệnh.
 
-Bot trả mã như `L1` khi tạo lịch. Quản lý bằng:
+Bot chỉ dùng nội dung bạn soạn. Đã bỏ các bộ câu tích cực/nhắc uống nước tạo sẵn. Lịch cũ giữ nguyên nội dung đã lưu; nếu từng dùng bộ mẫu, hãy xóa lịch đó và tạo lại bằng câu của bạn.
+
+## Quản lý lịch
 
 ```text
 !lich
+!lich 2
+!lich L1
 !dung L1
 !dung all
 !tieptuc L1
 !xoa L1
 ```
 
-`!tieptuc` bắt đầu đợt mới sau khoảng gửi. `!lich` hiển thị giờ Việt Nam. Bot lưu nhóm chính/lịch ở `data/control.json` (nội dung tin nhắn có trong file này). Giữ thư mục `data` khi cập nhật. Lịch còn chạy sẽ hoạt động lại khi bot kết nối sau restart, không gửi dồn những lần bỏ lỡ. Gửi lỗi thì lịch tự dừng và báo một lần ở nhóm chính; kiểm tra rồi dùng `!tieptuc`.
+Danh sách hiện 5 lịch/trang. `!lich L1` xem trạng thái, thời gian theo giờ Việt Nam và câu tiếp theo (xem trước tối đa 2400 ký tự). `!tieptuc` bắt đầu đợt mới sau khoảng gửi, giữ vị trí câu. Muốn sửa nội dung/chu kỳ thì xóa lịch và tạo lại.
 
-Độ chính xác tùy kết nối và host, không bảo đảm đúng tuyệt đối từng giây. Host tắt thì không gửi. Tin đã bắt đầu gửi có thể vẫn đến sau lệnh dừng. Nếu khởi động không thành công vì `control.json` hỏng, giữ bản sao file rồi kiểm tra/sửa file thay vì xóa `session.json`.
+Bot lưu nhóm chính và lịch trong `data/control.json`, ghi file mới rồi thay thế file cũ. Giữ `data` khi cập nhật. Dữ liệu lỗi sẽ chặn khởi động với mã `CONTROL_STATE_INVALID`, không tự xóa dữ liệu. Giữ bản sao rồi kiểm tra/sửa file; không cần xóa phiên đăng nhập Zalo.
 
-## Nhạc và trợ giúp
+Khi host tắt/mất kết nối, bot không gửi. Khi kết nối lại, lịch tiếp tục mà không gửi bù dồn. Mỗi yêu cầu Zalo có giới hạn chờ 30 giây. Gửi lỗi hoặc không rõ kết quả thì lịch dừng, báo một lần; không tự gửi lại để tránh trùng. Vị trí câu và số lượt được ghi trước khi gửi, nên lượt không rõ kết quả có thể bị bỏ qua. Xem `!lich L1` rồi quyết định tiếp tục. Một tin đã gửi lên mạng vẫn có thể đến sau khi hết chờ hoặc dừng.
 
-`!nhac tên bài` hoặc `!scl link SoundCloud`: voice kèm ảnh thông tin, tối đa 10 phút. Chỉ dùng trong nhóm chính. `!kiemtra` kiểm tra công cụ. `!help` giải thích đầy đủ tất cả lệnh và ví dụ ngay trong chat.
+Lệnh xem trợ giúp/danh sách lặp quá nhanh trong 1,5 giây được bỏ qua để tránh lấp chat. Lệnh dừng không bị giới hạn này.
 
-Không chia sẻ `.env`, `data/session.json` hay ảnh QR đăng nhập. Đây là bot dùng thư viện tài khoản cá nhân zca-js, không phải API Zalo chính thức.
+## Nhạc
 
+`!nhac tên bài` hoặc `!scl link SoundCloud`: voice kèm ảnh thông tin, chỉ tại nhóm chính. Mặc định tối đa 10 phút; `MAX_DURATION_SECONDS` trong `.env` cho phép 30–600 giây.
 
-## Nội dung đa dạng (mới ở 1.2.1)
+Bot tải ảnh bìa song song với tải âm thanh lên Zalo, gửi voice trước rồi đến ảnh. Nếu ảnh lỗi thì chỉ thêm một dòng tên bài. Không nhắn trạng thái đang tải/chờ. Một bài chạy và tối đa hai bài đợi. Yêu cầu trùng trong 30 giây hoặc cùng người gọi trong 10 giây được bỏ qua.
 
-`!mau` liệt kê bộ có sẵn: `@uongnuoc` (8 lời nhắc sức khỏe/nghỉ ngơi) và `@tichcuc` (8 lời nhắn tích cực). `!mau tichcuc` xem từng câu.
+`!kiemtra` kiểm tra công cụ nhạc và SoundCloud. Công cụ nhạc được kiểm tra nền sau khi bắt đầu kết nối, không chặn đăng nhập/lệnh chữ.
 
-```text
-!tudong 123456789 | 30m | 4 | 2h | @tichcuc
-!tudong 123456789 | 30m | 4 | 2h | Câu thứ nhất || Câu thứ hai || Câu thứ ba
-```
+## Kiểm tra và giới hạn
 
-Bot gửi luân phiên theo thứ tự, hết danh sách mới quay lại đầu. Sau khi nghỉ, tiếp tục câu kế tiếp; restart và tiếp tục lịch cũng giữ vị trí câu. Bộ mẫu được chụp riêng vào từng lịch lúc tạo. Lịch cũ từ 1.2.0 vẫn hoạt động; muốn thay nội dung thì xóa lịch và tạo lại.
+- `npm test`: kiểm tra tự động (37 ca ở bản này).
+- `npm run doctor`: kiểm tra công cụ và tạo PNG.
+- `npm audit --omit=dev`: kiểm tra advisory dependency.
+- Đã kiểm tra lịch, quyền nhóm, gửi trùng, lỗi mạng giả lập và tạo ảnh; chưa kiểm thử trên tài khoản Zalo/Botkeep của bạn.
 
-Tối đa 50 câu tự nhập, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự. Hai dấu `||` tách câu; một dấu `|` trong nội dung vẫn giữ nguyên. Nếu nội dung bắt đầu bằng `@` thì được hiểu là tên bộ mẫu; hãy thêm chữ phía trước nếu bạn muốn gửi chữ bắt đầu bằng ký tự này. Không nhận câu bắt đầu bằng tiền tố lệnh. Mỗi lịch chỉ gửi một câu tại mỗi lượt.
-
-Nội dung đa dạng giúp bớt lặp, không bảo đảm tránh cơ chế chống spam của Zalo. Hãy chọn khoảng gửi phù hợp với nhóm.
+Không chia sẻ `.env`, `data/session.json`, nội dung `control.json` hay QR đăng nhập. Bot dùng thư viện tài khoản cá nhân zca-js, không phải API Zalo chính thức.

@@ -3,13 +3,14 @@ import { prepareMusic, checkTools, inspectTrack } from './music.mjs';
 import { diagnosticMessage, redactDiagnostics } from './process.mjs';
 import { createMusicCard, durationLabel } from './card.mjs';
 import { controlHelp } from './control.mjs';
+import { deadline, createDeduper } from './runtime.mjs';
 
 export function createHandler(api, config, prepare = prepareMusic, options = {}) {
   const makeCard = options.card || createMusicCard;
   const toolsCheck = options.tools || checkTools;
   const inspect = options.inspect || inspectTrack;
   const now = options.now || Date.now;
-  const seen = new Set();
+  const duplicate = createDeduper(300);
   const cooldown = new Map();
   const recent = new Map();
   const lastError = new Map();
@@ -43,14 +44,13 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     const group = String(event.threadId), author = String(event.data.uidFrom);
     if (!options.control && config.groups.size && !config.groups.has(group)) return;
     if (!options.control && config.users.size && !config.users.has(author)) return;
-    const key = `${group}:${event.data.msgId ?? event.data.cliMsgId}`;
-    if (seen.has(key)) return;
-    seen.add(key);
-    if (seen.size > 300) seen.delete(seen.values().next().value);
-    const say = msg => api.sendMessage(msg, group, event.type);
+    if (duplicate(event)) return;
+    const token = options.control?.token();
+    const current = () => !options.control || options.control.isCurrent(group, token);
+    const say = msg => current() ? deadline(() => api.sendMessage(msg, group, event.type)) : Promise.resolve();
     if (name === 'id') return say(`ID nhóm: ${group}\nUID của bạn: ${author}`);
     if (name === 'help') {
-      return say(controlHelp(config.prefix));
+      return say(controlHelp(config.prefix, config.maxDuration));
     }
     if (!words.length && name !== 'kiemtra') return say(`Dùng ${config.prefix}${name} tên bài hát hoặc link SoundCloud.`);
 
@@ -69,25 +69,32 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     const job = queue.then(async () => {
       let audio;
       try {
+        if (!current()) return;
         if (name === 'kiemtra') {
           const tools = await toolsCheck();
-          const sample = await inspect(input || 'https://soundcloud.com/kevin-9-1/carefree');
+          await inspect(input || 'https://soundcloud.com/kevin-9-1/carefree');
           console.log('Kiểm tra nhạc OK:', JSON.stringify(tools), 'SoundCloud tìm được bài.');
           return await say('Kiểm tra OK: công cụ nhạc và kết nối SoundCloud hoạt động.');
         }
         audio = await prepare(input, config.maxDuration);
-        let card;
-        try { card = await makeCard(audio); }
-        catch { console.warn('Không tạo được ảnh bài hát; sẽ dùng một dòng thông tin ngắn.'); }
-        const uploads = await api.uploadAttachment(audio.audioPath, group, event.type);
+        if (!current()) return;
+        // Tải ảnh bìa song song với tải audio lên Zalo để voice không phải chờ ảnh.
+        const cardPromise = Promise.resolve().then(() => makeCard(audio)).catch(() => {
+          console.warn('Không tạo được ảnh bài hát; sẽ dùng một dòng thông tin ngắn.');
+          return null;
+        });
+        if (!current()) return;
+        const uploads = await deadline(() => api.uploadAttachment(audio.audioPath, group, event.type));
+        if (!current()) return;
         const attachment = uploads.find(x => x.fileType === 'others' && x.fileUrl);
         if (!attachment) throw new Error('Zalo chưa trả về đường dẫn âm thanh sau khi tải lên.');
-        await api.sendVoice({ voiceUrl: attachment.fileUrl }, group, event.type);
+        await deadline(() => api.sendVoice({ voiceUrl: attachment.fileUrl }, group, event.type));
+        const card = await cardPromise;
         // Lỗi ảnh sau khi voice đã gửi không được báo thành lỗi cả bài hoặc gửi voice lần nữa.
         let imageSent = false;
-        if (card) {
+        if (card && current()) {
           try {
-            await api.sendMessage({ msg: '', attachments: [card] }, group, event.type);
+            await deadline(() => api.sendMessage({ msg: '', attachments: [card] }, group, event.type));
             imageSent = true;
           } catch { console.warn('Voice đã gửi; ảnh chưa gửi được.'); }
         }

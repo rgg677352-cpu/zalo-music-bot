@@ -1,4 +1,7 @@
-import test from 'node:test';
+import test, { beforeEach } from 'node:test';
+
+// Giữ log lỗi giả lập khỏi đầu ra của bộ chạy kiểm thử. Mock tự phục hồi sau mỗi test.
+beforeEach(t => { for (const method of ['log', 'warn', 'error']) t.mock.method(console, method, () => {}); });
 import assert from 'node:assert/strict';
 import { ThreadType } from 'zca-js';
 import { createHandler } from '../src/handler.mjs';
@@ -139,4 +142,19 @@ test('từ chối bài quá dài, không rõ thời lượng hoặc tìm kiếm 
   assert.throws(() => pickTrack({ webpage_url: 'https://soundcloud.com/a/b', duration: 601 }, 600));
   assert.throws(() => pickTrack({ webpage_url: 'https://soundcloud.com/a/b' }, 600));
   assert.equal(pickTrack({ entries: [{ webpage_url: 'https://soundcloud.com/a/b', duration: 120 }] }, 600).duration, 120);
+});
+
+test('voice không phải chờ tạo ảnh, ảnh vẫn gửi sau voice', async () => {
+  const order = []; let release;
+  const ready = new Promise(resolve => { release = resolve; });
+  const handler = createHandler({
+    uploadAttachment: async () => [{ fileType: 'others', fileUrl: 'https://example.org/v.aac' }],
+    sendVoice: async () => { order.push('voice'); },
+    sendMessage: async () => { order.push('image'); },
+  }, config, async () => ({ audioPath: '/tmp/a.aac', title: 'Bài hát', cleanup: async () => {} }), {
+    card: async () => { await ready; return fakeCard(); },
+  });
+  const pending = handler(message('!nhac test', 'parallel-card'));
+  await new Promise(r => setImmediate(r)); assert.deepEqual(order, ['voice']);
+  release(); await pending; assert.deepEqual(order, ['voice', 'image']);
 });
