@@ -3,7 +3,7 @@ import { prepareMusic, checkTools, inspectTrack } from './music.mjs';
 import { diagnosticMessage, redactDiagnostics } from './process.mjs';
 import { createMusicCard, durationLabel } from './card.mjs';
 import { controlHelp } from './control.mjs';
-import { deadline, createDeduper } from './runtime.mjs';
+import { deadline, createDeduper, commandPrefix } from './runtime.mjs';
 
 export function createHandler(api, config, prepare = prepareMusic, options = {}) {
   const makeCard = options.card || createMusicCard;
@@ -14,7 +14,7 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
   const cooldown = new Map();
   const recent = new Map();
   const lastError = new Map();
-  let queue = Promise.resolve(), pending = 0;
+  let queue = Promise.resolve(), pending = 0, randomSequence = 0;
 
   function logError(error) {
     console.error('Lỗi xử lý nhạc:', error.code || error.name || 'Error', error.exitCode ?? '',
@@ -25,6 +25,8 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
 
   function friendlyError(error) {
     if (/^(Nhập tên|Link |Bản này nhận|Không tìm thấy bài|Không xác định được thời lượng|Bài dài quá|Bài hát vượt)/.test(error.message || '')) return error.message;
+    if (error.code === 'TREND_UNAVAILABLE') return error.message;
+    if (error.code === 'MUSIC_HISTORY_INVALID') return 'File lịch sử nhạc lỗi. Kiểm tra data/music-history.json trên host; các lệnh khác vẫn dùng được.';
     if (error.reason === 'RATE_LIMIT') return 'Nguồn nhạc đang giới hạn lượt tải. Bạn thử lại sau một lúc nhé.';
     if (['NOT_FOUND', 'UNSUPPORTED_URL', 'UNAVAILABLE'].includes(error.reason)) return 'Bài này không tải được. Bạn thử link SoundCloud khác nhé.';
     return 'Chưa gửi được bài này. Bạn thử bài khác hoặc thử lại sau nhé.';
@@ -33,8 +35,8 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
   return async function handle(event) {
     if (event.type !== ThreadType.Group || typeof event.data?.content !== 'string') return;
     const text = event.data.content.trim();
-    const activePrefix = text.startsWith('?') ? '?' : config.prefix;
-    if (!text.startsWith(activePrefix)) return;
+    const activePrefix = commandPrefix(text, config.prefix);
+    if (!activePrefix) return;
     if (options.control) {
       if (await options.control.handle(event)) return;
       if (!options.control.isMain(event.threadId)) return;
@@ -56,7 +58,8 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     if (!words.length && name !== 'kiemtra') return say(`Dùng ${config.prefix}${name} tên bài hát hoặc link SoundCloud.`);
 
     const input = words.join(' ');
-    const request = `${group}:${name === 'kiemtra' ? 'check:' : ''}${input.toLowerCase()}`;
+    const random = ['scl', 'nhac'].includes(name) && /^(random|randoom)$/i.test(input);
+    const request = `${group}:${random ? 'random:' + randomSequence++ : (name === 'kiemtra' ? 'check:' : '') + input.toLowerCase()}`;
     const timestamp = now();
     if (recent.has(request) && timestamp - recent.get(request) < 30_000) return;
     if (cooldown.has(author) && timestamp - cooldown.get(author) < 10_000) return;
@@ -77,7 +80,8 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
           console.log('Kiểm tra nhạc OK:', JSON.stringify(tools), 'SoundCloud tìm được bài.');
           return await say('Kiểm tra OK: công cụ nhạc và kết nối SoundCloud hoạt động.');
         }
-        audio = await prepare(input, config.maxDuration);
+        if (random && !options.trending) throw Object.assign(new Error('Chưa bật nguồn nhạc thịnh hành. Kiểm tra bản cài bot.'), { code: 'TREND_UNAVAILABLE' });
+        audio = random ? await options.trending(group, config.maxDuration, prepare, current) : await prepare(input, config.maxDuration);
         if (!current()) return;
         // Tải ảnh bìa song song với tải audio lên Zalo để voice không phải chờ ảnh.
         const cardPromise = Promise.resolve().then(() => makeCard(audio)).catch(() => {

@@ -216,3 +216,11 @@ test('cập nhật ?pr khi lượt cũ đang gửi không bị lỗi lượt cũ
   const job = f.c.snapshot().jobs[0]; assert.equal(job.paused, false); assert.deepEqual(job.messages, ['Nội dung mới']); assert.equal(job.nextAt, 1200000);
   assert.equal(f.calls.filter(x => /đã dừng vì/.test(x.text)).length, 0);
 });
+
+test('tiền tố nhiều ký tự vẫn nhận cùng các alias ! và ?', async t => {
+  const f = fixture(t), c = createControl(f.api, { ...f.opts, prefix: '!!' });
+  await c.handle(f.event('!!setup', '100', 'owner')); assert.equal(c.snapshot().mainGroup, '100');
+  await c.handle(f.event('?pr 200 | Câu A')); await c.handle(f.event('!!pr 200 | Câu B'));
+  assert.equal(c.snapshot().jobs.length, 1); assert.deepEqual(c.snapshot().jobs[0].messages, ['Câu B']);
+  await c.handle(f.event('!dung all')); assert.equal(c.snapshot().jobs[0].paused, true);
+});

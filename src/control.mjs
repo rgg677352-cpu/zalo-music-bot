@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
 import { ThreadType } from 'zca-js';
 import { resolveMessages } from './messages.mjs';
-import { deadline, createDeduper, durationText, pageOf } from './runtime.mjs';
+import { deadline, createDeduper, durationText, pageOf, commandPrefix } from './runtime.mjs';
 export function parseDuration(value, zero = false) {
   const m = /^(\d+)(s|giay|m|phut|h|gio)$/i.exec(value.trim());
   const n = m && Number(m[1]) * (/^(m|phut)$/i.test(m[2]) ? 60000 : /^(h|gio)$/i.test(m[2]) ? 3600000 : 1000);
@@ -34,7 +34,7 @@ Lịch giữ qua restart, không gửi bù dồn khi host tắt. Gửi lỗi th�
 
 Nhạc
 ?nhac tên bài hoặc ?scl link SoundCloud — voice kèm ảnh, tối đa ${Math.floor(maxDuration / 60)} phút.
-?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
+!scl randoom hoặc !scl random — bài trong bảng xếp hạng VN/quốc tế, tìm bản SoundCloud đủ dài, tránh lặp 80 lượt random gần đây. Không tải được nguồn thì báo lỗi, không dùng danh sách cố định.\n?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
 Các lệnh cũ vẫn được giữ để tương thích.`;
 }
 export function createControl(api, { statePath, prefix = '!', now = Date.now, ownerId = String(api.getOwnId()), autoStart = true, requestTimeout = 30000, maxDuration = 600 }) {
@@ -94,13 +94,13 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
   }
   function validateText(text) {
     if (!text || text.length > 4000) throw new Error('Nội dung cần từ 1 đến 4000 ký tự.');
-    if (text.startsWith(prefix) || text.startsWith('?')) throw new Error(`Nội dung không được bắt đầu bằng ?, tránh bot tự gọi lệnh.`);
+    if (text.startsWith(prefix) || text.startsWith('?') || text.startsWith('!')) throw new Error(`Nội dung không được bắt đầu bằng ?, tránh bot tự gọi lệnh.`);
   }
   async function handle(event) {
     if (event.type !== ThreadType.Group || typeof event.data?.content !== 'string') return false;
     const text = event.data.content.trim();
-    const activePrefix = text.startsWith('?') ? '?' : prefix;
-    if (!text.startsWith(activePrefix)) return false;
+    const activePrefix = commandPrefix(text, prefix);
+    if (!activePrefix) return false;
     const m = /^(\S+)(?:\s+([\s\S]*))?$/.exec(text.slice(activePrefix.length)); if (!m) return false;
     const name = m[1].toLowerCase(), arg = m[2] || '', group = String(event.threadId);
     if (!commands.has(name)) return false;
@@ -221,7 +221,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         if (!state.jobs.includes(job) || job.paused || job.nextAt > now()) continue;
         const messages = job.messages || [job.text];
         const content = messages[job.cursor || 0];
-        if (content.trimStart().startsWith(prefix) || content.trimStart().startsWith('?')) {
+        if (content.trimStart().startsWith(prefix) || content.trimStart().startsWith('?') || content.trimStart().startsWith('!')) {
           job.paused = true; save();
           try { await send(`${job.id} đã dừng: nội dung bắt đầu bằng tiền tố lệnh hiện tại. Xóa lịch và sửa nội dung trước khi tạo lại.`, state.mainGroup); } catch {}
           continue;

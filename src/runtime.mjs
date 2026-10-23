@@ -33,3 +33,7 @@ export function pageOf(items, value, size = 8) {
   const index = Number(page);
   return { items: items.slice((index - 1) * size, index * size), page: index, total, offset: (index - 1) * size };
 }
+
+export function commandPrefix(text, configured) {
+  return [...new Set([configured, '?', '!'].filter(Boolean))].sort((a, b) => b.length - a.length).find(prefix => text.startsWith(prefix)) || null;
+}

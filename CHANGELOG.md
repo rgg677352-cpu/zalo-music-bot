@@ -1,3 +1,14 @@
+# 1.5.0
+
+- Thêm `!scl randoom`, `!scl random`, `?scl random`: lấy bảng most-played Apple Music VN/Mỹ/Anh/Hàn, rồi tìm bản SoundCloud phù hợp.
+- Cache 6 giờ, dự phòng tối đa 48 giờ khi nguồn lỗi, từ chối bảng quá cũ; không dùng danh sách cố định thay thế.
+- Lọc preview dưới 90 giây, kết quả nhầm tên/nghệ sĩ, remix/cover/mashup không yêu cầu. Không bảo đảm mọi bài đều có bản tải được.
+- Lưu 80 lượt random gần nhất theo nhóm, giữ qua restart; không phát lại chỉ vì nguồn thiếu bài mới.
+- Sửa nhận tiền tố ! khi cấu hình đang là ?; chặn cả hai tiền tố trong nội dung gửi tự động.
+- Sửa chống lặp lệnh random 30 giây khiến yêu cầu mới bị bỏ nhầm; vẫn giữ cooldown 10 giây/người.
+- Không chờ nguồn quốc tế tùy chọn bị lỗi khi đã có đủ cache VN và một nguồn quốc tế.
+- 53 kiểm tra đã qua, doctor đạt; tải và chuyển AAC thực tế thành công bài VN và quốc tế. Chưa kiểm thử gửi trên tài khoản Zalo người dùng.
+
 # 1.4.0
 
 - Thêm `?pr ID | nội dung | nội dung 2`: luân phiên một nội dung/lượt, mặc định mỗi 10 phút, lần đầu sau 10 phút.

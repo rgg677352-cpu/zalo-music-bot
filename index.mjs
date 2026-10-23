@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { Zalo, LoginQRCallbackEventType } from 'zca-js';
 import { createHandler } from './src/handler.mjs';
 import { createControl } from './src/control.mjs';
+import { createTrending } from './src/trends.mjs';
 import { checkTools } from './src/music.mjs';
 import { diagnosticMessage } from './src/process.mjs';
 
@@ -55,12 +56,17 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.4.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
+  console.log('Zalo Music Bot 1.5.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
   const api = await login();
   const control = createControl(api, { statePath: `${dataDir}control.json`, prefix, maxDuration, autoStart: false });
+  let trending;
+  const randomMusic = (...args) => {
+    trending ||= createTrending({ dataDir });
+    return trending.prepare(...args);
+  };
   const handler = createHandler(api, {
     prefix, maxDuration, groups: list(process.env.ALLOWED_GROUP_IDS), users: list(process.env.ALLOWED_USER_IDS),
-  }, undefined, { control });
+  }, undefined, { control, trending: randomMusic });
   // Lưu cookie được làm mới sau lần đăng nhập này.
   const credentials = JSON.parse(readFileSync(sessionPath, 'utf8'));
   credentials.cookie = api.getCookie().toJSON().cookies;
@@ -68,7 +74,7 @@ try {
   api.listener.on('message', event => {
     handler(event).catch(() => console.error('Không gửi được phản hồi. Kiểm tra kết nối Zalo.'));
   });
-  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.4.0. Tài khoản đang chạy bot gõ ?setup trong nhóm chính, rồi gõ ?help.`); });
+  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.5.0. Tài khoản đang chạy bot gõ ?setup trong nhóm chính, rồi gõ ?help.`); });
   api.listener.on('disconnected', () => { control.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
   api.listener.on('error', () => console.error('Kết nối Zalo báo lỗi. Không chia sẻ file session.json.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {

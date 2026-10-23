@@ -1,8 +1,8 @@
-# Bot Zalo 1.4.0
+# Bot Zalo 1.5.0
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.4.0.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.4.0`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.5.0.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.5.0`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
@@ -57,6 +57,29 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 
 ## Kiểm tra
 
-`npm test`: 42 kiểm tra. `npm run doctor`: công cụ nhạc và tạo PNG. Đã kiểm tra xử lý lệnh, lịch, lỗi mạng giả lập và tương thích dữ liệu cũ; chưa gửi thử trực tiếp trên tài khoản Zalo/Botkeep của bạn.
+`npm test`: 53 kiểm tra. `npm run doctor`: công cụ nhạc và tạo PNG. Đã kiểm tra xử lý lệnh, lịch, lỗi mạng giả lập và tương thích dữ liệu cũ; chưa gửi thử trực tiếp trên tài khoản Zalo/Botkeep của bạn.
 
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
+
+
+## Nhạc thịnh hành ngẫu nhiên (1.5.0)
+
+```text
+!scl randoom
+!scl random
+?scl random
+```
+
+Dùng trong nhóm điều khiển đã chọn. Cả `!` và `?` luôn được nhận; tiền tố riêng trong `.env` vẫn dùng được. `randoom` và `random` cùng một chức năng, không bị tìm thành tên bài. Hai dấu này cũng được chặn ở đầu nội dung PR để tránh bot tự gọi lệnh.
+
+Bot lấy bảng most-played Apple Music Việt Nam và các thị trường quốc tế Mỹ/Anh/Hàn Quốc, ưu tiên luân phiên hai nguồn VN/quốc tế khi tìm được bản phù hợp. Đây là bảng các bài đang được nghe nhiều, **không phải danh sách bài chỉ mới phát hành trong vài ngày gần đây**, và cũng không phải bảng xếp hạng của SoundCloud. Bài hay phụ thuộc gu nghe của bạn.
+
+- Nguồn: https://rss.marketingtools.apple.com/api/v2/vn/music/most-played/100/songs.json (đổi `vn` thành `us`, `gb`, `kr` cho thị trường khác).
+- Cache 6 giờ; khi nguồn lỗi có thể dùng cache còn trong 48 giờ. Từ chối feed có ngày cập nhật quá 7 ngày hoặc không hợp lệ. Không thay bằng danh sách nhạc cố định khi nguồn lỗi.
+- Tìm tối đa ba kết quả SoundCloud cho mỗi bài được chọn, đối chiếu tên bài/nghệ sĩ. Bỏ bản dưới 90 giây, quá giới hạn thời lượng, remix/cover/mashup không yêu cầu. Không bảo đảm mọi bài trong bảng đều có bản phù hợp để tải trên SoundCloud.
+- Ghi nhớ 80 lượt random gần nhất cho mỗi nhóm, cả tên bài/nghệ sĩ và URL SoundCloud, ở `data/music-history.json`. Tránh chọn lại trong phạm vi lịch sử này. Nếu không có bài phù hợp/chưa phát thì báo lỗi, không cố phát lại bài cũ. Giữ `data` để còn lịch sử qua restart.
+- Lịch sử được ghi trước khi gửi voice để tránh gửi trùng khi kết quả Zalo không rõ; lượt gửi thất bại có thể vẫn nằm trong lịch sử.
+- `data/trends-cache.json` là cache có thể tải lại; nếu `music-history.json` hỏng thì giữ bản sao và sửa file, không xóa phiên Zalo. Lỗi lịch sử nhạc không ngăn bot đăng nhập hay chạy lệnh PR.
+- Mỗi người gọi nhạc cách ít nhất 10 giây; yêu cầu random mới không bị bộ chống lặp tên lệnh 30 giây chặn nhầm. Chỉ một bài xử lý và tối đa hai bài chờ như trước.
+
+Đã chạy thử tải bài Việt Nam và quốc tế từ bảng hiện tại rồi chuyển AAC; chưa thử gửi trực tiếp vào tài khoản Zalo của bạn. Việc đối chiếu metadata không bảo đảm tuyệt đối bản SoundCloud là bản gốc/chính thức.

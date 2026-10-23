@@ -158,3 +158,17 @@ test('voice không phải chờ tạo ảnh, ảnh vẫn gửi sau voice', async
   await new Promise(r => setImmediate(r)); assert.deepEqual(order, ['voice']);
   release(); await pending; assert.deepEqual(order, ['voice', 'image']);
 });
+
+test('!scl randoom nhận dù PREFIX=?, random không bị chặn bởi chống lặp tên lệnh 30 giây', async () => {
+  const selected = [], sent = []; let time = 0;
+  const handler = createHandler({
+    uploadAttachment: async () => [{ fileType: 'others', fileUrl: 'https://example.org/a.aac' }],
+    sendVoice: async () => sent.push('voice'), sendMessage: async () => sent.push('image'),
+  }, { ...config, prefix: '?' }, async input => { selected.push(input); return { title: input, audioPath: '/tmp/a.aac', cleanup: async () => {} }; }, {
+    now: () => time, card: fakeCard,
+    trending: async (group, max, prepare) => prepare(`song-${selected.length + 1}`, max),
+  });
+  await handler(message('!scl randoom', 'random1')); time = 11000;
+  await handler(message('!scl random', 'random2'));
+  assert.deepEqual(selected, ['song-1','song-2']); assert.equal(sent.filter(x => x === 'voice').length, 2);
+});
