@@ -1,23 +1,7 @@
-Kiểm tra bản 1.1.0 — 2026-10-22
-
-18 bài kiểm tra tự động đã qua trên Node.js 24 / Linux x64:
-- Một yêu cầu chỉ phát sinh một voice và một ảnh; không có tin đang tải hoặc link chữ.
-- Hàng đợi chạy lần lượt, bỏ yêu cầu trùng và giữ giới hạn nhóm/người dùng.
-- Dọn file kể cả khi gửi lỗi. Ảnh lỗi sau voice không làm gửi voice lại.
-- Tin lỗi trong nhóm ngắn và bị giới hạn; chi tiết kỹ thuật giữ trong Console.
-- Tin help của bot không tự kích hoạt lệnh mới khi selfListen bật.
-- Tạo PNG có chữ tiếng Việt và metadata đúng để gửi ảnh từ Buffer qua zca-js.
-- Ảnh bìa chỉ tải từ CDN HTTPS SoundCloud, giới hạn dung lượng, có hình dự phòng.
-- Chẩn đoán TLS/runtime, ẩn URL và thông tin nhạy cảm trong log.
-
-npm run doctor: yt-dlp 2026.10.21, FFmpeg 7.0.2 và bộ tạo PNG/font chạy được.
-Đã tạo ảnh PNG 1080x380 từ metadata bài Carefree, có bìa thật và nghệ sĩ Kevin MacLeod.
-Font Be Vietnam Pro 132.948 byte, SHA-256 kiểm tra lúc cài; giấy phép đi kèm assets/.
-
-Chưa trực tiếp truy cập container Botkeep hoặc gửi ảnh/voice trong nhóm Zalo thật.
-Luồng gửi tin được kiểm tra bằng API giả lập; ảnh đã được xem trực quan ở môi trường phát triển.
-ZIP không chứa cookie, QR, session.json, .env thật, nhạc, node_modules hoặc binary.
-Giữ data/ và Environment khi cập nhật; cần cài dependency mới bằng npm ci.
-
-Kiểm tra tích hợp: tải bài Carefree và chuyển AAC thật, tạo ảnh có bìa thật,
-đưa qua handler với API Zalo giả lập. Đầu ra đúng [voice, image], không có tin chữ phụ.
+Bản 1.2.0 — 2026-10-23
+Console cần hiện: Zalo Music Bot 1.2.0
+Tài khoản Zalo đang đăng nhập bot gõ !setup trong nhóm chính.
+Sau đó mọi thành viên nhóm này dùng !help, !list, !gui, !tudong, !lich, !dung, !tieptuc, !xoa.
+Ví dụ: !tudong ID_NHOM | 30s | 5 | 10m | Xin chào
+Chưa thay ID_NHOM bằng ID thật thì không tạo lịch.
+Giữ thư mục data khi cập nhật. File ZIP cần được giải nén/ghi đè toàn bộ ở thư mục chính.

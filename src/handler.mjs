@@ -2,6 +2,7 @@ import { ThreadType } from 'zca-js';
 import { prepareMusic, checkTools, inspectTrack } from './music.mjs';
 import { diagnosticMessage, redactDiagnostics } from './process.mjs';
 import { createMusicCard, durationLabel } from './card.mjs';
+import { controlHelp } from './control.mjs';
 
 export function createHandler(api, config, prepare = prepareMusic, options = {}) {
   const makeCard = options.card || createMusicCard;
@@ -32,12 +33,16 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     if (event.type !== ThreadType.Group || typeof event.data?.content !== 'string') return;
     const text = event.data.content.trim();
     if (!text.startsWith(config.prefix)) return;
+    if (options.control) {
+      if (await options.control.handle(event)) return;
+      if (!options.control.isMain(event.threadId)) return;
+    }
     const [command, ...words] = text.slice(config.prefix.length).split(/\s+/);
     const name = command.toLowerCase();
     if (!['help', 'id', 'nhac', 'scl', 'kiemtra'].includes(name)) return;
     const group = String(event.threadId), author = String(event.data.uidFrom);
-    if (config.groups.size && !config.groups.has(group)) return;
-    if (config.users.size && !config.users.has(author)) return;
+    if (!options.control && config.groups.size && !config.groups.has(group)) return;
+    if (!options.control && config.users.size && !config.users.has(author)) return;
     const key = `${group}:${event.data.msgId ?? event.data.cliMsgId}`;
     if (seen.has(key)) return;
     seen.add(key);
@@ -45,7 +50,7 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     const say = msg => api.sendMessage(msg, group, event.type);
     if (name === 'id') return say(`ID nhóm: ${group}\nUID của bạn: ${author}`);
     if (name === 'help') {
-      return say(`Lệnh nhạc:\n${config.prefix}nhac tên bài hoặc ${config.prefix}scl link SoundCloud\nBot gửi voice kèm ảnh bài hát, tối đa ${Math.floor(config.maxDuration / 60)} phút.\n${config.prefix}id: ID nhóm · ${config.prefix}kiemtra: kiểm tra kết nối.`);
+      return say(controlHelp(config.prefix));
     }
     if (!words.length && name !== 'kiemtra') return say(`Dùng ${config.prefix}${name} tên bài hát hoặc link SoundCloud.`);
 

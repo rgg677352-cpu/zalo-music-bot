@@ -3,6 +3,7 @@ import { mkdirSync, existsSync, readFileSync, writeFileSync, renameSync, rmSync 
 import { fileURLToPath } from 'node:url';
 import { Zalo, LoginQRCallbackEventType } from 'zca-js';
 import { createHandler } from './src/handler.mjs';
+import { createControl } from './src/control.mjs';
 import { checkTools } from './src/music.mjs';
 import { diagnosticMessage } from './src/process.mjs';
 
@@ -54,7 +55,7 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.1.0 — voice + ảnh bài hát, chat gọn.');
+  console.log('Zalo Music Bot 1.2.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
   try {
     const tools = await checkTools();
     console.log(`yt-dlp ${tools.ytVersion}; FFmpeg OK.`);
@@ -64,9 +65,10 @@ try {
     console.error('Bot vẫn đăng nhập được; dùng !kiemtra để kiểm tra lại công cụ.');
   }
   const api = await login();
+  const control = createControl(api, { statePath: `${dataDir}control.json`, prefix, autoStart: false });
   const handler = createHandler(api, {
     prefix, maxDuration, groups: list(process.env.ALLOWED_GROUP_IDS), users: list(process.env.ALLOWED_USER_IDS),
-  });
+  }, undefined, { control });
   // Lưu cookie được làm mới sau lần đăng nhập này.
   const credentials = JSON.parse(readFileSync(sessionPath, 'utf8'));
   credentials.cookie = api.getCookie().toJSON().cookies;
@@ -74,16 +76,17 @@ try {
   api.listener.on('message', event => {
     handler(event).catch(() => console.error('Không gửi được phản hồi. Kiểm tra kết nối Zalo.'));
   });
-  api.listener.on('connected', () => console.log(`BOT SẴN SÀNG. Trong nhóm, gõ ${prefix}help hoặc ${prefix}nhac tên bài hát.`));
-  api.listener.on('disconnected', () => console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'));
+  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.2.0. Tài khoản đang chạy bot gõ ${prefix}setup trong nhóm chính, rồi gõ ${prefix}help.`); });
+  api.listener.on('disconnected', () => { control.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
   api.listener.on('error', () => console.error('Kết nối Zalo báo lỗi. Không chia sẻ file session.json.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
+    control.stop();
     api.listener.stop();
     process.exit(0);
   });
   api.listener.start({ retryOnClose: true });
 } catch (error) {
   console.error('Không khởi động/đăng nhập được:', error.name || 'Error');
-  console.error('Kiểm tra mạng của host và thử restart. Nếu phiên lỗi, xóa data/session.json để quét QR lại.');
+  console.error('Kiểm tra mạng, dung lượng và quyền ghi data. Nếu data/control.json lỗi, giữ bản sao và sửa file. Chỉ xóa data/session.json khi xác định phiên đăng nhập lỗi.');
   process.exitCode = 1;
 }
