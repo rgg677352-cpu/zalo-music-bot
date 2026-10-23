@@ -63,7 +63,7 @@ test('handler chặn cả nhạc bên ngoài nhóm chính và bỏ giới hạn 
   await h(f.event('!setup', '100', 'owner')); const n = f.calls.length;
   await h(f.event('!nhac test', '200')); await h(f.event('!id', '200')); assert.equal(f.calls.length, n);
   await h(f.event('!id')); assert.match(f.calls.at(-1).text, /ID nhóm: 100/);
-  assert.match(controlHelp(), /30m \| 4 \| 2h/);
+  assert.match(controlHelp(), /\?pr ID_NHOM \| Câu một \| Câu hai/);
 });
 
 test('luân phiên câu riêng, giữ vị trí qua restart và nghỉ, hết mới quay lại đầu', async t => {
@@ -107,7 +107,7 @@ test('list phân trang, không tải tên toàn bộ và không gửi nhiều tr
   f.api.getAllGroups = async () => ({ gridVerMap: Object.fromEntries(Array.from({ length: 25 }, (_, i) => [String(i + 100), '1'])) });
   let looked = 0; f.api.getGroupInfo = async ids => { looked += ids.length; return { gridInfoMap: {} }; };
   const before = f.calls.length; await f.c.handle(f.event('!list')); assert.equal(f.calls.length, before + 1); assert.equal(looked, 8);
-  assert.match(f.calls.at(-1).text, /1\/4/); assert.match(f.calls.at(-1).text, /!list 2/);
+  assert.match(f.calls.at(-1).text, /1\/4/); assert.match(f.calls.at(-1).text, /\?list 2/);
   // Lệnh xem lặp quá nhanh không phát sinh thêm phản hồi.
   await f.c.handle(f.event('!list')); assert.equal(f.calls.length, before + 1);
   f.at(2000); await f.c.handle(f.event('!list 9')); assert.match(f.calls.at(-1).text, /Trang không hợp lệ/);
@@ -164,4 +164,55 @@ test('đổi nhóm chính hủy cả bài đang tải lẫn bài xếp hàng, v�
   const second = handler(f.event('!nhac B', '100', 'member2'));
   await new Promise(r => setImmediate(r)); await f.c.handle(f.event('!setup', '200', 'owner')); release();
   await Promise.all([first, second]); assert.equal(prepared, 1); assert.equal(cleaned, 1); assert.equal(uploaded, 0);
+});
+
+test('?pr chạy với cấu hình PREFIX=! cũ, gửi mỗi 10 phút một nội dung và quay vòng', async t => {
+  const f = fixture(t); const h = createHandler(f.api, { prefix: '!', groups: new Set(), users: new Set(), maxDuration: 600 }, undefined, { control: f.c });
+  await h(f.event('?setup', '100', 'owner'));
+  await h(f.event('?pr 200 | Nội dung một | Nội dung hai'));
+  assert.equal(f.c.snapshot().jobs.length, 1);
+  const sent = () => f.calls.filter(x => x.group === '200').map(x => x.text);
+  f.at(599999); await f.c.tick(); assert.deepEqual(sent(), []);
+  f.at(600000); await f.c.tick(); assert.deepEqual(sent(), ['Nội dung một']);
+  f.at(1200000); await f.c.tick(); f.at(1800000); await f.c.tick();
+  assert.deepEqual(sent(), ['Nội dung một','Nội dung hai','Nội dung một']);
+});
+
+test('?pr cập nhật cùng nhóm không tạo lịch trùng, giữ ID và đặt lại thời gian', async t => {
+  const f = fixture(t); await f.c.handle(f.event('?setup', '100', 'owner'));
+  await f.c.handle(f.event('?pr 200 | Cũ')); f.at(100000);
+  await f.c.handle(f.event('?pr 200 | Mới A | Mới B'));
+  const jobs = f.c.snapshot().jobs;
+  assert.equal(jobs.length, 1); assert.equal(jobs[0].id, 'L1'); assert.equal(jobs[0].nextAt, 700000); assert.deepEqual(jobs[0].messages, ['Mới A', 'Mới B']);
+  const restored = createControl(f.api, f.opts); f.at(700000); await restored.tick();
+  assert.equal(f.calls.filter(x => x.group === '200').at(-1).text, 'Mới A');
+  await restored.handle(f.event('?dung L1')); f.at(1300000); await restored.tick();
+  assert.equal(f.calls.filter(x => x.group === '200').length, 1);
+  await restored.handle(f.event('?tieptuc L1')); assert.equal(restored.snapshot().jobs[0].nextAt, 1900000);
+});
+
+test('?pr không tạo lịch với nhóm sai, nội dung trống hay nội dung là lệnh', async t => {
+  const f = fixture(t); await f.c.handle(f.event('?setup', '100', 'owner'));
+  for (const content of ['?pr 200', '?pr 999 | A', '?pr 200 | A | ', '?pr 200 | A || B', '?pr 200 | ?setup', '?pr 200 | !setup']) await f.c.handle(f.event(content));
+  assert.equal(f.c.snapshot().jobs.length, 0);
+  await f.c.handle(f.event('?pr 200 | A', '200')); assert.equal(f.c.snapshot().jobs.length, 0);
+});
+
+test('setup sai tài khoản có chỉ dẫn, help trước setup có chỉ dẫn, không nhắn lặp liên tục', async t => {
+  const f = fixture(t);
+  await f.c.handle(f.event('?help')); assert.match(f.calls.at(-1).text, /cần nhắn \?setup/);
+  await f.c.handle(f.event('?setup')); assert.match(f.calls.at(-1).text, /chính tài khoản Zalo/);
+  const n = f.calls.length; await f.c.handle(f.event('?setup')); await f.c.handle(f.event('?help')); assert.equal(f.calls.length, n);
+  await f.c.handle(f.event('?setup', '100', 'owner')); assert.equal(f.c.snapshot().mainGroup, '100');
+  await f.c.handle(f.event('?help')); assert.match(f.calls.at(-1).text, /\?pr ID_NHOM/);
+});
+
+test('cập nhật ?pr khi lượt cũ đang gửi không bị lỗi lượt cũ dừng nhầm lịch mới', async t => {
+  const f = fixture(t); await f.c.handle(f.event('?setup', '100', 'owner')); await f.c.handle(f.event('?pr 200 | Nội dung cũ'));
+  const original = f.api.sendMessage; let rejectOld;
+  f.api.sendMessage = (text, group) => group === '200' ? new Promise((_, reject) => { rejectOld = reject; }) : original(text, group);
+  f.at(600000); const pending = f.c.tick(); await new Promise(r => setImmediate(r));
+  await f.c.handle(f.event('?pr 200 | Nội dung mới')); rejectOld(new Error('old dispatch failed')); await pending;
+  const job = f.c.snapshot().jobs[0]; assert.equal(job.paused, false); assert.deepEqual(job.messages, ['Nội dung mới']); assert.equal(job.nextAt, 1200000);
+  assert.equal(f.calls.filter(x => /đã dừng vì/.test(x.text)).length, 0);
 });

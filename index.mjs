@@ -16,7 +16,7 @@ const maxDuration = Number(process.env.MAX_DURATION_SECONDS || 600);
 if (!Number.isInteger(maxDuration) || maxDuration < 30 || maxDuration > 600) {
   throw new Error('MAX_DURATION_SECONDS cần là số từ 30 đến 600.');
 }
-const prefix = process.env.PREFIX || '!';
+const prefix = process.env.PREFIX || '?';
 if (!/^[!./#$?]{1,3}$/.test(prefix)) throw new Error('PREFIX cần từ 1–3 ký tự, ví dụ ! hoặc /.');
 
 const zalo = new Zalo({ selfListen: true, checkUpdate: false, logging: false });
@@ -55,7 +55,7 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.3.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
+  console.log('Zalo Music Bot 1.4.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
   const api = await login();
   const control = createControl(api, { statePath: `${dataDir}control.json`, prefix, maxDuration, autoStart: false });
   const handler = createHandler(api, {
@@ -68,7 +68,7 @@ try {
   api.listener.on('message', event => {
     handler(event).catch(() => console.error('Không gửi được phản hồi. Kiểm tra kết nối Zalo.'));
   });
-  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.3.0. Tài khoản đang chạy bot gõ ${prefix}setup trong nhóm chính, rồi gõ ${prefix}help.`); });
+  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.4.0. Tài khoản đang chạy bot gõ ?setup trong nhóm chính, rồi gõ ?help.`); });
   api.listener.on('disconnected', () => { control.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
   api.listener.on('error', () => console.error('Kết nối Zalo báo lỗi. Không chia sẻ file session.json.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {

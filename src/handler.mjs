@@ -33,12 +33,13 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
   return async function handle(event) {
     if (event.type !== ThreadType.Group || typeof event.data?.content !== 'string') return;
     const text = event.data.content.trim();
-    if (!text.startsWith(config.prefix)) return;
+    const activePrefix = text.startsWith('?') ? '?' : config.prefix;
+    if (!text.startsWith(activePrefix)) return;
     if (options.control) {
       if (await options.control.handle(event)) return;
       if (!options.control.isMain(event.threadId)) return;
     }
-    const [command, ...words] = text.slice(config.prefix.length).split(/\s+/);
+    const [command, ...words] = text.slice(activePrefix.length).split(/\s+/);
     const name = command.toLowerCase();
     if (!['help', 'id', 'nhac', 'scl', 'kiemtra'].includes(name)) return;
     const group = String(event.threadId), author = String(event.data.uidFrom);

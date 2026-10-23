@@ -8,45 +8,34 @@ export function parseDuration(value, zero = false) {
   if (!Number.isSafeInteger(n) || n < (zero ? 0 : 1000) || n > 604800000) throw new Error('Thời gian cần dạng 30s, 5m hoặc 1h, tối đa 7 ngày. Khoảng gửi ít nhất 1 giây; nghỉ có thể là 0s.');
   return n;
 }
-export function controlHelp(p = '!', maxDuration = 600) {
+export function controlHelp(p = '?', maxDuration = 600) {
   return `BOT · Hướng dẫn
 
-Nhóm điều khiển
-${p}setup — tài khoản đăng nhập bot chọn nhóm chính.
-Mọi thành viên nhóm chính được điều khiển; nhóm khác không nhận lệnh. Đổi nhóm chính sẽ dừng lịch cũ.
-${p}list [trang] — tên và ID nhóm tài khoản đang tham gia.
-${p}id — ID nhóm hiện tại và UID người nhắn.
+Bắt đầu
+?setup — tài khoản đăng nhập bot chọn nhóm điều khiển.
+Mọi thành viên nhóm này đều dùng được lệnh.
+?list — xem tên và ID nhóm. ?list 2 — trang tiếp.
 
-Gửi một lần
-${p}gui ID_NHOM | Nội dung
-Ví dụ: ${p}gui 123456789 | Chào mọi người
-Tài khoản bot phải có quyền nhắn trong nhóm đích.
+Gửi tự động · 10 phút/lần
+?pr ID_NHOM | Nội dung
+Hoặc nhiều nội dung:
+?pr ID_NHOM | Câu một | Câu hai | Câu ba
 
-Gửi theo lịch
-${p}tudong ID_NHOM | khoảng gửi | số lần/đợt | nghỉ | nội dung
-Ví dụ: ${p}tudong 123456789 | 30m | 4 | 2h | Câu một || Câu hai || Câu ba
+Mỗi lượt chỉ gửi một câu, lần lượt từ đầu đến cuối rồi quay lại. Lần đầu sau 10 phút. Bot gửi đúng nội dung bạn soạn. Gọi ?pr lại cho cùng nhóm sẽ cập nhật lịch đó và chờ 10 phút từ lúc cập nhật, không tạo thêm lịch PR trùng.
+Dùng một dấu | để tách các câu; mỗi câu không chứa dấu |. Tối đa 50 câu, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự. Nhập ID đầy đủ, không dùng số thứ tự trong danh sách. Bot phải có quyền nhắn ở nhóm đích.
 
-Ví dụ trên: chờ 30 phút rồi gửi câu đầu; mỗi 30 phút gửi câu kế. Đủ 4 lượt thì nghỉ 2 giờ rồi tiếp tục. Hết danh sách câu mới quay lại đầu.
-• s = giây, m = phút, h = giờ. 90s = 1 phút 30 giây.
-• Nghỉ thay khoảng chờ giữa hai đợt. 0s = luôn chờ theo khoảng gửi.
-• Số lượt/đợt: 1–1000. Khoảng gửi: từ 1 giây; mỗi khoảng tối đa 7 ngày.
-• Tối đa 50 câu/lịch, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự. Dùng || để tách câu, một dấu | được giữ trong nội dung.
-• Bot gửi đúng chữ bạn soạn, không tự thêm lời dẫn. Không bắt đầu câu bằng ${p} để tránh tự gọi lệnh.
+Quản lý
+?lich — xem lịch đang có; ?lich L1 — chi tiết.
+?dung L1 — dừng một lịch; ?dung all — dừng tất cả.
+?tieptuc L1 — chạy lại sau 10 phút (với lịch PR).
+?xoa L1 — xóa lịch.
 
-Quản lý lịch
-${p}lich [trang] — danh sách lịch.
-${p}lich L1 — chi tiết và câu gửi tiếp theo.
-${p}dung L1 — tạm dừng một lịch.
-${p}dung all — dừng tất cả.
-${p}tieptuc L1 — bắt đầu đợt mới sau khoảng gửi; giữ vị trí câu.
-${p}xoa L1 — xóa lịch.
-
-Bot giữ lịch qua restart, không gửi bù dồn khi host tắt. Gửi lỗi sẽ dừng lịch và báo một lần. Lượt gửi không rõ kết quả cũng không tự thử lại; câu đó có thể bị bỏ qua. Tin đã bắt đầu gửi có thể vẫn đến sau khi dừng. Botkeep phải chạy và kết nối Zalo thì lịch mới hoạt động.
+Lịch giữ qua restart, không gửi bù dồn khi host tắt. Gửi lỗi thì dừng lịch, không tự thử lại khi không rõ kết quả. Tin đã bắt đầu gửi có thể vẫn đến sau khi dừng. Botkeep phải chạy và kết nối Zalo.
 
 Nhạc
-${p}nhac tên bài hoặc ${p}scl link SoundCloud — voice kèm ảnh, tối đa ${Math.floor(maxDuration / 60)} phút.
-${p}kiemtra — kiểm tra công cụ nhạc.
-${p}help — hướng dẫn này.`;
+?nhac tên bài hoặc ?scl link SoundCloud — voice kèm ảnh, tối đa ${Math.floor(maxDuration / 60)} phút.
+?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
+Các lệnh cũ vẫn được giữ để tương thích.`;
 }
 export function createControl(api, { statePath, prefix = '!', now = Date.now, ownerId = String(api.getOwnId()), autoStart = true, requestTimeout = 30000, maxDuration = 600 }) {
   let state = { version: 1, mainGroup: null, nextId: 1, jobs: [] };
@@ -62,6 +51,8 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
           !Number.isSafeInteger(j.rest) || j.rest < 0 || j.rest > 604800000 ||
           !Number.isInteger(j.count) || j.count < 1 || j.count > 1000 || !Number.isInteger(j.sent) || j.sent < 0 || j.sent >= j.count ||
           !Number.isSafeInteger(j.nextAt) || j.nextAt < 0 || typeof j.paused !== 'boolean') return false;
+      if (j.kind !== undefined && j.kind !== 'pr') return false;
+      if (j.kind === 'pr' && (j.interval !== 600000 || j.count !== 1 || j.rest !== 0)) return false;
       ids.add(j.id);
       if (j.messages !== undefined && (!Array.isArray(j.messages) || !j.messages.length || j.messages.length > 50 ||
           j.messages.some(m => typeof m !== 'string' || !m || m.length > 4000) ||
@@ -89,29 +80,50 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
   };
   const send = (text, group) => deadline(() => api.sendMessage(text, group, ThreadType.Group), requestTimeout);
   const isMain = group => state.mainGroup === String(group);
-  const commands = new Set(['setup', 'help', 'list', 'gui', 'tudong', 'lich', 'dung', 'tieptuc', 'xoa', 'mau']);
+  const commands = new Set(['setup', 'help', 'list', 'gui', 'tudong', 'lich', 'dung', 'tieptuc', 'xoa', 'mau', 'pr']);
   const duplicate = createDeduper();
   const readCooldown = new Map();
   function split(arg, count) {
     const parts = []; let rest = arg;
-    for (let i = 0; i < count - 1; i++) { const at = rest.indexOf('|'); if (at < 0) throw new Error(`Thiếu dấu |. Gõ ${prefix}help để xem cú pháp.`); parts.push(rest.slice(0, at).trim()); rest = rest.slice(at + 1); }
+    for (let i = 0; i < count - 1; i++) { const at = rest.indexOf('|'); if (at < 0) throw new Error(`Thiếu dấu |. Gõ ?help để xem cú pháp.`); parts.push(rest.slice(0, at).trim()); rest = rest.slice(at + 1); }
     return [...parts, rest.trim()];
   }
   async function targetExists(id) {
     const all = await deadline(() => api.getAllGroups(), requestTimeout);
-    if (!/^\d+$/.test(id) || !Object.hasOwn(all.gridVerMap || {}, id)) throw new Error(`ID nhóm không hợp lệ hoặc bot chưa tham gia. Gõ ${prefix}list để lấy ID.`);
+    if (!/^\d+$/.test(id) || !Object.hasOwn(all.gridVerMap || {}, id)) throw new Error(`ID nhóm không hợp lệ hoặc bot chưa tham gia. Gõ ?list để lấy ID.`);
   }
   function validateText(text) {
     if (!text || text.length > 4000) throw new Error('Nội dung cần từ 1 đến 4000 ký tự.');
-    if (text.startsWith(prefix)) throw new Error(`Nội dung không được bắt đầu bằng ${prefix}, tránh bot tự gọi lệnh.`);
+    if (text.startsWith(prefix) || text.startsWith('?')) throw new Error(`Nội dung không được bắt đầu bằng ?, tránh bot tự gọi lệnh.`);
   }
   async function handle(event) {
     if (event.type !== ThreadType.Group || typeof event.data?.content !== 'string') return false;
-    const text = event.data.content.trim(); if (!text.startsWith(prefix)) return false;
-    const m = /^(\S+)(?:\s+([\s\S]*))?$/.exec(text.slice(prefix.length)); if (!m) return false;
+    const text = event.data.content.trim();
+    const activePrefix = text.startsWith('?') ? '?' : prefix;
+    if (!text.startsWith(activePrefix)) return false;
+    const m = /^(\S+)(?:\s+([\s\S]*))?$/.exec(text.slice(activePrefix.length)); if (!m) return false;
     const name = m[1].toLowerCase(), arg = m[2] || '', group = String(event.threadId);
     if (!commands.has(name)) return false;
-    if (name === 'setup' ? String(event.data.uidFrom) !== ownerId : !isMain(group)) return true;
+    if (name === 'setup' && String(event.data.uidFrom) !== ownerId) {
+      const key = `setup-denied:${group}`;
+      if (!readCooldown.has(key) || now() - readCooldown.get(key) >= 30000) {
+        readCooldown.set(key, now());
+        if (readCooldown.size > 500) readCooldown.delete(readCooldown.keys().next().value);
+        await send('Dùng chính tài khoản Zalo đã đăng nhập bot để nhắn ?setup trong nhóm này. Sau đó mọi thành viên ở đây đều điều khiển được.', group);
+      }
+      return true;
+    }
+    if (name !== 'setup' && !isMain(group)) {
+      if (name === 'help' && (String(event.data.uidFrom) === ownerId || !state.mainGroup)) {
+        const key = `help-setup:${group}`;
+        if (!readCooldown.has(key) || now() - readCooldown.get(key) >= 30000) {
+          readCooldown.set(key, now());
+          if (readCooldown.size > 500) readCooldown.delete(readCooldown.keys().next().value);
+          await send('Chưa ở nhóm điều khiển. Tài khoản Zalo đã đăng nhập bot cần nhắn ?setup trong nhóm muốn dùng, rồi nhắn ?help.', group);
+        }
+      }
+      return true;
+    }
     if (duplicate(event)) return true;
     const token = generation;
     if (['help', 'list', 'lich', 'mau'].includes(name)) {
@@ -124,10 +136,10 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
     try {
       if (name === 'setup') {
         if (!isMain(group)) { state.mainGroup = group; generation++; state.jobs.forEach(j => { j.paused = true; }); save(); }
-        await say(`Nhóm điều khiển đã sẵn sàng.\nMọi thành viên tại đây đều dùng được lệnh.\n${prefix}help — hướng dẫn · ${prefix}list — danh sách nhóm`);
-      } else if (name === 'help') await say(controlHelp(prefix, maxDuration));
+        await say(`Nhóm điều khiển đã sẵn sàng.\nMọi thành viên tại đây đều dùng được lệnh.\n?help — hướng dẫn · ?list — danh sách nhóm`);
+      } else if (name === 'help') await say(controlHelp('?', maxDuration));
       else if (name === 'mau') {
-        await say(`Nội dung luân phiên\nSoạn các câu, ngăn bằng ||.\nVí dụ: ${prefix}tudong ID_NHOM | 30m | 4 | 2h | Câu một || Câu hai\nBot chỉ gửi nội dung bạn nhập.`);
+        await say(`Nội dung luân phiên\nSoạn các câu, ngăn bằng ||.\nVí dụ: ?tudong ID_NHOM | 30m | 4 | 2h | Câu một || Câu hai\nBot chỉ gửi nội dung bạn nhập.`);
       } else if (name === 'list') {
         const ids = Object.keys((await deadline(() => api.getAllGroups(), requestTimeout)).gridVerMap || {}).sort();
         if (token !== generation) return true;
@@ -137,7 +149,24 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         try { info = (await deadline(() => api.getGroupInfo(page.items), requestTimeout)).gridInfoMap || {}; } catch {}
         if (token !== generation) return true;
         const rows = page.items.map((id, i) => `${page.offset + i + 1}. ${String(info[id]?.name || 'Chưa lấy được tên').replace(/[\r\n]/g, ' ').slice(0, 100)}\n${id}`);
-        await say(`Nhóm · ${page.page}/${page.total}\n\n${rows.join('\n\n')}\n\nDùng ID đầy đủ để gửi.${page.page < page.total ? ` Trang tiếp: ${prefix}list ${page.page + 1}` : ''}`);
+        await say(`Nhóm · ${page.page}/${page.total}\n\n${rows.join('\n\n')}\n\nDùng ID đầy đủ để gửi.${page.page < page.total ? ` Trang tiếp: ?list ${page.page + 1}` : ''}`);
+      } else if (name === 'pr') {
+        const parts = arg.split('|').map(s => s.trim());
+        if (parts.length < 2) throw new Error('Nội dung lệnh: ?pr ID_NHOM | câu một | câu hai');
+        const [target, ...messages] = parts;
+        if (arg.length > 20000 || messages.length > 50) throw new Error('Nội dung tối đa 50 câu, tổng đầu vào tối đa 20000 ký tự.');
+        for (const text of messages) validateText(text);
+        await targetExists(target);
+        if (!isMain(group) || token !== generation) return true;
+        const previous = state.jobs.find(j => j.kind === 'pr' && j.target === target);
+        if (!previous && state.jobs.length >= 100) throw new Error('Đã có 100 lịch. Xóa lịch cũ trước khi thêm.');
+        const existed = !!previous;
+        // Thay object để kết quả gửi của lịch cũ không ghi đè lịch vừa cập nhật.
+        const job = { id: previous?.id || `L${state.nextId++}`, target, kind: 'pr', text: messages[0], messages, cursor: 0, interval: 600000, rest: 0, count: 1, sent: 0, nextAt: now() + 600000, paused: false };
+        if (previous) state.jobs[state.jobs.indexOf(previous)] = job;
+        else state.jobs.push(job);
+        save();
+        await say(`${existed ? 'Đã cập nhật' : 'Đã tạo'} ${job.id} → ${target}\n${messages.length} nội dung · 10 phút/lượt\nLần đầu sau 10 phút.\n?dung ${job.id} — dừng`);
       } else if (name === 'gui') {
         const [target, content] = split(arg, 2); validateText(content); await targetExists(target);
         if (!isMain(group) || token !== generation) return true;
@@ -151,24 +180,24 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         if (state.jobs.length >= 100) throw new Error('Đã có 100 lịch. Xóa lịch cũ trước khi thêm.');
         const job = { id: `L${state.nextId++}`, target, text: messages[0], messages, cursor: 0, interval, rest, count, sent: 0, nextAt: now() + interval, paused: false };
         state.jobs.push(job); save();
-        await say(`Lịch ${job.id} · Đang chạy\nNhóm: ${target}\nMỗi ${durationText(interval)} · ${count} lượt/đợt\nNghỉ: ${durationText(rest)} · ${messages.length} câu luân phiên\nLần đầu sau ${durationText(interval)}.\n${prefix}dung ${job.id} — tạm dừng`);
+        await say(`Lịch ${job.id} · Đang chạy\nNhóm: ${target}\nMỗi ${durationText(interval)} · ${count} lượt/đợt\nNghỉ: ${durationText(rest)} · ${messages.length} câu luân phiên\nLần đầu sau ${durationText(interval)}.\n?dung ${job.id} — tạm dừng`);
       } else if (name === 'lich') {
-        if (!state.jobs.length) { await say(`Chưa có lịch. ${prefix}help để xem cách tạo.`); return true; }
+        if (!state.jobs.length) { await say(`Chưa có lịch. ?help để xem cách tạo.`); return true; }
         const id = arg.trim().toUpperCase();
         if (/^L/.test(id)) {
           const j = state.jobs.find(j => j.id === id);
-          if (!j) throw new Error(`Không tìm thấy ${id}. Dùng ${prefix}lich để xem danh sách.`);
+          if (!j) throw new Error(`Không tìm thấy ${id}. Dùng ?lich để xem danh sách.`);
           const next = (j.messages || [j.text])[j.cursor || 0];
           await say(`${j.id} · ${j.paused ? 'Tạm dừng' : 'Đang chạy'}\nNhóm: ${j.target}\nMỗi ${durationText(j.interval)} · ${j.count} lượt/đợt\nNghỉ: ${durationText(j.rest)}\nCâu tiếp: ${(j.cursor || 0) + 1}/${j.messages?.length || 1}\n${j.paused ? 'Chờ tiếp tục' : 'Lần tới: ' + new Date(j.nextAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}\n\n${next.slice(0, 2400)}${next.length > 2400 ? '…' : ''}`);
         } else {
           const page = pageOf(state.jobs, arg, 5);
-          await say(`Lịch gửi · ${page.page}/${page.total}\n\n${page.items.map(j => `${j.id} · ${j.paused ? 'Tạm dừng' : 'Đang chạy'} → ${j.target}\nMỗi ${durationText(j.interval)} · ${j.count} lượt · nghỉ ${durationText(j.rest)}\n${(j.messages?.[j.cursor] || j.text).replace(/\s+/g, ' ').slice(0, 90)}`).join('\n\n')}\n\n${prefix}lich L1 — chi tiết${page.page < page.total ? ` · ${prefix}lich ${page.page + 1} — trang tiếp` : ''}`);
+          await say(`Lịch gửi · ${page.page}/${page.total}\n\n${page.items.map(j => `${j.id} · ${j.paused ? 'Tạm dừng' : 'Đang chạy'} → ${j.target}\nMỗi ${durationText(j.interval)} · ${j.count} lượt · nghỉ ${durationText(j.rest)}\n${(j.messages?.[j.cursor] || j.text).replace(/\s+/g, ' ').slice(0, 90)}`).join('\n\n')}\n\n?lich L1 — chi tiết${page.page < page.total ? ` · ?lich ${page.page + 1} — trang tiếp` : ''}`);
         }
       } else if (name === 'dung' && arg.trim().toLowerCase() === 'all') {
         state.jobs.forEach(j => { j.paused = true; }); save(); await say('Đã dừng tất cả lịch.');
       } else {
         const id = arg.trim().toUpperCase(), job = state.jobs.find(j => j.id === id);
-        if (!job) throw new Error(`Không tìm thấy mã lịch. Gõ ${prefix}lich để xem.`);
+        if (!job) throw new Error(`Không tìm thấy mã lịch. Gõ ?lich để xem.`);
         if (name === 'xoa') state.jobs = state.jobs.filter(j => j !== job);
         else if (name === 'dung') job.paused = true;
         else { job.paused = false; job.sent = 0; job.nextAt = now() + job.interval; }
@@ -192,7 +221,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         if (!state.jobs.includes(job) || job.paused || job.nextAt > now()) continue;
         const messages = job.messages || [job.text];
         const content = messages[job.cursor || 0];
-        if (content.trimStart().startsWith(prefix)) {
+        if (content.trimStart().startsWith(prefix) || content.trimStart().startsWith('?')) {
           job.paused = true; save();
           try { await send(`${job.id} đã dừng: nội dung bắt đầu bằng tiền tố lệnh hiện tại. Xóa lịch và sửa nội dung trước khi tạo lại.`, state.mainGroup); } catch {}
           continue;
@@ -202,9 +231,10 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         job.nextAt = now() + (end && job.rest > 0 ? job.rest : job.interval); save();
         try { await send(content, job.target); }
         catch {
-          if (state.jobs.includes(job)) { job.paused = true; save(); }
+          if (!state.jobs.includes(job)) continue;
+          job.paused = true; save();
           if (token !== generation) continue;
-          try { await send(`${job.id} đã dừng vì gửi tin không thành công. Kiểm tra nhóm đích rồi dùng ${prefix}tieptuc ${job.id}.`, state.mainGroup); } catch {}
+          try { await send(`${job.id} đã dừng vì gửi tin không thành công. Kiểm tra nhóm đích rồi dùng ?tieptuc ${job.id}.`, state.mainGroup); } catch {}
         }
       }
     } finally { busy = false; }

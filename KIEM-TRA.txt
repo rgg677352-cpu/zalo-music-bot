@@ -1,8 +1,8 @@
-Bản 1.3.0 — 2026-10-23
-Console cần hiện: Zalo Music Bot 1.3.0
-Giải nén và ghi đè toàn bộ code ở thư mục chính; giữ data và .env riêng.
-Tài khoản bot gõ !setup tại nhóm chính, rồi !help.
-!list [trang] — tên/ID nhóm. !lich [trang] — lịch. !lich L1 — chi tiết.
-!tudong ID_NHOM | 30m | 4 | 2h | Câu một || Câu hai || Câu ba
-Thay ID_NHOM bằng ID thật. Nội dung do bạn tự chuẩn bị.
-!dung all để dừng tất cả lịch.
+Bản 1.4.0 — 2026-10-23
+Console cần hiện Zalo Music Bot 1.4.0.
+Giữ data và .env khi giải nén/ghi đè toàn bộ code.
+Tài khoản đăng nhập bot gõ ?setup trong nhóm điều khiển.
+?list để lấy ID nhóm.
+?pr ID_NHOM | Nội dung một | Nội dung hai
+Mỗi 10 phút gửi một nội dung; lần đầu sau 10 phút.
+?dung all để dừng mọi lịch. ?help để xem hướng dẫn.

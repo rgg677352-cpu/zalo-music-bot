@@ -1,11 +1,11 @@
-# Zalo Music & Group Control Bot 1.3.0
+# Zalo Bot 1.4.0
 
-Điều khiển tài khoản Zalo từ một nhóm chính: lấy tên/ID nhóm, gửi nội dung tự soạn theo chu kỳ gửi/nghỉ, luân phiên nhiều câu; gửi nhạc SoundCloud dạng voice kèm ảnh.
+Gửi nội dung tự soạn vào nhóm Zalo, luân phiên mỗi 10 phút:
 
-[Hướng dẫn cài đặt và sử dụng](HUONG-DAN.md) · [Thay đổi bản 1.3.0](CHANGELOG.md)
+```text
+?pr ID_NHOM | Nội dung một | Nội dung hai
+```
 
-Node.js 22+; `npm ci`, `npm start`. Tài khoản đăng nhập bot nhắn `!setup` trong nhóm chính, sau đó dùng `!help`. Mọi thành viên nhóm chính đều điều khiển được.
+Tài khoản đăng nhập bot nhắn `?setup` trong nhóm điều khiển. Sau đó mọi thành viên nhóm này dùng được `?list`, `?pr`, `?lich`, `?dung`, `?tieptuc`, `?xoa`, `?help`. Nhóm khác không điều khiển được. Có nhạc SoundCloud dạng voice kèm ảnh.
 
-Bản 1.3.0 làm gọn phản hồi, phân trang danh sách, bỏ bộ câu tạo sẵn, giới hạn chờ Zalo, hủy yêu cầu cũ khi đổi nhóm/mất kết nối và không chặn đăng nhập bởi kiểm tra công cụ nhạc.
-
-Giữ riêng thư mục `data` và `.env`. Host phải đang chạy/kết nối thì lịch mới gửi. Không bảo đảm hết mọi lỗi trên môi trường chưa kiểm thử.
+[Hướng dẫn cập nhật và sử dụng](HUONG-DAN.md). Node.js 22+; `npm ci`, `npm start`. Giữ riêng `data` và `.env`. Chưa kiểm thử trực tiếp trên tài khoản Zalo của người dùng.
