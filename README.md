@@ -1,4 +1,4 @@
-# Zalo Music & Group Control Bot 1.2.0
+# Zalo Music & Group Control Bot 1.2.1
 
 Bot tài khoản Zalo cá nhân: nhóm điều khiển, lấy tên/ID nhóm, gửi chữ ngay hoặc theo khoảng giây/phút/giờ với thời gian nghỉ, và gửi nhạc SoundCloud dạng voice kèm ảnh.
 

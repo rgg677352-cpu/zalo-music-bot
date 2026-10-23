@@ -1,7 +1,10 @@
-Bản 1.2.0 — 2026-10-23
-Console cần hiện: Zalo Music Bot 1.2.0
+Bản 1.2.1 — 2026-10-23
+Console cần hiện: Zalo Music Bot 1.2.1
 Tài khoản Zalo đang đăng nhập bot gõ !setup trong nhóm chính.
 Sau đó mọi thành viên nhóm này dùng !help, !list, !gui, !tudong, !lich, !dung, !tieptuc, !xoa.
 Ví dụ: !tudong ID_NHOM | 30s | 5 | 10m | Xin chào
 Chưa thay ID_NHOM bằng ID thật thì không tạo lịch.
 Giữ thư mục data khi cập nhật. File ZIP cần được giải nén/ghi đè toàn bộ ở thư mục chính.
+
+!mau: xem bộ nội dung có sẵn. Dùng @tichcuc hoặc @uongnuoc ở phần nội dung lịch.
+Nội dung tự nhập: Câu một || Câu hai || Câu ba

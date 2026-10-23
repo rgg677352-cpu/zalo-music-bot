@@ -55,7 +55,7 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.2.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
+  console.log('Zalo Music Bot 1.2.1 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
   try {
     const tools = await checkTools();
     console.log(`yt-dlp ${tools.ytVersion}; FFmpeg OK.`);
@@ -76,7 +76,7 @@ try {
   api.listener.on('message', event => {
     handler(event).catch(() => console.error('Không gửi được phản hồi. Kiểm tra kết nối Zalo.'));
   });
-  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.2.0. Tài khoản đang chạy bot gõ ${prefix}setup trong nhóm chính, rồi gõ ${prefix}help.`); });
+  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.2.1. Tài khoản đang chạy bot gõ ${prefix}setup trong nhóm chính, rồi gõ ${prefix}help.`); });
   api.listener.on('disconnected', () => { control.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
   api.listener.on('error', () => console.error('Kết nối Zalo báo lỗi. Không chia sẻ file session.json.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {

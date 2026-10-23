@@ -65,3 +65,34 @@ test('handler chặn cả nhạc bên ngoài nhóm chính và bỏ giới hạn 
   await h(f.event('!id')); assert.match(f.calls.at(-1).text, /ID nhóm: 100/);
   assert.match(controlHelp(), /30s \| 5 \| 10m/);
 });
+
+test('luân phiên câu riêng, giữ vị trí qua restart và nghỉ, hết mới quay lại đầu', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  await f.c.handle(f.event('!tudong 200 | 1s | 2 | 5s | Câu A || Câu B || Câu C'));
+  f.at(1000); await f.c.tick(); f.at(2000); await f.c.tick();
+  assert.equal(f.c.snapshot().jobs[0].nextAt, 7000);
+  const restored = createControl(f.api, f.opts);
+  f.at(7000); await restored.tick(); f.at(8000); await restored.tick();
+  assert.deepEqual(f.calls.filter(x => x.group === '200').map(x => x.text), ['Câu A','Câu B','Câu C','Câu A']);
+});
+
+test('bộ mẫu có sẵn và lỗi nhập câu trống/tiền tố được phát hiện', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  await f.c.handle(f.event('!mau')); assert.match(f.calls.at(-1).text, /@tichcuc/);
+  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | @tichcuc'));
+  assert.equal(f.c.snapshot().jobs[0].messages.length, 8);
+  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | A || !setup'));
+  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | A || '));
+  await f.c.handle(f.event('!tudong 200 | 1m | 4 | 2h | @khongco'));
+  assert.equal(f.c.snapshot().jobs.length, 1);
+  assert.match(f.calls.at(-1).text, /mẫu không tồn tại/);
+});
+
+test('lịch bản 1.2.0 vẫn đọc và gửi bình thường', async t => {
+  const f = fixture(t); await f.c.handle(f.event('!setup', '100', 'owner'));
+  await f.c.handle(f.event('!tudong 200 | 1s | 1 | 0s | Nội dung cũ'));
+  const state = f.c.snapshot(); delete state.jobs[0].messages; delete state.jobs[0].cursor;
+  const { writeFileSync } = await import('node:fs'); writeFileSync(f.opts.statePath, JSON.stringify(state));
+  const restored = createControl(f.api, f.opts); f.at(1000); await restored.tick();
+  assert.equal(f.calls.at(-1).text, 'Nội dung cũ');
+});

@@ -1,11 +1,11 @@
-# Bot Zalo 1.2.0: nhóm điều khiển, lịch gửi/nghỉ và nhạc
+# Bot Zalo 1.2.1: nhóm điều khiển, lịch gửi/nghỉ và nhạc
 
 ## Cập nhật trên Botkeep
 
 1. Stop bot. Giữ nguyên thư mục `data` và cấu hình riêng `.env`.
-2. Upload `zalo-music-bot-1.2.0.zip`, giải nén và ghi đè **toàn bộ code** ở thư mục chính. ZIP chứa thẳng `index.mjs`, `package.json`, `src`, `scripts`... Không để code nằm trong một thư mục con.
+2. Upload `zalo-music-bot-1.2.1.zip`, giải nén và ghi đè **toàn bộ code** ở thư mục chính. ZIP chứa thẳng `index.mjs`, `package.json`, `src`, `scripts`... Không để code nằm trong một thư mục con.
 3. ZIP chỉ nằm trong Files thì chưa cập nhật. Cần dùng mục Extract/Unarchive của host. Console chạy bot không phải Terminal để gõ lệnh shell.
-4. Start; kiểm tra Console hiện `Zalo Music Bot 1.2.0` và `BOT SẴN SÀNG 1.2.0`.
+4. Start; kiểm tra Console hiện `Zalo Music Bot 1.2.1` và `BOT SẴN SÀNG 1.2.1`.
 5. Nếu chưa có dependencies thì dùng quy trình cài `npm ci` của host. Bản này không thêm dependency so với 1.1.0.
 
 ## Chọn nhóm chính
@@ -58,3 +58,19 @@ Bot trả mã như `L1` khi tạo lịch. Quản lý bằng:
 `!nhac tên bài` hoặc `!scl link SoundCloud`: voice kèm ảnh thông tin, tối đa 10 phút. Chỉ dùng trong nhóm chính. `!kiemtra` kiểm tra công cụ. `!help` giải thích đầy đủ tất cả lệnh và ví dụ ngay trong chat.
 
 Không chia sẻ `.env`, `data/session.json` hay ảnh QR đăng nhập. Đây là bot dùng thư viện tài khoản cá nhân zca-js, không phải API Zalo chính thức.
+
+
+## Nội dung đa dạng (mới ở 1.2.1)
+
+`!mau` liệt kê bộ có sẵn: `@uongnuoc` (8 lời nhắc sức khỏe/nghỉ ngơi) và `@tichcuc` (8 lời nhắn tích cực). `!mau tichcuc` xem từng câu.
+
+```text
+!tudong 123456789 | 30m | 4 | 2h | @tichcuc
+!tudong 123456789 | 30m | 4 | 2h | Câu thứ nhất || Câu thứ hai || Câu thứ ba
+```
+
+Bot gửi luân phiên theo thứ tự, hết danh sách mới quay lại đầu. Sau khi nghỉ, tiếp tục câu kế tiếp; restart và tiếp tục lịch cũng giữ vị trí câu. Bộ mẫu được chụp riêng vào từng lịch lúc tạo. Lịch cũ từ 1.2.0 vẫn hoạt động; muốn thay nội dung thì xóa lịch và tạo lại.
+
+Tối đa 50 câu tự nhập, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự. Hai dấu `||` tách câu; một dấu `|` trong nội dung vẫn giữ nguyên. Nếu nội dung bắt đầu bằng `@` thì được hiểu là tên bộ mẫu; hãy thêm chữ phía trước nếu bạn muốn gửi chữ bắt đầu bằng ký tự này. Không nhận câu bắt đầu bằng tiền tố lệnh. Mỗi lịch chỉ gửi một câu tại mỗi lượt.
+
+Nội dung đa dạng giúp bớt lặp, không bảo đảm tránh cơ chế chống spam của Zalo. Hãy chọn khoảng gửi phù hợp với nhóm.
