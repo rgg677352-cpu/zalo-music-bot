@@ -37,16 +37,14 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     const text = event.data.content.trim();
     const activePrefix = commandPrefix(text, config.prefix);
     if (!activePrefix) return;
+    if (options.trading && await options.trading.handle(event)) return;
     if (options.control) {
       if (await options.control.handle(event)) return;
-      if (!options.control.isMain(event.threadId)) return;
     }
     const [command, ...words] = text.slice(activePrefix.length).split(/\s+/);
     const name = command.toLowerCase();
     if (!['help', 'id', 'nhac', 'scl', 'kiemtra'].includes(name)) return;
     const group = String(event.threadId), author = String(event.data.uidFrom);
-    if (!options.control && config.groups.size && !config.groups.has(group)) return;
-    if (!options.control && config.users.size && !config.users.has(author)) return;
     if (duplicate(event)) return;
     const token = options.control?.token();
     const current = () => !options.control || options.control.isCurrent(group, token);

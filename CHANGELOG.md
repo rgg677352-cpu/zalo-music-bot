@@ -1,3 +1,11 @@
+## 1.6.0 — 2026-10-24
+
+- Mọi nhóm dùng ngay, bỏ yêu cầu setup cho cả lệnh cũ; bỏ trần 100 lịch. Setup cũ không dừng lịch/nhạc.
+- Thêm !on/!BTC/!ETH/!XAUU/!off theo nhóm và khung M15/M30/H1/H4; lưu đăng ký, chống trùng qua restart, ngắt kết nối thì dừng.
+- Engine chỉ báo dùng chung web/bot, cấu hình riêng mỗi tài sản,288cấu hình được sàng lọc. Chưa có bộ đủ tiêu chí; không phát lệnh từ bộ chưa đạt.
+- Giữ phiên Zalo, lịch cũ và lịch sử nhạc. Sửa lockfile có bản string_decoder 1.5.0 không tồn tại để npm cài được.
+- Chưa triển khai host Botkeep hoặc test gửi tin Zalo thật.
+
 # 1.5.0
 
 - Thêm `!scl randoom`, `!scl random`, `?scl random`: lấy bảng most-played Apple Music VN/Mỹ/Anh/Hàn, rồi tìm bản SoundCloud phù hợp.

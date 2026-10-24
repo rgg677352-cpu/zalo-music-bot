@@ -1,14 +1,14 @@
-# Bot Zalo 1.5.0
+# Bot Zalo 1.6.0
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.5.0.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.5.0`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.6.0.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.0`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
 ## Dùng nhanh
 
-1. Dùng chính tài khoản Zalo đã đăng nhập bot nhắn `?setup` trong nhóm điều khiển. Mọi thành viên nhóm đó đều được dùng lệnh. Nhóm khác không điều khiển được.
+1. Bot đã tham gia nhóm là mọi thành viên dùng được lệnh ngay, không cần `!setup`/`?setup`. Không có nhóm chính và không giới hạn số nhóm.
 2. Nhắn `?list` để lấy tên/ID nhóm. `?list 2` xem trang tiếp. Tài khoản bot phải ở trong nhóm đích và có quyền nhắn.
 3. Nhắn một trong hai dạng:
 
@@ -37,7 +37,7 @@ Mỗi dấu `|` tách một nội dung. Không dùng `||` và không để đo�
 
 Bot trả mã như `L1` sau khi tạo lịch. `?dung` tạm dừng, `?tieptuc` chờ 10 phút rồi tiếp tục ở câu kế (đối với lịch PR), `?xoa` xóa hẳn. `?lich 2` xem trang tiếp.
 
-Đổi nhóm chính bằng `?setup` sẽ dừng tất cả lịch cũ. Sai tài khoản setup sẽ được hướng dẫn thay vì im lặng. `?help` trước khi chọn nhóm chính cũng có chỉ dẫn.
+`?setup`/`!setup` cũ chỉ trả lời rằng không cần setup; không đổi quyền, không dừng lịch hoặc hủy nhạc ở nhóm khác.
 
 ## Dữ liệu cũ và mất kết nối
 
@@ -62,7 +62,7 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
 
 
-## Nhạc thịnh hành ngẫu nhiên (1.5.0)
+## Nhạc thịnh hành ngẫu nhiên (1.6.0)
 
 ```text
 !scl randoom
@@ -83,3 +83,17 @@ Bot lấy bảng most-played Apple Music Việt Nam và các thị trường qu�
 - Mỗi người gọi nhạc cách ít nhất 10 giây; yêu cầu random mới không bị bộ chống lặp tên lệnh 30 giây chặn nhầm. Chỉ một bài xử lý và tối đa hai bài chờ như trước.
 
 Đã chạy thử tải bài Việt Nam và quốc tế từ bảng hiện tại rồi chuyển AAC; chưa thử gửi trực tiếp vào tài khoản Zalo của bạn. Việc đối chiếu metadata không bảo đảm tuyệt đối bản SoundCloud là bản gốc/chính thức.
+
+
+## Báo setup demo
+
+- `!on`: bật BTC/ETH/XAUUSD, M15/M30/H1/H4 trong nhóm đang nhắn.
+- `!BTC`, `!ETH`, `!XAUU`: bật riêng tài sản và hỏi setup hiện tại. XAUU là alias của XAUUSD.
+- `!BTC H1` hoặc `!on ETH M30`: chọn tài sản/khung.
+- `!off BTC`: chỉ tắt BTC trong nhóm này; `!off`: tắt hết thông báo trade nhóm này.
+
+Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong nhóm. `!on` không bật cho nhóm khác. Đăng ký và ID nến đã gửi lưu trong `data/trading-subscriptions.json`; giữ file qua restart. Bot chỉ phát setup mới từ bộ đạt kiểm tra, có Entry/TP/SL, hướng, nguồn, khung và thời hạn. Lỗi nguồn hoặc giá trễ thì không phát lệnh. Gửi chưa rõ kết quả không tự gửi lại. Không gửi bù setup cũ.
+
+Hiện chưa có bộ đủ tiêu chí trong 288 cấu hình. Khi hỏi bot sẽ báo chưa đạt; đây là hành vi đúng, không phải lỗi. Khung lớn đã test khoảng 9 tháng; bộ đạt số học trong đợt tìm thêm trên cùng mẫu vẫn cần forward test. Vàng chưa nối được nguồn live cùng nguồn đã kiểm tra, không phát setup vàng hiện tại. Engine chia sẻ cùng web, nguồn BTC/ETH là Bitget USDT gần đúng Exness. Đây là thông báo demo, không đặt lệnh trên sàn.
+
+Đã chạy kiểm tra tự động bằng API Zalo giả lập. Chưa có quyền host Botkeep hoặc phiên Zalo nên chưa cập nhật host, chưa gửi tin thật. Cập nhật ZIP trên host cũ và restart, giữ toàn bộ `data/`/`.env`; không cần `!setup`.

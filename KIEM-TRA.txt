@@ -1,11 +1,7 @@
-Bản 1.5.0 — 2026-10-23
-Console cần hiện Zalo Music Bot 1.5.0.
-Giữ data và .env khi giải nén/ghi đè toàn bộ code.
-Tài khoản đăng nhập bot gõ ?setup trong nhóm điều khiển.
-?list để lấy ID nhóm.
-?pr ID_NHOM | Nội dung một | Nội dung hai
-Mỗi 10 phút gửi một nội dung; lần đầu sau 10 phút.
-?dung all để dừng mọi lịch. ?help để xem hướng dẫn.
-
-!scl randoom hoặc !scl random: nhạc theo bảng xếp hạng VN/quốc tế, phát từ SoundCloud.
-Giữ data để còn lịch và lịch sử nhạc qua restart.
+Bản 1.6.0 — 2026-10-24
+Console: BOT SẴN SÀNG 1.6.0
+Giữ data/ và .env, cập nhật code trên host cũ rồi restart.
+Bot đã vào nhóm là dùng được: ?help, ?list, ?pr, ?nhac. Không cần !setup/?setup.
+!on bật thông báo trade nhóm này; !BTC/!ETH/!XAUU hỏi và bật riêng tài sản; !off BTC tắt riêng BTC.
+Hiện chưa có bộ đạt tiêu chí nên chưa phát thông báo đặt lệnh.
+Đã test API Zalo giả lập; chưa gửi tin thật hoặc cập nhật host Botkeep.
