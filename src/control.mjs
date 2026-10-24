@@ -20,7 +20,7 @@ Thông báo setup · chỉ demo
 !BTC, !ETH, !XAUU — bật riêng tài sản và xem setup hiện có.
 !BTC H1 hoặc !on ETH M30 — chọn riêng khung.
 !off BTC — tắt riêng BTC trong nhóm; !off — tắt tất cả báo trade nhóm này.
-Chỉ bộ vượt kiểm tra mới phát setup mới, có entry/TP/SL. Bộ chưa đạt được báo rõ khi hỏi; không phát lệnh cho đủ số lượng.
+Tự gửi setup DEMO mới có entry/TP/SL, kể cả bộ chưa đạt kiểm chứng; tin nhắn ghi rõ trạng thái. Chỉ dùng nến đóng và giá mới, không gửi bù setup hết hạn. Vàng chưa có nguồn live, chưa báo setup vàng.
 
 Gửi tự động · 10 phút/lần
 ?pr ID_NHOM | Nội dung

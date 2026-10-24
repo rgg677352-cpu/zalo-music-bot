@@ -2,7 +2,7 @@
 
 Ngày nghiên cứu: 24/10/2026. Giá tham chiếu, không phải giá và kết quả khớp lệnh tài khoản Exness.
 
-Đã sàng lọc 288 cấu hình (36 quy tắc riêng theo tài sản × 2 bộ thoát × 4 khung). Mỗi tài sản/khung chọn một bộ dựa trên train và validation; giữ nguyên bộ đó khi đánh giá đoạn cuối. **0 trong 12 bộ cuối vượt đủ tiêu chí. Chưa bật thông báo đặt lệnh tự động cho bộ nào.** Không có nghĩa tất cả chỉ báo trên thế giới đều thua, hay đã đánh giá độc lập toàn bộ 288 bộ trên holdout.
+Đã sàng lọc 288 cấu hình (36 quy tắc riêng theo tài sản × 2 bộ thoát × 4 khung). Mỗi tài sản/khung chọn một bộ dựa trên train và validation; giữ nguyên bộ đó khi đánh giá đoạn cuối. **0 trong 12 bộ cuối vượt đủ tiêu chí. Bản bot 1.6.1 cho phép báo setup DEMO của các bộ chưa đạt, với nhãn rõ; không sửa kết quả kiểm chứng.** Không có nghĩa tất cả chỉ báo trên thế giới đều thua, hay đã đánh giá độc lập toàn bộ 288 bộ trên holdout.
 
 M15/M30 dùng 24/09–23/10/2026: 15 ngày train, 5 ngày validation, 10 ngày holdout. H1/H4 dùng 24/01–23/10/2026: train tới 24/07, validation tới 09/09, holdout 09/09–23/10. Dữ liệu trước các mốc dùng để khởi động chỉ báo, không tính vào kết quả. H1/H4 đã mở rộng khoảng 9 tháng theo yêu cầu.
 
@@ -28,9 +28,9 @@ Hai bộ thoát: SL = 1,5 ATR, TP = 1,5R, giữ tối đa 8 nến; hoặc SL = 2
 - ETH H4 WaveTrend: 6 lệnh, +1,00R / +0,95R stress; quá ít lệnh để kết luận.
 - Các bộ cuối khác không vượt train/validation hoặc lỗ đoạn cuối. CSV ghi đầy đủ cả kết quả âm.
 
-Web cho xem tín hiệu demo BTC/ETH của bộ chưa đạt nếu người dùng chủ động bật ô thử nghiệm; chỉ dùng nến đóng và Bid/Ask mới, không gửi lệnh đến sàn. **Bot không phát setup từ các bộ này.** Vàng trên trang khung lớn hiện là biểu đồ lịch sử có ghi thời điểm; chưa có nguồn live cùng nguồn đã kiểm tra, chưa phát entry hiện tại. Không suy diễn dữ liệu cũ thành giá live.
+Web cho xem tín hiệu demo BTC/ETH của bộ chưa đạt nếu người dùng chủ động bật ô thử nghiệm; chỉ dùng nến đóng và Bid/Ask mới, không gửi lệnh đến sàn. **Bot 1.6.1 mặc định gửi setup DEMO mới của BTC/ETH khi bật !on, kể cả bộ chưa đạt; tin ghi rõ DEMO · CHƯA ĐẠT KIỂM CHỨNG.** Vàng trên trang khung lớn hiện là biểu đồ lịch sử có ghi thời điểm; chưa có nguồn live cùng nguồn đã kiểm tra, chưa phát entry hiện tại. Không suy diễn dữ liệu cũ thành giá live.
 
-Bot không cần !setup/?setup ở mọi nhóm đã tham gia. !on bật thông báo theo nhóm, !BTC/!ETH/!XAUU bật riêng tài sản và hỏi setup; !off BTC tắt BTC riêng nhóm đó. Khi chưa có bộ đạt, bot trả lời rõ khi hỏi và không bịa setup để có thông báo. Bản bot phải được cập nhật trên host đang chạy; trang web không phải bằng chứng bot đã hoạt động trên Zalo.
+Bot không cần !setup/?setup ở mọi nhóm đã tham gia. !on bật thông báo theo nhóm, !BTC/!ETH/!XAUU bật riêng tài sản và hỏi setup; !off BTC tắt BTC riêng nhóm đó. Kết quả không đạt kiểm chứng không còn khóa tin demo; chỉ tín hiệu thật từ nến đóng, giá mới và entry chưa hết hạn mới được gửi. Không bịa setup cho đủ thông báo. Bản bot phải được cập nhật trên host đang chạy; trang web không phải bằng chứng bot đã hoạt động trên Zalo.
 
 ## Nguồn công thức và dữ liệu
 

@@ -1,8 +1,8 @@
-# Bot Zalo 1.6.0
+# Bot Zalo 1.6.1
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.6.0.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.0`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.6.1.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.1`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
@@ -62,7 +62,7 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
 
 
-## Nhạc thịnh hành ngẫu nhiên (1.6.0)
+## Nhạc thịnh hành ngẫu nhiên (1.6.1)
 
 ```text
 !scl randoom
@@ -92,8 +92,8 @@ Bot lấy bảng most-played Apple Music Việt Nam và các thị trường qu�
 - `!BTC H1` hoặc `!on ETH M30`: chọn tài sản/khung.
 - `!off BTC`: chỉ tắt BTC trong nhóm này; `!off`: tắt hết thông báo trade nhóm này.
 
-Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong nhóm. `!on` không bật cho nhóm khác. Đăng ký và ID nến đã gửi lưu trong `data/trading-subscriptions.json`; giữ file qua restart. Bot chỉ phát setup mới từ bộ đạt kiểm tra, có Entry/TP/SL, hướng, nguồn, khung và thời hạn. Lỗi nguồn hoặc giá trễ thì không phát lệnh. Gửi chưa rõ kết quả không tự gửi lại. Không gửi bù setup cũ.
+Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong nhóm. `!on` không bật cho nhóm khác. Đăng ký và ID nến đã gửi lưu trong `data/trading-subscriptions.json`; giữ file qua restart. Bot tự phát setup DEMO mới, có Entry/TP/SL, hướng, nguồn, khung và thời hạn. Bộ chưa đạt kiểm chứng vẫn gửi khi có tín hiệu, luôn có nhãn “DEMO · CHƯA ĐẠT KIỂM CHỨNG”. Lỗi nguồn hoặc giá trễ thì không phát lệnh. Gửi chưa rõ kết quả không tự gửi lại. Không gửi bù setup cũ.
 
-Hiện chưa có bộ đủ tiêu chí trong 288 cấu hình. Khi hỏi bot sẽ báo chưa đạt; đây là hành vi đúng, không phải lỗi. Khung lớn đã test khoảng 9 tháng; bộ đạt số học trong đợt tìm thêm trên cùng mẫu vẫn cần forward test. Vàng chưa nối được nguồn live cùng nguồn đã kiểm tra, không phát setup vàng hiện tại. Engine chia sẻ cùng web, nguồn BTC/ETH là Bitget USDT gần đúng Exness. Đây là thông báo demo, không đặt lệnh trên sàn.
+0/288 bộ đạt kiểm chứng vẫn giữ nguyên; kết quả này không còn khóa thông báo DEMO. Khung lớn đã test khoảng 9 tháng; bộ đạt số học trong đợt tìm thêm trên cùng mẫu vẫn cần forward test. Vàng chưa nối được nguồn live cùng nguồn đã kiểm tra, không phát setup vàng hiện tại. Engine chia sẻ cùng web, nguồn BTC/ETH là Bitget USDT gần đúng Exness. H1/H4 đang chờ nến mới là bình thường; chỉ báo nguồn trễ khi thiếu nến đã phải đóng. Đây là thông báo demo, không đặt lệnh trên sàn.
 
 Đã chạy kiểm tra tự động bằng API Zalo giả lập. Chưa có quyền host Botkeep hoặc phiên Zalo nên chưa cập nhật host, chưa gửi tin thật. Cập nhật ZIP trên host cũ và restart, giữ toàn bộ `data/`/`.env`; không cần `!setup`.

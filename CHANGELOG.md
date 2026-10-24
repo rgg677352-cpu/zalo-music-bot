@@ -1,3 +1,11 @@
+## 1.6.1 — 2026-10-24
+
+- !on mặc định tự gửi setup DEMO BTC/ETH từ bộ chọn trong nghiên cứu, kể cả chưa đạt kiểm chứng; không sửa kết quả test hay cờ accepted. Tin có nhãn DEMO · CHƯA ĐẠT KIỂM CHỨNG.
+- Bỏ nhầm trạng thái nến trễ sau2phút trên H1/H4; chờ tín hiệu/entry hết hạn được báo đúng trạng thái, không gửi setup cũ.
+- Kiểm tra timestamp báo giá lúc gửi, vẫn chống trùng và lưu đăng ký qua restart; vàng thiếu nguồn live vẫn báo chưa sẵn sàng.
+- Hỏi setup nhiều khung đọc dữ liệu song song, kiểm tra độ mới trước khi gửi.
+- Kiểm tra toàn luồng provider mặc định → tín hiệu nến lịch sử thật → thông báo Zalo giả lập, với accepted=false. Chưa gửi tin Zalo thật hoặc cập nhật host Botkeep.
+
 ## 1.6.0 — 2026-10-24
 
 - Mọi nhóm dùng ngay, bỏ yêu cầu setup cho cả lệnh cũ; bỏ trần 100 lịch. Setup cũ không dừng lịch/nhạc.
