@@ -1,0 +1,98 @@
+[
+  {
+    "asset": "BTC",
+    "frame": "M15",
+    "n": 3552,
+    "first": 1789603200,
+    "last": 1792799100,
+    "sha256": "221d3445f54d663a4c8180b971c1090823e1025ec23ac3ff0683585f8ac2a4fd"
+  },
+  {
+    "asset": "BTC",
+    "frame": "M30",
+    "n": 1776,
+    "first": 1789603200,
+    "last": 1792798200,
+    "sha256": "3509b0f951cd5c3b73076cee63d4b8ab29d14dbea99f5541d1de285abf550ec5"
+  },
+  {
+    "asset": "BTC",
+    "frame": "H1",
+    "n": 7848,
+    "first": 1764547200,
+    "last": 1792796400,
+    "sha256": "208733c90adc97f6a664b1b7324d74faa414b5ac127613fe13f1d364fa5322c0"
+  },
+  {
+    "asset": "BTC",
+    "frame": "H4",
+    "n": 1962,
+    "first": 1764547200,
+    "last": 1792785600,
+    "sha256": "1d34b264ef867d73753e5fe966a78785252b97c6c88142a2be501648edc7ffa1"
+  },
+  {
+    "asset": "ETH",
+    "frame": "M15",
+    "n": 3552,
+    "first": 1789603200,
+    "last": 1792799100,
+    "sha256": "599ff53b475b136d18829ee91016e82f919154284817b791e3c94f334fd10bb6"
+  },
+  {
+    "asset": "ETH",
+    "frame": "M30",
+    "n": 1776,
+    "first": 1789603200,
+    "last": 1792798200,
+    "sha256": "df7302ded4520e4a09d6e4eff43be0cb456698a7f0c98c1b2f43163e129aa6c2"
+  },
+  {
+    "asset": "ETH",
+    "frame": "H1",
+    "n": 7848,
+    "first": 1764547200,
+    "last": 1792796400,
+    "sha256": "24252d4f307c157881b2559ab3b4e0a2b2c1900b1b732160f982a6f134158745"
+  },
+  {
+    "asset": "ETH",
+    "frame": "H4",
+    "n": 1962,
+    "first": 1764547200,
+    "last": 1792785600,
+    "sha256": "78dc2bf4450cef51667c9f475ae8f9da58c682dcf69d2a2256aa2a8166b881b3"
+  },
+  {
+    "asset": "XAUUSD",
+    "frame": "M15",
+    "n": 5000,
+    "first": 1786357800,
+    "last": 1792788300,
+    "sha256": "f43aa0c47697902191038f625494b5f792c42b69c4d3552cab0437b931ac801b"
+  },
+  {
+    "asset": "XAUUSD",
+    "frame": "M30",
+    "n": 2500,
+    "first": 1786357800,
+    "last": 1792787400,
+    "sha256": "b3844485bbafd5a6b4e29b2ef80d92160de58ba9cd54669751c098c4a7344137"
+  },
+  {
+    "asset": "XAUUSD",
+    "frame": "H1",
+    "n": 6000,
+    "first": 1760929200,
+    "last": 1792785600,
+    "sha256": "3700b1af4091f2720decae7a3cd3ae6fc894f51255ce6c50f641d1e146a30aad"
+  },
+  {
+    "asset": "XAUUSD",
+    "frame": "H4",
+    "n": 1304,
+    "first": 1760932800,
+    "last": 1792771200,
+    "sha256": "a8695461927806455640e1400a2076521f1a0cf3f52f0a67a42ebe6d56cbaad9"
+  }
+]

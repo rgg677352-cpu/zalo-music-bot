@@ -1,14 +1,14 @@
-# Bot Zalo 1.5.0
+# Bot Zalo 1.6.4
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.5.0.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.5.0`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.6.4.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.4`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
 ## Dùng nhanh
 
-1. Dùng chính tài khoản Zalo đã đăng nhập bot nhắn `?setup` trong nhóm điều khiển. Mọi thành viên nhóm đó đều được dùng lệnh. Nhóm khác không điều khiển được.
+1. Bot đã tham gia nhóm là mọi thành viên dùng được lệnh ngay, không cần `!setup`/`?setup`. Không có nhóm chính và không giới hạn số nhóm.
 2. Nhắn `?list` để lấy tên/ID nhóm. `?list 2` xem trang tiếp. Tài khoản bot phải ở trong nhóm đích và có quyền nhắn.
 3. Nhắn một trong hai dạng:
 
@@ -37,7 +37,7 @@ Mỗi dấu `|` tách một nội dung. Không dùng `||` và không để đo�
 
 Bot trả mã như `L1` sau khi tạo lịch. `?dung` tạm dừng, `?tieptuc` chờ 10 phút rồi tiếp tục ở câu kế (đối với lịch PR), `?xoa` xóa hẳn. `?lich 2` xem trang tiếp.
 
-Đổi nhóm chính bằng `?setup` sẽ dừng tất cả lịch cũ. Sai tài khoản setup sẽ được hướng dẫn thay vì im lặng. `?help` trước khi chọn nhóm chính cũng có chỉ dẫn.
+`?setup`/`!setup` cũ chỉ trả lời rằng không cần setup; không đổi quyền, không dừng lịch hoặc hủy nhạc ở nhóm khác.
 
 ## Dữ liệu cũ và mất kết nối
 
@@ -62,7 +62,7 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
 
 
-## Nhạc thịnh hành ngẫu nhiên (1.5.0)
+## Nhạc thịnh hành ngẫu nhiên (1.6.4)
 
 ```text
 !scl randoom
@@ -83,3 +83,42 @@ Bot lấy bảng most-played Apple Music Việt Nam và các thị trường qu�
 - Mỗi người gọi nhạc cách ít nhất 10 giây; yêu cầu random mới không bị bộ chống lặp tên lệnh 30 giây chặn nhầm. Chỉ một bài xử lý và tối đa hai bài chờ như trước.
 
 Đã chạy thử tải bài Việt Nam và quốc tế từ bảng hiện tại rồi chuyển AAC; chưa thử gửi trực tiếp vào tài khoản Zalo của bạn. Việc đối chiếu metadata không bảo đảm tuyệt đối bản SoundCloud là bản gốc/chính thức.
+
+
+## Báo setup demo
+
+- `!on`: bật BTC/ETH/XAUUSD, M15/M30/H1/H4 trong nhóm đang nhắn.
+- `!BTC`, `!ETH`, `!XAUU`: bật riêng tài sản và hỏi setup hiện tại. XAUU là alias của XAUUSD.
+- `!BTC H1` hoặc `!on ETH M30`: chọn tài sản/khung.
+- `!off BTC`: chỉ tắt BTC trong nhóm này; `!off`: tắt hết thông báo trade nhóm này.
+
+Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong nhóm. `!on` không bật cho nhóm khác. Đăng ký và ID nến đã gửi lưu trong `data/trading-subscriptions.json`; giữ file qua restart. Bot tự phát setup DEMO mới, có Entry/TP/SL, hướng, nguồn, khung và thời hạn. Bộ chưa đạt kiểm chứng vẫn gửi khi có tín hiệu, luôn có nhãn “DEMO · CHƯA ĐẠT KIỂM CHỨNG”. Lỗi nguồn hoặc giá trễ thì không phát lệnh. Gửi chưa rõ kết quả không tự gửi lại. Không gửi bù setup cũ.
+
+0/288 bộ đạt kiểm chứng vẫn giữ nguyên; kết quả này không còn khóa thông báo DEMO. Khung lớn đã test khoảng 9 tháng; bộ đạt số học trong đợt tìm thêm trên cùng mẫu vẫn cần forward test. Vàng chưa nối được nguồn live cùng nguồn đã kiểm tra, không phát setup vàng hiện tại. Engine chia sẻ cùng web, nguồn BTC/ETH là Bitget USDT gần đúng Exness. H1/H4 đang chờ nến mới là bình thường; chỉ báo nguồn trễ khi thiếu nến đã phải đóng. Đây là thông báo demo, không đặt lệnh trên sàn.
+
+Đã chạy kiểm tra tự động bằng API Zalo giả lập. Chưa có quyền host Botkeep hoặc phiên Zalo nên chưa cập nhật host, chưa gửi tin thật. Cập nhật ZIP trên host cũ và restart, giữ toàn bộ `data/`/`.env`; không cần `!setup`.
+
+
+## Scalp bổ sung — 1.6.4
+
+`!scalp` bật thông báo scalp BTC/ETH trong nhóm và xem setup mới nếu có. `!scalp BTC` hoặc `!scalp ETH` chọn riêng. Không cần !on hoặc !setup trước đó. Các thông báo M15/M30/H1/H4 đang bật vẫn được giữ.
+
+`!off scalp` chỉ tắt scalp; `!off scalp BTC` chỉ tắt scalp BTC. `!off BTC` tắt mọi khung của BTC; `!off` tắt hết thông báo trade nhóm này. Nhóm khác không đổi.
+
+Scalp dùng nến M1, ATR M5 và bộ chỉ báo riêng từng tài sản/khung giờ như web; giữ tối đa 1–3 phút. Chỉ gửi setup mới còn 45 giây hiệu lực sau lúc chỉ báo xuất hiện; entry/TP/SL lấy từ giá mới. Nến Bitget, ưu tiên giá Exness công khai và quy đổi ATR theo giá cùng thời điểm. Nguồn Exness lỗi thì dừng báo setup; không chuyển sang giá Bitget/USDT. Không bịa hoặc gửi bù setup quá hạn.
+
+Vòng scalp 10 giây chạy riêng vòng khung lớn 30 giây. Chỉ tính lại chỉ báo khi nến M1 đổi, dùng chung dữ liệu giữa các nhóm. Đăng ký và nến đã gửi giữ qua restart; không có giới hạn số nhóm trong code. Mọi setup scalp hiện là demo chưa vượt kiểm chứng, không tự đặt lệnh lên sàn.
+
+
+Giá lệnh bản1.6.4: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
+
+Để khớp đúng nguồn tài khoản, cần kết nối chính tài khoản bằng cầu nối terminal MT5 chỉ đọc hoặc API chính thức nếu là tài khoản Exness được hỗ trợ. Exness API hiện không hỗ trợ tài khoản MetaTrader tiêu chuẩn. Tên BTC trong app không đủ xác định mã/suffix. Không gửi mật khẩu/khóa bí mật vào chat; thông tin kết nối phải cấu hình trực tiếp trên máy chủ của chủ tài khoản.
+
+## Khi không nhận được setup — 1.6.4
+
+1. Stop → Upload ZIP1.6.4 → Extract/Unarchive ghi đè code ở thư mục gốc → Start. Giữ nguyên `data/` và `.env`.
+2. Gõ `!status`: phải ghi `Bot 1.6.4`. Nếu không nhận lệnh này, kiểm tra lại thư mục giải nén và dòng phiên bản trong Console.
+3. Gõ `!scalp BTC` (BTC) hoặc `!scalp` (BTC+ETH). Không cần `!on` hay `!setup` trước. Đăng ký cũ vẫn giữ qua restart.
+4. Gõ `!status` sau khoảng20giây. Dòng `quét ...s trước` và giờ nến phải cập nhật. Xem lý do riêng: chờ tín hiệu, nguồn lỗi/giá cũ, hay Zalo chưa xác nhận gửi. Status chỉ hiển thị đăng ký của nhóm hiện tại.
+
+Bot kiểm tra mỗi10giây, không phải phát một lệnh mỗi10giây. Mọi tín hiệu vẫn phải mới và có Bid/Ask Exness hợp lệ. Các bộ hiện vẫn chưa đạt kiểm chứng và chỉ dùng demo.

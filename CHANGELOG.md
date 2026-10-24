@@ -1,3 +1,43 @@
+## 1.6.4 — 2026-10-24
+
+- Thêm `!status`: phiên bản thật đang chạy, đăng ký của nhóm hiện tại, vòng quét có chạy hay không, lần quét/nến/chỉ báo gần nhất và lý do chưa gửi. Phân biệt Zalo đã xác nhận với gửi chưa rõ kết quả. Không cần setup và không tự bật nhóm mới.
+- Nguồn lỗi không còn bị bỏ qua im lặng: lưu trạng thái chẩn đoán, log khi lỗi đổi/hồi phục; không biến lỗi giá thành trạng thái chờ tín hiệu.
+- Quét BTC/ETH độc lập với giới hạn song song, gửi nhiều nhóm có giới hạn song song; một nguồn/nhóm chậm không giữ toàn bộ tín hiệu. Dùng chung request đang tải để tránh nhiều lệnh gọi trùng nguồn.
+- Chỉ đánh dấu setup đã xử lý ngay trước khi gửi, sau khi tất cả kết quả hỏi trực tiếp đã xong và kiểm tra lại độ mới. Không tiêu thụ một setup vì nó tải xong sớm nhưng đã quá hạn trong lúc đợi mã khác. `!off` trong khi đang tải chặn setup trả muộn.
+- Exness SSE bỏ qua tick cũ ban đầu và có HTTP snapshot dự phòng cùng nguồn với giới hạn thời gian/dung lượng. Tôn trọng429/403/451; không đổi sang giá Entry sàn khác.
+- 91 kiểm tra tự động qua; chạy theo dõi giá thật với hàm gửi Zalo giả lập. Chưa cập nhật host Botkeep hoặc xác nhận gửi trên Zalo thật. Không đổi bộ chỉ báo hay sửa kết quả kiểm chứng để ép thêm lệnh.
+
+## 1.6.3 — 2026-10-24
+
+- Bỏ fallback giá Entry Bitget/USDT của scalp và chuyển cả M15–H4 sang giá lệnh Exness công khai. Thiếu giá Exness mới thì dừng setup, không thay bằng giá thị trường khác.
+- BUY vào Ask, SELL vào Bid; quy đổi khoảng ATR/rủi ro theo hai nguồn cùng thời điểm, giữ R:R và hạn entry. Giá Exness công khai vẫn có thể khác tài khoản; chỉ báo dùng nến Bitget tham chiếu.
+- Tin ghi rõ BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask và giờ phát để phân biệt giá lúc báo với giá hiện tại hoặc một lệnh chờ Limit.
+- Thêm kiểm tra khung lớn chuyển giá đúng Bid/Ask, source stale/missing/wrong, expiry, và không rò Entry Bitget khi Exness lỗi. Chưa có cầu nối feed tài khoản MT5, chưa cập nhật host Botkeep.
+
+## 1.6.2 — 2026-10-24
+
+- !scalp bật thêm scalp demo BTC/ETH M1/M5, trả setup hiện còn hiệu lực và tự báo tín hiệu mới; !scalp BTC/ETH chọn riêng; !off scalp hoặc !off scalp BTC tắt riêng. Không ảnh hưởng khung lớn hoặc nhóm khác.
+- Dùng cùng công thức/cấu hình 480 ứng viên đã nghiên cứu trên web, theo phiên, giữ tối đa 1–3 phút; không sửa kết quả kiểm chứng.
+- Ưu tiên giá Exness công khai cho Entry/TP/SL và quy đổi ATR từ cùng thời điểm; dự phòng Bitget/USDT ghi rõ nguồn. Giá nguồn công khai có thể lệch tài khoản.
+- Vòng scalp 10 giây độc lập vòng HTF 30 giây, lưu tín hiệu/cấu hình theo nến mới, chống trùng qua restart; bỏ setup hết hạn hoặc quote trễ.
+- Không cần !setup, không trần số nhóm; giữ phiên Zalo/lịch nhạc/PR. Chưa cập nhật host Botkeep hoặc gửi tin Zalo thật.
+
+## 1.6.1 — 2026-10-24
+
+- !on mặc định tự gửi setup DEMO BTC/ETH từ bộ chọn trong nghiên cứu, kể cả chưa đạt kiểm chứng; không sửa kết quả test hay cờ accepted. Tin có nhãn DEMO · CHƯA ĐẠT KIỂM CHỨNG.
+- Bỏ nhầm trạng thái nến trễ sau2phút trên H1/H4; chờ tín hiệu/entry hết hạn được báo đúng trạng thái, không gửi setup cũ.
+- Kiểm tra timestamp báo giá lúc gửi, vẫn chống trùng và lưu đăng ký qua restart; vàng thiếu nguồn live vẫn báo chưa sẵn sàng.
+- Hỏi setup nhiều khung đọc dữ liệu song song, kiểm tra độ mới trước khi gửi.
+- Kiểm tra toàn luồng provider mặc định → tín hiệu nến lịch sử thật → thông báo Zalo giả lập, với accepted=false. Chưa gửi tin Zalo thật hoặc cập nhật host Botkeep.
+
+## 1.6.0 — 2026-10-24
+
+- Mọi nhóm dùng ngay, bỏ yêu cầu setup cho cả lệnh cũ; bỏ trần 100 lịch. Setup cũ không dừng lịch/nhạc.
+- Thêm !on/!BTC/!ETH/!XAUU/!off theo nhóm và khung M15/M30/H1/H4; lưu đăng ký, chống trùng qua restart, ngắt kết nối thì dừng.
+- Engine chỉ báo dùng chung web/bot, cấu hình riêng mỗi tài sản,288cấu hình được sàng lọc. Chưa có bộ đủ tiêu chí; không phát lệnh từ bộ chưa đạt.
+- Giữ phiên Zalo, lịch cũ và lịch sử nhạc. Sửa lockfile có bản string_decoder 1.5.0 không tồn tại để npm cài được.
+- Chưa triển khai host Botkeep hoặc test gửi tin Zalo thật.
+
 # 1.5.0
 
 - Thêm `!scl randoom`, `!scl random`, `?scl random`: lấy bảng most-played Apple Music VN/Mỹ/Anh/Hàn, rồi tìm bản SoundCloud phù hợp.

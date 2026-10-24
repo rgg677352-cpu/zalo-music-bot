@@ -4,15 +4,17 @@ import { fileURLToPath } from 'node:url';
 import { Zalo, LoginQRCallbackEventType } from 'zca-js';
 import { createHandler } from './src/handler.mjs';
 import { createControl } from './src/control.mjs';
+import { createTrading } from './src/trading.mjs';
+import { createTradeProvider } from './src/trade-provider.mjs';
 import { createTrending } from './src/trends.mjs';
 import { checkTools } from './src/music.mjs';
 import { diagnosticMessage } from './src/process.mjs';
+import { BOT_VERSION } from './src/version.mjs';
 
 const dataDir = fileURLToPath(new URL('./data/', import.meta.url));
 const sessionPath = `${dataDir}session.json`;
 const qrPath = `${dataDir}qr.png`;
 mkdirSync(dataDir, { recursive: true, mode: 0o700 });
-const list = value => new Set(String(value || '').split(',').map(x => x.trim()).filter(Boolean));
 const maxDuration = Number(process.env.MAX_DURATION_SECONDS || 600);
 if (!Number.isInteger(maxDuration) || maxDuration < 30 || maxDuration > 600) {
   throw new Error('MAX_DURATION_SECONDS cần là số từ 30 đến 600.');
@@ -56,17 +58,18 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.5.0 — nhóm điều khiển + lịch gửi/nghỉ + nhạc.');
+  console.log(`Zalo Music Bot ${BOT_VERSION} — mọi nhóm dùng ngay, không cần setup.`);
   const api = await login();
   const control = createControl(api, { statePath: `${dataDir}control.json`, prefix, maxDuration, autoStart: false });
+  const trading = createTrading(api, { statePath: `${dataDir}trading-subscriptions.json`, prefix, provider: createTradeProvider() });
   let trending;
   const randomMusic = (...args) => {
     trending ||= createTrending({ dataDir });
     return trending.prepare(...args);
   };
   const handler = createHandler(api, {
-    prefix, maxDuration, groups: list(process.env.ALLOWED_GROUP_IDS), users: list(process.env.ALLOWED_USER_IDS),
-  }, undefined, { control, trending: randomMusic });
+    prefix, maxDuration,
+  }, undefined, { control, trading, trending: randomMusic });
   // Lưu cookie được làm mới sau lần đăng nhập này.
   const credentials = JSON.parse(readFileSync(sessionPath, 'utf8'));
   credentials.cookie = api.getCookie().toJSON().cookies;
@@ -74,11 +77,12 @@ try {
   api.listener.on('message', event => {
     handler(event).catch(() => console.error('Không gửi được phản hồi. Kiểm tra kết nối Zalo.'));
   });
-  api.listener.on('connected', () => { control.start(); console.log(`BOT SẴN SÀNG 1.5.0. Tài khoản đang chạy bot gõ ?setup trong nhóm chính, rồi gõ ?help.`); });
-  api.listener.on('disconnected', () => { control.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
+  api.listener.on('connected', () => { control.start(); trading.start(); console.log(`BOT SẴN SÀNG ${BOT_VERSION}. Dùng !status kiểm tra báo trade; ?help xem hướng dẫn.`); });
+  api.listener.on('disconnected', () => { control.stop(); trading.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
   api.listener.on('error', () => console.error('Kết nối Zalo báo lỗi. Không chia sẻ file session.json.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
     control.stop();
+    trading.stop();
     api.listener.stop();
     process.exit(0);
   });
@@ -86,11 +90,11 @@ try {
   // Đăng nhập và lệnh chữ không phải chờ kiểm tra công cụ nhạc.
   checkTools().then(tools => console.log(`yt-dlp ${tools.ytVersion}; FFmpeg OK.`)).catch(error => {
     console.error(diagnosticMessage(error));
-    console.error(`Dùng ${prefix}kiemtra trong nhóm chính để thử lại.`);
+    console.error(`Dùng ${prefix}kiemtra trong nhóm để thử lại.`);
   });
 } catch (error) {
   console.error('Không khởi động/đăng nhập được:', error.code || error.name || 'Error');
-  if (error.code === 'CONTROL_STATE_INVALID') console.error(error.message);
+  if (['CONTROL_STATE_INVALID', 'TRADING_STATE_INVALID'].includes(error.code)) console.error(error.message);
   console.error('Kiểm tra mạng, dung lượng và quyền ghi data. Nếu data/control.json lỗi, giữ bản sao và sửa file. Chỉ xóa data/session.json khi xác định phiên đăng nhập lỗi.');
   process.exitCode = 1;
 }

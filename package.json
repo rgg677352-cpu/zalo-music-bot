@@ -1,9 +1,9 @@
 {
   "name": "zalo-music-voice-bot",
-  "version": "1.5.0",
+  "version": "1.6.4",
   "private": true,
   "type": "module",
-  "description": "Bot Zalo gửi nhạc SoundCloud dưới dạng tin nhắn thoại",
+  "description": "Bot Zalo nhạc, lịch gửi mọi nhóm và thông báo setup demo đã kiểm tra",
   "engines": {
     "node": ">=22"
   },
