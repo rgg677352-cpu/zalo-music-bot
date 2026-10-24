@@ -1,3 +1,11 @@
+## 1.6.5 — 2026-10-24
+
+- Status từng chỉ giữ lần quét mới nhất: lỗi chặn setup bị trạng thái chờ ở nến sau che mất. Giữ thêm lần chặn gần nhất và tín hiệu thực sự quan sát trong phiên; phân biệt với “tín hiệu gần nhất” tính lại từ lịch sử. Hiện giờ khởi động bộ báo để nhận biết tín hiệu trước khi bot chạy.
+- `!check BTC` / `!check ETH` kiểm tra trực tiếp nến M1, giá Bitget dùng quy đổi, Bid/Ask Exness, tuổi tick, HTTP và chênh đồng hồ. Không đợi chỉ báo có tín hiệu, không bật/tắt đăng ký, không tạo lệnh.
+- Bot mặc định lấy snapshot HTTP hữu hạn từ cùng endpoint Exness công khai mà web dùng, dự phòng SSE cùng dịch vụ. Chế độ đọc trực tiếp vẫn hỗ trợ cho tích hợp rõ ràng. Không dùng Entry sàn crypto làm dự phòng, không bỏ giới hạn5giây hoặc thời hạn setup.
+- Giữ mã HTTP/tuổi tick/lỗi giờ trong lý do nguồn giá. Tôn trọng cả429/403/451 được máy chủ chuyển tiếp báo lại, không đổi đường để bỏ qua hạn chế.
+- 101 kiểm tra tự động qua; đã kiểm tra nến/giá thật BTC/ETH qua HTTP. Chưa kết luận nguyên nhân mạng cụ thể trên Botkeep của người dùng, chưa gửi Zalo thật hoặc tự cập nhật host.
+
 ## 1.6.4 — 2026-10-24
 
 - Thêm `!status`: phiên bản thật đang chạy, đăng ký của nhóm hiện tại, vòng quét có chạy hay không, lần quét/nến/chỉ báo gần nhất và lý do chưa gửi. Phân biệt Zalo đã xác nhận với gửi chưa rõ kết quả. Không cần setup và không tự bật nhóm mới.

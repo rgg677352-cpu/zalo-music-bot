@@ -21,7 +21,7 @@ test('one slow Zalo group does not hold another group and status distinguishes u
 test('source error and recovery are visible in status, with last candle and checks scoped to enabled asset',async t=>{
  let fail=false;const f=fixture(t,{snapshot:async(a)=>{if(fail)throw Error('Nguồn dữ liệu HTTP 429');return{status:'waiting',reason:'Đang chờ tín hiệu scalp M1 mới.',asset:a,candle:1792828740,rule:'RSI nhanh · 2',checks:[['x','x','x',true],['y','y','y',false]],last_signal:1792828502}}});
  await f.c.handle(event('!scalp BTC',1));f.c.start();await turn();fail=true;await f.c.tick();await f.c.handle(event('!status',2));assert.match(f.messages.at(-1).text,/HTTP 429/);assert.doesNotMatch(f.messages.at(-1).text,/ETH SCALP/);
- fail=false;await f.c.tick();await f.c.handle(event('!status',3));const msg=f.messages.at(-1).text;assert.match(msg,/ĐANG CHẠY/);assert.match(msg,/quét 0s trước/);assert.match(msg,/RSI nhanh/);assert.match(msg,/1\/2 điều kiện/);assert.match(msg,/tín hiệu gần nhất/);assert.doesNotMatch(msg,/HTTP 429/);assert.ok(!f.messages.some(m=>m.text.includes('Entry:')));
+ fail=false;await f.c.tick();await f.c.handle(event('!status',3));const msg=f.messages.at(-1).text;assert.match(msg,/ĐANG CHẠY/);assert.match(msg,/quét 0s trước/);assert.match(msg,/RSI nhanh/);assert.match(msg,/1\/2 điều kiện/);assert.match(msg,/tín hiệu gần nhất/);assert.doesNotMatch(msg.split('Chặn gần nhất')[0],/HTTP 429/);assert.match(msg,/Chặn gần nhất.*HTTP 429/);assert.ok(!f.messages.some(m=>m.text.includes('Entry:')));
 });
 test('configured timers keep checking after a waiting command without needing another user message',async t=>{
  let n=0,ready;const checked=new Promise(r=>ready=r),dir=fs.mkdtempSync(path.join(os.tmpdir(),'trade-timer-'));

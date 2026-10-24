@@ -1,8 +1,8 @@
-# Bot Zalo 1.6.4
+# Bot Zalo 1.6.5
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.6.4.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.4`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.6.5.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.5`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
@@ -62,7 +62,7 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
 
 
-## Nhạc thịnh hành ngẫu nhiên (1.6.4)
+## Nhạc thịnh hành ngẫu nhiên (1.6.5)
 
 ```text
 !scl randoom
@@ -99,7 +99,7 @@ Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong
 Đã chạy kiểm tra tự động bằng API Zalo giả lập. Chưa có quyền host Botkeep hoặc phiên Zalo nên chưa cập nhật host, chưa gửi tin thật. Cập nhật ZIP trên host cũ và restart, giữ toàn bộ `data/`/`.env`; không cần `!setup`.
 
 
-## Scalp bổ sung — 1.6.4
+## Scalp bổ sung — 1.6.5
 
 `!scalp` bật thông báo scalp BTC/ETH trong nhóm và xem setup mới nếu có. `!scalp BTC` hoặc `!scalp ETH` chọn riêng. Không cần !on hoặc !setup trước đó. Các thông báo M15/M30/H1/H4 đang bật vẫn được giữ.
 
@@ -110,15 +110,21 @@ Scalp dùng nến M1, ATR M5 và bộ chỉ báo riêng từng tài sản/khung 
 Vòng scalp 10 giây chạy riêng vòng khung lớn 30 giây. Chỉ tính lại chỉ báo khi nến M1 đổi, dùng chung dữ liệu giữa các nhóm. Đăng ký và nến đã gửi giữ qua restart; không có giới hạn số nhóm trong code. Mọi setup scalp hiện là demo chưa vượt kiểm chứng, không tự đặt lệnh lên sàn.
 
 
-Giá lệnh bản1.6.4: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
+Giá lệnh bản1.6.5: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
 
 Để khớp đúng nguồn tài khoản, cần kết nối chính tài khoản bằng cầu nối terminal MT5 chỉ đọc hoặc API chính thức nếu là tài khoản Exness được hỗ trợ. Exness API hiện không hỗ trợ tài khoản MetaTrader tiêu chuẩn. Tên BTC trong app không đủ xác định mã/suffix. Không gửi mật khẩu/khóa bí mật vào chat; thông tin kết nối phải cấu hình trực tiếp trên máy chủ của chủ tài khoản.
 
-## Khi không nhận được setup — 1.6.4
+## Khi không nhận được setup — 1.6.5
 
-1. Stop → Upload ZIP1.6.4 → Extract/Unarchive ghi đè code ở thư mục gốc → Start. Giữ nguyên `data/` và `.env`.
-2. Gõ `!status`: phải ghi `Bot 1.6.4`. Nếu không nhận lệnh này, kiểm tra lại thư mục giải nén và dòng phiên bản trong Console.
+1. Stop → Upload ZIP1.6.5 → Extract/Unarchive ghi đè code ở thư mục gốc → Start. Giữ nguyên `data/` và `.env`.
+2. Gõ `!status`: phải ghi `Bot 1.6.5`. Nếu không nhận lệnh này, kiểm tra lại thư mục giải nén và dòng phiên bản trong Console.
 3. Gõ `!scalp BTC` (BTC) hoặc `!scalp` (BTC+ETH). Không cần `!on` hay `!setup` trước. Đăng ký cũ vẫn giữ qua restart.
 4. Gõ `!status` sau khoảng20giây. Dòng `quét ...s trước` và giờ nến phải cập nhật. Xem lý do riêng: chờ tín hiệu, nguồn lỗi/giá cũ, hay Zalo chưa xác nhận gửi. Status chỉ hiển thị đăng ký của nhóm hiện tại.
 
 Bot kiểm tra mỗi10giây, không phải phát một lệnh mỗi10giây. Mọi tín hiệu vẫn phải mới và có Bid/Ask Exness hợp lệ. Các bộ hiện vẫn chưa đạt kiểm chứng và chỉ dùng demo.
+
+## Kiểm tra trực tiếp nguồn — 1.6.5
+
+Sau khi cập nhật và restart, gửi `!check BTC` trong nhóm. Phải thấy `Bot 1.6.5`; các dòng nến, giá quy đổi và giá Exness phải OK. `!check ETH` làm tương tự cho ETH. LỖI HTTP, tick quá5giây hoặc lệch đồng hồ là lý do chưa tạo setup; không cần chờ một tín hiệu để thấy lỗi này. Lệnh không thay đăng ký nhóm.
+
+Status mới giữ “Chặn gần nhất” khi lượt tiếp theo đã chuyển sang chờ; hiện “Đã thấy trong phiên” riêng với tín hiệu lịch sử. Thông tin chẩn đoán này bắt đầu lại khi restart; giờ khởi động được ghi rõ, không xóa lịch sử nến đã xử lý.

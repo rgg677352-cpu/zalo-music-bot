@@ -21,7 +21,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   }catch{throw Object.assign(new Error('Không đọc được trading-subscriptions.json; giữ bản sao để kiểm tra.'),{code:'TRADING_STATE_INVALID'})}
  }
  const save=()=>{try{writeFileSync(statePath+'.new',JSON.stringify(state,null,2),{mode:0o600});renameSync(statePath+'.new',statePath)}catch(error){persistenceFailed=true;throw error}};
- const health=new Map(),deliveries=new Map();
+ const health=new Map(),deliveries=new Map(),lastIssues=new Map(),observedSignals=new Map(),bootTime=now()/1000;
  const duplicate=createDeduper(),cooldown=new Map(),busy=new Set();let timers=[],generation=0,connected=false;
  const say=(msg,id)=>deadline(()=>api.sendMessage(msg,id,ThreadType.Group),requestTimeout);
  const group=id=>state.groups[id]||=({enabled:[],delivered:{}});
@@ -35,6 +35,10 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  }
  function record(a,f,s,token){
   if(token!==generation)return;const key=a+':'+f,old=health.get(key),status=valid(s,a,f)?'setup':s?.status==='setup'?'rejected':s?.status||'error',reason=reasonFor(s,a,f);
+  const at=now()/1000;
+  if(Number.isFinite(s?.signal_time))observedSignals.set(key,{signal_time:s.signal_time,seen_at:at,candle:s.candle,side:s.signal_side??s.side});
+  const pendingSignal=!Number.isFinite(s?.signal_time)||Object.values(state.groups).some(g=>g.enabled.includes(key)&&(g.delivered[key]||0)<s.candle);
+  if(pendingSignal&&(['error','stale','rejected'].includes(status)||Number.isFinite(s?.signal_time)&&status==='waiting'&&at-s.signal_time>=45))lastIssues.set(key,{at,signal_time:s?.signal_time,candle:s?.candle,reason});
   health.set(key,{checked:now()/1000,status,reason,candle:s?.candle,rule:s?.rule,checks:s?.checks,last_signal:s?.last_signal});
   if(['error','stale','rejected'].includes(status)&&(!old||old.status!==status||old.reason!==reason))console.warn(`[trade] ${key}: ${reason}`);
   else if(old&&['error','stale','rejected'].includes(old.status)&&!['error','stale','rejected'].includes(status))console.log(`[trade] ${key}: nguồn đã hồi phục (${status}).`);
@@ -45,11 +49,13 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  }
  function statusMessage(id){
   const g=state.groups[id],keys=g?.enabled||[],t=now()/1000;
-  const lines=[`Bot ${BOT_VERSION} · BÁO TRADE ${persistenceFailed?'DỪNG DO LỖI LƯU FILE':connected&&timers.length?'ĐANG CHẠY':'ĐANG DỪNG / MẤT KẾT NỐI'}`,`Scalp ${Math.round(scalpPollMs/1000)}s · M15–H4 ${Math.round(pollMs/1000)}s · giá setup Exness công khai.`];
+  const lines=[`Bot ${BOT_VERSION} · BÁO TRADE ${persistenceFailed?'DỪNG DO LỖI LƯU FILE':connected&&timers.length?'ĐANG CHẠY':'ĐANG DỪNG / MẤT KẾT NỐI'}`,`Bộ báo khởi động ${vnTime(bootTime)} VN.`, `Scalp ${Math.round(scalpPollMs/1000)}s · M15–H4 ${Math.round(pollMs/1000)}s · giá setup Exness công khai.`];
   if(!keys.length)lines.push('Nhóm này chưa bật báo. Dùng !scalp BTC hoặc !on.');
-  for(const key of keys){const h=health.get(key),send=deliveries.get(id+':'+key),age=h?Math.max(0,Math.floor(t-h.checked)):null,checks=h?.checks?.filter(r=>r[3]===true).length;
+  for(const key of keys){const h=health.get(key),send=deliveries.get(id+':'+key),issue=lastIssues.get(key),seen=observedSignals.get(key),age=h?Math.max(0,Math.floor(t-h.checked)):null,checks=h?.checks?.filter(r=>r[3]===true).length;
    lines.push(`\n${key.replace(':',' ')} · ${h?'quét '+age+'s trước':'chưa quét'}${busy.has(key.endsWith(':SCALP'))?' · vòng quét đang chạy':''}`);
-   if(h){lines.push(h.status==='setup'&&(g.delivered[key]||0)>=h.candle?'Tín hiệu nến này đã xử lý; chờ tín hiệu mới.':h.reason);if(h.rule)lines.push(h.rule+(Number.isInteger(checks)?' · '+checks+'/'+h.checks.length+' điều kiện':''));if(h.candle)lines.push('Nến '+vnTime(h.candle)+' VN'+(h.last_signal?' · tín hiệu gần nhất '+vnTime(h.last_signal)+' VN':''));}
+   if(h){lines.push(h.status==='setup'&&(g.delivered[key]||0)>=h.candle?'Tín hiệu nến này đã xử lý; chờ tín hiệu mới.':h.reason);if(h.rule)lines.push(h.rule+(Number.isInteger(checks)?' · '+checks+'/'+h.checks.length+' điều kiện':''));if(h.candle)lines.push('Nến '+vnTime(h.candle)+' VN'+(h.last_signal?' · tín hiệu gần nhất (lịch sử) '+vnTime(h.last_signal)+' VN':''));}
+   if(seen)lines.push('Đã thấy trong phiên: '+vnTime(seen.signal_time)+' VN · quét lúc '+vnTime(seen.seen_at)+' VN.');
+   if(issue)lines.push('Chặn gần nhất '+vnTime(issue.at)+' VN: '+issue.reason);
    if(send)lines.push(send.status==='sent'?'Zalo xác nhận gửi lúc '+vnTime(send.at)+' VN.':'Lần gửi '+vnTime(send.at)+' VN chưa được Zalo xác nhận; không tự gửi lại để tránh trùng.');
    else if(g.delivered[key])lines.push('Nến đã xử lý: '+vnTime(g.delivered[key])+' VN (lưu qua restart).');
   }
@@ -73,17 +79,28 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   await say(header+texts.join('\n\n'),id);
   for(const {key}of included)deliveries.set(id+':'+key,{status:'sent',at:now()/1000});
  }
- const usage='Dùng !on, !status, !BTC H1, !scalp, !scalp BTC, !off scalp, !off scalp BTC, !off BTC hoặc !off.';
+ function formatCheck(result){
+  const lines=[`KIỂM TRA NGUỒN ${result.asset} · Bot ${BOT_VERSION}`];
+  for(const row of result.checks||[]){let detail=row.detail||'';
+   if(row.candles)detail=row.candles+' nến · nến cuối '+vnTime(row.candle)+' VN';
+   if(Number.isFinite(row.bid))detail=`Bid ${price(row.bid)} / Ask ${price(row.ask)} · ${Number(row.age).toFixed(1)}s · ${row.transport||'Bitget HTTP'}`+(detail?' · '+detail:'');
+   lines.push(`${row.ok?'OK':'LỖI'} · ${row.name}: ${detail}`);
+  }
+  if(Number.isFinite(result.clock_delta))lines.push('Lệch giờ host / nguồn: '+result.clock_delta.toFixed(1)+'s.');
+  lines.push('Chỉ kiểm tra nguồn; không bật/tắt đăng ký và không tạo lệnh.');return lines.join('\n');
+ }
+ const usage='Dùng !on, !status, !check BTC, !BTC H1, !scalp, !scalp BTC, !off scalp, !off scalp BTC, !off BTC hoặc !off.';
  async function handle(event){
   if(event.type!==ThreadType.Group||typeof event.data?.content!=='string')return false;
   const text=event.data.content.trim(),p=commandPrefix(text,prefix);if(!p)return false;
   const[raw,...args]=text.slice(p.length).split(/\s+/),name=raw.toUpperCase(),asset=alias(name);
-  if(!asset&&!['ON','OFF','SCALP','STATUS'].includes(name))return false;
+  if(!asset&&!['ON','OFF','SCALP','STATUS','CHECK'].includes(name))return false;
   if(duplicate(event))return true;const id=String(event.threadId);if(!/^\d+$/.test(id))return true;
   const key=id+':'+event.data.uidFrom+':'+text.toUpperCase();
-  if((asset||name==='SCALP')&&cooldown.has(key)&&now()-cooldown.get(key)<1500)return true;
+  if((asset||name==='SCALP'||name==='CHECK')&&cooldown.has(key)&&now()-cooldown.get(key)<1500)return true;
   cooldown.set(key,now());if(cooldown.size>2000)cooldown.delete(cooldown.keys().next().value);
   try{
+   if(name==='CHECK'){const selected=args[0]?alias(args[0]):null;if(args.length>1||selected&&!SCALP_ASSETS.includes(selected)||args[0]&&!selected){await say('Dùng !check BTC hoặc !check ETH.',id);return true}if(!provider.check){await say('Bộ nguồn chưa hỗ trợ kiểm tra trực tiếp.',id);return true}const results=await Promise.allSettled((selected?[selected]:SCALP_ASSETS).map(a=>deadline(()=>provider.check(a),requestTimeout)));await say(results.map(r=>r.status==='fulfilled'?formatCheck(r.value):'Kiểm tra nguồn vượt thời gian chờ; chưa xác nhận được giá.').join('\n\n'),id);return true}
    if(name==='STATUS'){await say(statusMessage(id),id);return true}
    if(persistenceFailed)throw Error('storage');
    if(name==='SCALP'||name==='OFF'&&args[0]?.toUpperCase()==='SCALP'){
@@ -128,5 +145,5 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  const report=()=>console.error('Tạm dừng báo giao dịch: không lưu được trạng thái.');
  function start(){connected=true;if(timers.length)return;timers=[setInterval(()=>sweep(false).catch(report),pollMs),setInterval(()=>sweep(true).catch(report),scalpPollMs)];timers.forEach(t=>t.unref?.());void tick().catch(report)}
  function stop(){connected=false;generation++;timers.forEach(clearInterval);timers=[]}
- if(autoStart)start();return{handle,tick,start,stop,snapshot:()=>structuredClone(state),diagnostics:()=>({connected,running:timers.length>0,persistenceFailed,checks:Object.fromEntries(health)})};
+ if(autoStart)start();return{handle,tick,start,stop,snapshot:()=>structuredClone(state),diagnostics:()=>({connected,running:timers.length>0,persistenceFailed,bootTime,checks:Object.fromEntries(health),lastIssues:Object.fromEntries(lastIssues),observedSignals:Object.fromEntries(observedSignals)})};
 }
