@@ -1,3 +1,10 @@
+## 1.6.3 — 2026-10-24
+
+- Bỏ fallback giá Entry Bitget/USDT của scalp và chuyển cả M15–H4 sang giá lệnh Exness công khai. Thiếu giá Exness mới thì dừng setup, không thay bằng giá thị trường khác.
+- BUY vào Ask, SELL vào Bid; quy đổi khoảng ATR/rủi ro theo hai nguồn cùng thời điểm, giữ R:R và hạn entry. Giá Exness công khai vẫn có thể khác tài khoản; chỉ báo dùng nến Bitget tham chiếu.
+- Tin ghi rõ BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask và giờ phát để phân biệt giá lúc báo với giá hiện tại hoặc một lệnh chờ Limit.
+- Thêm kiểm tra khung lớn chuyển giá đúng Bid/Ask, source stale/missing/wrong, expiry, và không rò Entry Bitget khi Exness lỗi. Chưa có cầu nối feed tài khoản MT5, chưa cập nhật host Botkeep.
+
 ## 1.6.2 — 2026-10-24
 
 - !scalp bật thêm scalp demo BTC/ETH M1/M5, trả setup hiện còn hiệu lực và tự báo tín hiệu mới; !scalp BTC/ETH chọn riêng; !off scalp hoặc !off scalp BTC tắt riêng. Không ảnh hưởng khung lớn hoặc nhóm khác.

@@ -46,3 +46,6 @@ Mã engine dùng chung cho web/bot, tiêu chí đã lưu trước khi đọc k�
 
 
 Bản1.6.2 bổ sung !scalp: bật scalp BTC/ETH M1/M5 theo cùng cấu hình giờ trong fast-study, giữ tối đa1–3phút, hiệu lực entry45giây. Vòng scalp10giây riêng vòng HTF30giây; chỉ tính lại khi nến M1 đổi. Ưu tiên báo giá Exness công khai và quy đổi ATR theo tỷ lệ giá cùng thời điểm; nếu nguồn này lỗi, dùng Bitget/USDT ghi rõ nguồn. Giá công khai vẫn có thể lệch tài khoản. !off scalp tắt riêng scalp, !off BTC tắt mọi khung BTC. 0/480 cấu hình scalp vượt đủ kiểm tra, tin luôn ghi DEMO · CHƯA ĐẠT KIỂM CHỨNG.
+
+
+Bản1.6.3 sửa giá lệnh: cả scalp và M15–H4 chỉ dùng Bid/Ask Exness công khai để tính Entry/SL/TP, không lấy giá Bitget làm Entry khi Exness lỗi. Tin ghi loại MARKET tham chiếu, Bid/Ask lúc phát và giờ tick. Nến chỉ báo vẫn từ Bitget, khoảng ATR được quy đổi cùng thời điểm; CHƯA phải feed tài khoản MT5 và không bảo đảm trùng giá trong app. Muốn đúng nguồn tài khoản cần cầu nối MT5 chỉ đọc đúng login/server/symbol hoặc API chính thức cho loại tài khoản Exness được hỗ trợ; API này không hỗ trợ tài khoản MetaTrader tiêu chuẩn.

@@ -20,7 +20,7 @@ export function scalpSetup({bars, asset, study, quote, anchor = quote, now = Dat
   if (!(risk>0) || quote.ask-quote.bid>atr*.5) return paused('Spread quá lớn so với ATR M5.');
   const entry=e.side===1?quote.ask:quote.bid, sl=entry-e.side*risk, tp=entry+e.side*reward;
   if (sl<=0 || tp<=0) return paused('Khoảng Entry/TP/SL không hợp lệ.');
-  return { status:'setup',asset,frame:'SCALP',id:asset+':scalp:'+e.t,side:e.side,entry,low:entry-.03*risk,high:entry+.03*risk,sl,tp,risk,rr:reward/risk,hold:e.holdSeconds,candle:e.t,created:now,quote_time:quote.t,expires,rule:e.familyName,session:e.session,source:quote.source,currency:quote.source==='Bitget'?'USDT':'USD',reference:true,accepted:e.accepted===true,experimental:e.accepted!==true,demo:true };
+  return { status:'setup',asset,frame:'SCALP',id:asset+':scalp:'+e.t,side:e.side,entry,low:entry-.03*risk,high:entry+.03*risk,sl,tp,risk,rr:reward/risk,hold:e.holdSeconds,candle:e.t,created:now,quote_time:quote.t,quote_bid:quote.bid,quote_ask:quote.ask,instrument:asset+(quote.source==='Bitget'?'USDT':'USD'),order_type:'MARKET',expires,rule:e.familyName,session:e.session,source:quote.source,candle_source:'Bitget',currency:quote.source==='Bitget'?'USDT':'USD',reference:true,accepted:e.accepted===true,experimental:e.accepted!==true,demo:true };
 }
 export function createScalpClient({market, study, referenceQuote}) {
   const cache=new Map();
@@ -35,7 +35,8 @@ export function createScalpClient({market, study, referenceQuote}) {
     if(!event?.known || !event.side || !event.inSession || initialNow<event.available || initialNow>=event.available+45) return scalpSetup({bars,asset,study,now:initialNow,event});
     const [initialAnchor,reference]=await Promise.all([market.quote(asset),referenceQuote?referenceQuote(asset).catch(()=>null):null]);
     const anchor=market.clock()-initialAnchor.t>4?await market.quote(asset):initialAnchor;
-    const now=market.clock(),fresh=reference && now-reference.t<=5 && reference.t<=now+3 && Math.abs(reference.t-anchor.t)<=5;
-    return scalpSetup({bars,asset,study,quote:fresh?reference:anchor,anchor,now,event});
+    const now=market.clock();
+    if(!reference || reference.source!=='Exness công khai' || now-reference.t>5 || reference.t>now+3 || Math.abs(reference.t-anchor.t)>5) return {status:'stale',asset,frame:'SCALP',reason:'Chưa có giá Exness mới; tạm dừng setup, không dùng giá Bitget làm Entry.'};
+    return scalpSetup({bars,asset,study,quote:reference,anchor,now,event});
   }};
 }
