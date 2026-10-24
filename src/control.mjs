@@ -16,6 +16,7 @@ Bot có mặt trong nhóm là mọi thành viên dùng được lệnh, không c
 ?list — xem tên và ID nhóm. ?list 2 — trang tiếp.
 
 Thông báo setup · chỉ demo
+!status — bản bot, lần quét mới nhất và lý do chưa gửi.
 !on — bật BTC/ETH/XAUUSD trong nhóm hiện tại, M15/M30/H1/H4.
 !BTC, !ETH, !XAUU — bật riêng tài sản và xem setup hiện có.
 !BTC H1 hoặc !on ETH M30 — chọn riêng khung.

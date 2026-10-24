@@ -1,3 +1,12 @@
+## 1.6.4 — 2026-10-24
+
+- Thêm `!status`: phiên bản thật đang chạy, đăng ký của nhóm hiện tại, vòng quét có chạy hay không, lần quét/nến/chỉ báo gần nhất và lý do chưa gửi. Phân biệt Zalo đã xác nhận với gửi chưa rõ kết quả. Không cần setup và không tự bật nhóm mới.
+- Nguồn lỗi không còn bị bỏ qua im lặng: lưu trạng thái chẩn đoán, log khi lỗi đổi/hồi phục; không biến lỗi giá thành trạng thái chờ tín hiệu.
+- Quét BTC/ETH độc lập với giới hạn song song, gửi nhiều nhóm có giới hạn song song; một nguồn/nhóm chậm không giữ toàn bộ tín hiệu. Dùng chung request đang tải để tránh nhiều lệnh gọi trùng nguồn.
+- Chỉ đánh dấu setup đã xử lý ngay trước khi gửi, sau khi tất cả kết quả hỏi trực tiếp đã xong và kiểm tra lại độ mới. Không tiêu thụ một setup vì nó tải xong sớm nhưng đã quá hạn trong lúc đợi mã khác. `!off` trong khi đang tải chặn setup trả muộn.
+- Exness SSE bỏ qua tick cũ ban đầu và có HTTP snapshot dự phòng cùng nguồn với giới hạn thời gian/dung lượng. Tôn trọng429/403/451; không đổi sang giá Entry sàn khác.
+- 91 kiểm tra tự động qua; chạy theo dõi giá thật với hàm gửi Zalo giả lập. Chưa cập nhật host Botkeep hoặc xác nhận gửi trên Zalo thật. Không đổi bộ chỉ báo hay sửa kết quả kiểm chứng để ép thêm lệnh.
+
 ## 1.6.3 — 2026-10-24
 
 - Bỏ fallback giá Entry Bitget/USDT của scalp và chuyển cả M15–H4 sang giá lệnh Exness công khai. Thiếu giá Exness mới thì dừng setup, không thay bằng giá thị trường khác.

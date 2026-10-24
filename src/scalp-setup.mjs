@@ -27,16 +27,16 @@ export function createScalpClient({market, study, referenceQuote}) {
   return { async snapshot(asset) {
     if (!['BTC','ETH'].includes(asset)) return {status:'unavailable',reason:'Scalp hiện hỗ trợ BTC và ETH.'};
     const bars=await market.candles(asset,'SCALP');
-    const last=cache.get(asset);
-    let event;
-    if(last?.bars===bars) event=last.event;
-    else { event=scalpEvent(bars,asset,study);cache.set(asset,{bars,event}); }
+    let saved=cache.get(asset);
+    if(saved?.bars!==bars){const series=selectedFastHistory({provider:'Bitget',[asset.toLowerCase()+'1']:bars},asset,study,{allDay:true});saved={bars,event:series.at(-1),lastSignal:series.findLast(e=>e.side&&e.known)?.available};cache.set(asset,saved)}
+    const {event,lastSignal}=saved;
+    const result=s=>({...s,candle:bars.at(-1)?.t,rule:s.rule||event?.familyName,checks:event?.checks,last_signal:lastSignal,candle_source:'Bitget'});
     const initialNow=market.clock();
-    if(!event?.known || !event.side || !event.inSession || initialNow<event.available || initialNow>=event.available+45) return scalpSetup({bars,asset,study,now:initialNow,event});
+    if(!event?.known || !event.side || !event.inSession || initialNow<event.available || initialNow>=event.available+45) return result(scalpSetup({bars,asset,study,now:initialNow,event}));
     const [initialAnchor,reference]=await Promise.all([market.quote(asset),referenceQuote?referenceQuote(asset).catch(()=>null):null]);
     const anchor=market.clock()-initialAnchor.t>4?await market.quote(asset):initialAnchor;
     const now=market.clock();
-    if(!reference || reference.source!=='Exness công khai' || now-reference.t>5 || reference.t>now+3 || Math.abs(reference.t-anchor.t)>5) return {status:'stale',asset,frame:'SCALP',reason:'Chưa có giá Exness mới; tạm dừng setup, không dùng giá Bitget làm Entry.'};
-    return scalpSetup({bars,asset,study,quote:reference,anchor,now,event});
+    if(!reference || reference.source!=='Exness công khai' || now-reference.t>5 || reference.t>now+3 || Math.abs(reference.t-anchor.t)>5) return result({status:'stale',asset,frame:'SCALP',reason:'Chưa có giá Exness mới; tạm dừng setup, không dùng giá Bitget làm Entry.'});
+    return result(scalpSetup({bars,asset,study,quote:reference,anchor,now,event}));
   }};
 }

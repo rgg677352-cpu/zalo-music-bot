@@ -6,7 +6,8 @@ import{exnessPlan}from'./exness-plan.mjs';
 export function createTradeProvider({mode='demo',exnessFetcher,...options}={}){
  if(!['demo','qualified'].includes(mode))throw Error('Unknown trade notification mode');
  const study=JSON.parse(readFileSync(new URL('../assets/htf-study.json',import.meta.url),'utf8')),fast=JSON.parse(readFileSync(new URL('../assets/fast-study.json',import.meta.url),'utf8')),market=createHTFClient(options),exness=createExnessQuotes({...options,fetcher:exnessFetcher||options.fetcher||fetch,now:market.clock}),scalp=createScalpClient({market,study:fast,referenceQuote:a=>exness.quote(a)});
- return{async snapshot(asset,frame){
+ const pending=new Map();
+ async function snapshot(asset,frame){
   if(frame==='SCALP')return mode==='demo'?scalp.snapshot(asset):{status:'research',reason:'Scalp chưa đạt kiểm chứng; chế độ hiện tại chỉ nhận bộ đã đạt.'};
   const plan=await market.snapshot(asset,frame,study.profiles[asset]?.[frame],mode==='demo');
   if(plan.status!=='setup')return plan;
@@ -15,5 +16,6 @@ export function createTradeProvider({mode='demo',exnessFetcher,...options}={}){
   let anchor={source:'Bitget',bid:plan.quote_bid,ask:plan.quote_ask,t:plan.quote_time};
   if(market.clock()-anchor.t>4)anchor=await market.quote(asset);
   return exnessPlan(plan,quote,anchor,market.clock());
- }};
+ }
+ return{snapshot(asset,frame){const key=asset+':'+frame;if(pending.has(key))return pending.get(key);const request=snapshot(asset,frame).finally(()=>pending.delete(key));pending.set(key,request);return request}};
 }

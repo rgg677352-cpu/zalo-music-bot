@@ -9,6 +9,7 @@ import { createTradeProvider } from './src/trade-provider.mjs';
 import { createTrending } from './src/trends.mjs';
 import { checkTools } from './src/music.mjs';
 import { diagnosticMessage } from './src/process.mjs';
+import { BOT_VERSION } from './src/version.mjs';
 
 const dataDir = fileURLToPath(new URL('./data/', import.meta.url));
 const sessionPath = `${dataDir}session.json`;
@@ -57,7 +58,7 @@ async function login() {
 }
 
 try {
-  console.log('Zalo Music Bot 1.6.3 — mọi nhóm dùng ngay, không cần setup.');
+  console.log(`Zalo Music Bot ${BOT_VERSION} — mọi nhóm dùng ngay, không cần setup.`);
   const api = await login();
   const control = createControl(api, { statePath: `${dataDir}control.json`, prefix, maxDuration, autoStart: false });
   const trading = createTrading(api, { statePath: `${dataDir}trading-subscriptions.json`, prefix, provider: createTradeProvider() });
@@ -76,7 +77,7 @@ try {
   api.listener.on('message', event => {
     handler(event).catch(() => console.error('Không gửi được phản hồi. Kiểm tra kết nối Zalo.'));
   });
-  api.listener.on('connected', () => { control.start(); trading.start(); console.log('BOT SẴN SÀNG 1.6.3. Dùng ?help trong bất kỳ nhóm nào bot đã tham gia.'); });
+  api.listener.on('connected', () => { control.start(); trading.start(); console.log(`BOT SẴN SÀNG ${BOT_VERSION}. Dùng !status kiểm tra báo trade; ?help xem hướng dẫn.`); });
   api.listener.on('disconnected', () => { control.stop(); trading.stop(); console.log('Kết nối Zalo bị ngắt. Nếu không tự kết nối lại, hãy restart bot.'); });
   api.listener.on('error', () => console.error('Kết nối Zalo báo lỗi. Không chia sẻ file session.json.'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
