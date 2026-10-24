@@ -16,6 +16,8 @@ Bot có mặt trong nhóm là mọi thành viên dùng được lệnh, không c
 ?list — xem tên và ID nhóm. ?list 2 — trang tiếp.
 
 Thông báo setup · chỉ demo
+!indicators — danh mục và số cấu hình đã kiểm tra.
+!research BTC / !research ETH H1 — bộ thử theo phiên, chưa bật nếu không đạt.
 !status — bản bot, giờ khởi động, lần quét và lần chặn setup gần nhất.
 !check BTC / !check ETH — thử nguồn nến và giá ngay, không cần đợi tín hiệu.
 !on — bật BTC/ETH/XAUUSD trong nhóm hiện tại, M15/M30/H1/H4.

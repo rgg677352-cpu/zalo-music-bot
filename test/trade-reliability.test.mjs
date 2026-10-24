@@ -11,7 +11,7 @@ test('status shows version and subscription state without enabling groups, fetch
 });
 test('BTC scalp timeout cannot hold an independent ETH scalp notification',async t=>{
  let armed=false,release;const f=fixture(t,{snapshot:async(a)=>!armed?{status:'waiting'}:a==='BTC'?new Promise(r=>release=r):setup('ETH')});
- await f.c.handle(event('!scalp'));const initial=f.messages.length;armed=true;f.c.start();await turn();assert.equal(typeof release,'function');assert.equal(f.messages.length,initial+1);assert.match(f.messages.at(-1).text,/ETH · SCALP/);release({status:'waiting'});await turn();
+ await f.c.handle(event('!scalp'));const initial=f.messages.length;armed=true;f.c.start();await turn();assert.equal(typeof release,'function');assert.equal(f.messages.length,initial+1);assert.match(f.messages.at(-1).text,/ETH · BUY · SCALP/);release({status:'waiting'});await turn();
 });
 test('one slow Zalo group does not hold another group and status distinguishes unconfirmed delivery',async t=>{
  let armed=false,release;const f=fixture(t,{snapshot:async()=>setup('BTC','H1')},(text,id)=>armed&&id==='100'&&text.includes('Entry:')?new Promise(r=>release=r):undefined);
@@ -55,7 +55,7 @@ test('a slow manual multi-asset query must not consume or display an early setup
  const c=createTrading({sendMessage:async text=>messages.push(text)},{statePath:path.join(dir,'s.json'),now:()=>time*1000,requestTimeout:1000,pollMs:600000,scalpPollMs:600000,provider:{snapshot:async a=>a==='BTC'&&!armed?new Promise(r=>release=r):a==='ETH'?{...setup('ETH'),created:time,quote_time:time}:{status:'waiting'}}});t.after(()=>{c.stop();fs.rmSync(dir,{recursive:true,force:true})});
  const command=c.handle(event('!scalp'));await turn();time+=6;release({status:'waiting'});await command;
  assert.doesNotMatch(messages[0],/Entry:/);assert.match(messages[0],/Giá báo đã cũ/);assert.equal(c.snapshot().groups['100'].delivered['ETH:SCALP'],undefined);
- armed=true;c.start();await turn();assert.ok(messages.some(x=>x.includes('ETH · SCALP')&&x.includes('Entry:')));
+ armed=true;c.start();await turn();assert.ok(messages.some(x=>x.includes('ETH · BUY · SCALP')&&x.includes('Entry:')));
 });
 test('turning an asset off during a pending manual query suppresses its late setup',async t=>{
  let release;const f=fixture(t,{snapshot:()=>new Promise(r=>release=r)});const query=f.c.handle(event('!BTC H1'));await turn();await f.c.handle(event('!off BTC',2));release(setup('BTC','H1'));await query;assert.ok(!f.messages.some(x=>x.text.includes('Entry:')));assert.deepEqual(f.c.snapshot().groups['100'].enabled,[]);

@@ -3,10 +3,13 @@ import{createHTFClient}from'./trade-data.mjs';
 import{createScalpClient}from'./scalp-setup.mjs';
 import{createExnessQuotes,quoteProblem}from'./exness-quotes.mjs';
 import{FRAMES}from'./trade-engine.mjs';
+import{sessionAt}from'./scalp-session.mjs';
+import{algorithmSeries,ALGORITHMS}from'./algorithm-lab.mjs';
 import{exnessPlan}from'./exness-plan.mjs';
 export function createTradeProvider({mode='demo',exnessFetcher,quoteTransport='pulse',...options}={}){
  if(!['demo','qualified'].includes(mode))throw Error('Unknown trade notification mode');
  const study=JSON.parse(readFileSync(new URL('../assets/htf-study.json',import.meta.url),'utf8')),fast=JSON.parse(readFileSync(new URL('../assets/fast-study.json',import.meta.url),'utf8')),market=createHTFClient(options),exness=createExnessQuotes({...options,fetcher:exnessFetcher||options.fetcher||fetch,now:market.clock,transport:quoteTransport}),scalp=createScalpClient({market,study:fast,referenceQuote:a=>exness.quote(a)});
+ const lab=JSON.parse(readFileSync(new URL('../assets/optimizer-study.json',import.meta.url),'utf8'));
  const pending=new Map();
  async function snapshot(asset,frame){
   if(frame==='SCALP')return mode==='demo'?scalp.snapshot(asset):{status:'research',reason:'Scalp chưa đạt kiểm chứng; chế độ hiện tại chỉ nhận bộ đã đạt.'};
@@ -30,5 +33,11 @@ export function createTradeProvider({mode='demo',exnessFetcher,quoteTransport='p
   });
   return{asset,checked:at,clock_delta:(options.now?options.now():Date.now()/1000)-at,transport:quoteTransport,checks};
  }
- return{check,snapshot(asset,frame){const key=asset+':'+frame;if(pending.has(key))return pending.get(key);const request=snapshot(asset,frame).finally(()=>pending.delete(key));pending.set(key,request);return request}};
+ async function research(asset='BTC',frame='SCALP',live=true){
+  const session=sessionAt(market.clock()),idx=['asia','europe','overlap','us_late','quiet'].indexOf(session.id),profile=lab.profiles.find(p=>p.asset===asset&&p.frame===frame&&p.session===idx);
+  const out={catalog:lab.catalog,algorithms:lab.algorithms,candidates:lab.candidates,finalists:lab.finalists,accepted:lab.accepted,asset,frame,session:session.name+' · '+session.hours+' VN',profile,active_new:false};
+  if(live&&profile&&['BTC','ETH'].includes(asset)&&frame==='SCALP'){try{const bars=await market.candles(asset,'SCALP'),[key,v]=profile.algorithm.split(':'),signal=algorithmSeries(bars,asset,key,Number(v)).at(-1);out.rule=ALGORITHMS[key];out.current={side:signal.side,known:signal.known,checks:signal.checks};}catch{out.live_reason='Chưa lấy được nến cho kiểm tra nghiên cứu.'}}
+  return out;
+ }
+ return{check,research,snapshot(asset,frame){const key=asset+':'+frame;if(pending.has(key))return pending.get(key);const request=snapshot(asset,frame).finally(()=>pending.delete(key));pending.set(key,request);return request}};
 }

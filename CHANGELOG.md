@@ -1,3 +1,12 @@
+## 1.7.0 — 2026-10-24
+
+- Sàng lọc5.520 cấu hình từ16 thuật toán kết hợp chỉ báo/regime,2biến thể riêng tài sản,5phiên và6gói TP/SL scalp.70 lựa chọn đóng băng trước test;10 scalp finalist chạy lại tick Exness, stress và delay15. Khung nhỏ giữ1tháng, H1/H4 khoảng9tháng.0bộ mới đủ điều kiện bật tự động;1bộH1 chỉ qua số học trong mẫu, chưa forward độc lập.
+- Thử riêng TP gần, SL cấu trúc, dời hòa vốn có chi phí trên tín hiệu cũ. Không tự đổi TP/SL mặc định thành gói chưa đạt hoặc hứa TP sẽ chạm.
+- Tích hợp thư viện nghiên cứu16thuật toán, catalog và kết quả theo mã/khung/phiên qua !indicators và !research BTC / !research ETH H1. Bộ rejected không tạo Entry hay tự đổi đăng ký. Vàng vẫn chưa livefeed hợp lệ.
+- Chỉ tính các họ chỉ báo đang được chọn: tín hiệu giữ nguyên trên12 cửa sổ dữ liệu thật, benchmark khoảng2.8x nhanh hơn trong môi trường kiểm tra, không phải bảo đảm tốc độ mọi host.
+- Tin setup gọn: mã/hướng/khung, Entry/TP/SL từng dòng, R:R/hold, hạn entry, Bid/Ask giờ phát, bộ và phiên, nhãn DEMO/nguồn. Bỏ dump vùng giá/link lặp. Hỏi nhiều khung không lặp mọi đoạn waiting, vẫn hiện lỗi nguồn.
+- Đăng ký/cooldown/quote guard/dedup qua restart giữ nguyên. Không gửi Zalo thật hay cập nhật host Botkeep từ môi trường này.
+
 ## 1.6.5 — 2026-10-24
 
 - Status từng chỉ giữ lần quét mới nhất: lỗi chặn setup bị trạng thái chờ ở nến sau che mất. Giữ thêm lần chặn gần nhất và tín hiệu thực sự quan sát trong phiên; phân biệt với “tín hiệu gần nhất” tính lại từ lịch sử. Hiện giờ khởi động bộ báo để nhận biết tín hiệu trước khi bot chạy.
