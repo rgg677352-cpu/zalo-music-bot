@@ -1,7 +1,10 @@
-Bản 1.6.1 — 2026-10-24
-Console: BOT SẴN SÀNG 1.6.1
+Bản 1.6.2 — 2026-10-24
+Console: BOT SẴN SÀNG 1.6.2
 Giữ data/ và .env, cập nhật code trên host cũ rồi restart.
 Bot đã vào nhóm là dùng được: ?help, ?list, ?pr, ?nhac. Không cần !setup/?setup.
 !on bật thông báo trade nhóm này; !BTC/!ETH/!XAUU hỏi và bật riêng tài sản; !off BTC tắt riêng BTC.
 Bật !on để tự nhận setup DEMO BTC/ETH mới, kèm Entry/TP/SL; bộ chưa đạt có nhãn rõ. Không cần mở web. Dữ liệu giá trễ/thiếu hoặc setup hết hạn thì không gửi. Vàng đang chờ nguồn live.
 Đã test API Zalo giả lập; chưa gửi tin thật hoặc cập nhật host Botkeep.
+
+!scalp bật thêm scalp BTC/ETH; !scalp BTC chọn riêng; !off scalp tắt riêng scalp.
+Scalp M1/M5, giữ 1–3 phút, kiểm tra 10 giây, giá ưu tiên Exness công khai; dự phòng Bitget ghi rõ nguồn.

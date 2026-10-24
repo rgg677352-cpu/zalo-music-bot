@@ -19,6 +19,9 @@ Thông báo setup · chỉ demo
 !on — bật BTC/ETH/XAUUSD trong nhóm hiện tại, M15/M30/H1/H4.
 !BTC, !ETH, !XAUU — bật riêng tài sản và xem setup hiện có.
 !BTC H1 hoặc !on ETH M30 — chọn riêng khung.
+!scalp — bật thêm scalp BTC/ETH M1/M5, giữ tối đa 1–3 phút.
+!scalp BTC hoặc !scalp ETH — bật riêng và xem setup scalp mới.
+!off scalp — tắt scalp, giữ M15–H4; !off scalp BTC — tắt scalp BTC.
 !off BTC — tắt riêng BTC trong nhóm; !off — tắt tất cả báo trade nhóm này.
 Tự gửi setup DEMO mới có entry/TP/SL, kể cả bộ chưa đạt kiểm chứng; tin nhắn ghi rõ trạng thái. Chỉ dùng nến đóng và giá mới, không gửi bù setup hết hạn. Vàng chưa có nguồn live, chưa báo setup vàng.
 

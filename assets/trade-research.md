@@ -43,3 +43,6 @@ Bot không cần !setup/?setup ở mọi nhóm đã tham gia. !on bật thông b
 - [WaveTrend — LazyBear](https://www.tradingview.com/script/2KE8wTuF-Indicator-WaveTrend-Oscillator-WT/), [Chandelier Exit — everget, mã công khai](https://github.com/everget/tradingview-pinescript-indicators/blob/master/trailing_stops/chandelier_exit.pine)
 
 Mã engine dùng chung cho web/bot, tiêu chí đã lưu trước khi đọc kết quả, dữ liệu đầu vào có SHA256 và log giao dịch từng bộ để tái kiểm tra. Các công thức không bảo đảm lợi nhuận.
+
+
+Bản1.6.2 bổ sung !scalp: bật scalp BTC/ETH M1/M5 theo cùng cấu hình giờ trong fast-study, giữ tối đa1–3phút, hiệu lực entry45giây. Vòng scalp10giây riêng vòng HTF30giây; chỉ tính lại khi nến M1 đổi. Ưu tiên báo giá Exness công khai và quy đổi ATR theo tỷ lệ giá cùng thời điểm; nếu nguồn này lỗi, dùng Bitget/USDT ghi rõ nguồn. Giá công khai vẫn có thể lệch tài khoản. !off scalp tắt riêng scalp, !off BTC tắt mọi khung BTC. 0/480 cấu hình scalp vượt đủ kiểm tra, tin luôn ghi DEMO · CHƯA ĐẠT KIỂM CHỨNG.

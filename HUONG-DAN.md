@@ -1,8 +1,8 @@
-# Bot Zalo 1.6.1
+# Bot Zalo 1.6.2
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.6.1.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.1`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.6.2.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.6.2`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
@@ -62,7 +62,7 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
 
 
-## Nhạc thịnh hành ngẫu nhiên (1.6.1)
+## Nhạc thịnh hành ngẫu nhiên (1.6.2)
 
 ```text
 !scl randoom
@@ -97,3 +97,14 @@ Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong
 0/288 bộ đạt kiểm chứng vẫn giữ nguyên; kết quả này không còn khóa thông báo DEMO. Khung lớn đã test khoảng 9 tháng; bộ đạt số học trong đợt tìm thêm trên cùng mẫu vẫn cần forward test. Vàng chưa nối được nguồn live cùng nguồn đã kiểm tra, không phát setup vàng hiện tại. Engine chia sẻ cùng web, nguồn BTC/ETH là Bitget USDT gần đúng Exness. H1/H4 đang chờ nến mới là bình thường; chỉ báo nguồn trễ khi thiếu nến đã phải đóng. Đây là thông báo demo, không đặt lệnh trên sàn.
 
 Đã chạy kiểm tra tự động bằng API Zalo giả lập. Chưa có quyền host Botkeep hoặc phiên Zalo nên chưa cập nhật host, chưa gửi tin thật. Cập nhật ZIP trên host cũ và restart, giữ toàn bộ `data/`/`.env`; không cần `!setup`.
+
+
+## Scalp bổ sung — 1.6.2
+
+`!scalp` bật thông báo scalp BTC/ETH trong nhóm và xem setup mới nếu có. `!scalp BTC` hoặc `!scalp ETH` chọn riêng. Không cần !on hoặc !setup trước đó. Các thông báo M15/M30/H1/H4 đang bật vẫn được giữ.
+
+`!off scalp` chỉ tắt scalp; `!off scalp BTC` chỉ tắt scalp BTC. `!off BTC` tắt mọi khung của BTC; `!off` tắt hết thông báo trade nhóm này. Nhóm khác không đổi.
+
+Scalp dùng nến M1, ATR M5 và bộ chỉ báo riêng từng tài sản/khung giờ như web; giữ tối đa 1–3 phút. Chỉ gửi setup mới còn 45 giây hiệu lực sau lúc chỉ báo xuất hiện; entry/TP/SL lấy từ giá mới. Nến Bitget, ưu tiên giá Exness công khai và quy đổi ATR theo giá cùng thời điểm. Nguồn Exness lỗi thì dùng Bitget/USDT, ghi rõ nguồn để tránh nhầm giá tài khoản. Không bịa hoặc gửi bù setup quá hạn.
+
+Vòng scalp 10 giây chạy riêng vòng khung lớn 30 giây. Chỉ tính lại chỉ báo khi nến M1 đổi, dùng chung dữ liệu giữa các nhóm. Đăng ký và nến đã gửi giữ qua restart; không có giới hạn số nhóm trong code. Mọi setup scalp hiện là demo chưa vượt kiểm chứng, không tự đặt lệnh lên sàn.

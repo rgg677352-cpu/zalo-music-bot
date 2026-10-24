@@ -1,0 +1,41 @@
+import { selectedFastHistory } from './fast-engine.mjs';
+export function scalpEvent(bars, asset, study) {
+  return selectedFastHistory({ provider: 'Bitget', [asset.toLowerCase() + '1']: bars }, asset, study, { allDay: true }).at(-1);
+}
+export function scalpSetup({bars, asset, study, quote, anchor = quote, now = Date.now()/1000, event}) {
+  const paused = reason => ({ status: 'stale', asset, frame: 'SCALP', reason });
+  if (!['BTC', 'ETH'].includes(asset)) return { status: 'unavailable', reason: 'Scalp hiện hỗ trợ BTC và ETH.' };
+  if (!Array.isArray(bars) || bars.length < 220 || bars.some((b,i) => ![b.t,b.o,b.h,b.l,b.c,b.v].every(Number.isFinite) || b.t%60 || b.l<=0 || b.h<Math.max(b.o,b.c) || b.l>Math.min(b.o,b.c) || b.t+62>now || i&&b.t-bars[i-1].t!==60)) return paused('Nến M1 thiếu, chưa đóng hoặc không liên tục.');
+  if (bars.at(-1).t+60 < Math.floor((now-2)/60)*60) return paused('Đang chờ nến M1 mới.');
+  const e = event || scalpEvent(bars,asset,study);
+  if (!e || !e.known || e.t!==bars.at(-1).t) return paused('Chưa đủ dữ liệu tính chỉ báo scalp.');
+  if (!e.side || !e.inSession) return { status:'waiting',asset,frame:'SCALP',reason:'Đang chờ tín hiệu scalp M1 mới.',rule:e.familyName };
+  const expires=e.available+45;
+  if (now<e.available || now>=expires) return { status:'waiting',asset,frame:'SCALP',reason:'Setup scalp cũ đã hết hạn; chờ tín hiệu mới.' };
+  const validQuote = q => q && [q.bid,q.ask,q.t].every(Number.isFinite) && q.bid>0 && q.ask>=q.bid && now-q.t<=5 && q.t<=now+3;
+  if (!validQuote(quote) || !validQuote(anchor) || anchor.source!=='Bitget' || !['Bitget','Exness công khai'].includes(quote.source) || Math.abs(quote.t-anchor.t)>5) return paused('Báo giá chưa mới hoặc khác nguồn dự kiến.');
+  const ratio=(quote.bid+quote.ask)/(anchor.bid+anchor.ask);
+  if (ratio<.98 || ratio>1.02) return paused('Chênh lệch giá tham chiếu quá lớn.');
+  const atr=e.atr*ratio, risk=atr*e.stopMultiplier, reward=atr*e.targetMultiplier;
+  if (!(risk>0) || quote.ask-quote.bid>atr*.5) return paused('Spread quá lớn so với ATR M5.');
+  const entry=e.side===1?quote.ask:quote.bid, sl=entry-e.side*risk, tp=entry+e.side*reward;
+  if (sl<=0 || tp<=0) return paused('Khoảng Entry/TP/SL không hợp lệ.');
+  return { status:'setup',asset,frame:'SCALP',id:asset+':scalp:'+e.t,side:e.side,entry,low:entry-.03*risk,high:entry+.03*risk,sl,tp,risk,rr:reward/risk,hold:e.holdSeconds,candle:e.t,created:now,quote_time:quote.t,expires,rule:e.familyName,session:e.session,source:quote.source,currency:quote.source==='Bitget'?'USDT':'USD',reference:true,accepted:e.accepted===true,experimental:e.accepted!==true,demo:true };
+}
+export function createScalpClient({market, study, referenceQuote}) {
+  const cache=new Map();
+  return { async snapshot(asset) {
+    if (!['BTC','ETH'].includes(asset)) return {status:'unavailable',reason:'Scalp hiện hỗ trợ BTC và ETH.'};
+    const bars=await market.candles(asset,'SCALP');
+    const last=cache.get(asset);
+    let event;
+    if(last?.bars===bars) event=last.event;
+    else { event=scalpEvent(bars,asset,study);cache.set(asset,{bars,event}); }
+    const initialNow=market.clock();
+    if(!event?.known || !event.side || !event.inSession || initialNow<event.available || initialNow>=event.available+45) return scalpSetup({bars,asset,study,now:initialNow,event});
+    const [initialAnchor,reference]=await Promise.all([market.quote(asset),referenceQuote?referenceQuote(asset).catch(()=>null):null]);
+    const anchor=market.clock()-initialAnchor.t>4?await market.quote(asset):initialAnchor;
+    const now=market.clock(),fresh=reference && now-reference.t<=5 && reference.t<=now+3 && Math.abs(reference.t-anchor.t)<=5;
+    return scalpSetup({bars,asset,study,quote:fresh?reference:anchor,anchor,now,event});
+  }};
+}

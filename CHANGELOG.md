@@ -1,3 +1,11 @@
+## 1.6.2 — 2026-10-24
+
+- !scalp bật thêm scalp demo BTC/ETH M1/M5, trả setup hiện còn hiệu lực và tự báo tín hiệu mới; !scalp BTC/ETH chọn riêng; !off scalp hoặc !off scalp BTC tắt riêng. Không ảnh hưởng khung lớn hoặc nhóm khác.
+- Dùng cùng công thức/cấu hình 480 ứng viên đã nghiên cứu trên web, theo phiên, giữ tối đa 1–3 phút; không sửa kết quả kiểm chứng.
+- Ưu tiên giá Exness công khai cho Entry/TP/SL và quy đổi ATR từ cùng thời điểm; dự phòng Bitget/USDT ghi rõ nguồn. Giá nguồn công khai có thể lệch tài khoản.
+- Vòng scalp 10 giây độc lập vòng HTF 30 giây, lưu tín hiệu/cấu hình theo nến mới, chống trùng qua restart; bỏ setup hết hạn hoặc quote trễ.
+- Không cần !setup, không trần số nhóm; giữ phiên Zalo/lịch nhạc/PR. Chưa cập nhật host Botkeep hoặc gửi tin Zalo thật.
+
 ## 1.6.1 — 2026-10-24
 
 - !on mặc định tự gửi setup DEMO BTC/ETH từ bộ chọn trong nghiên cứu, kể cả chưa đạt kiểm chứng; không sửa kết quả test hay cờ accepted. Tin có nhãn DEMO · CHƯA ĐẠT KIỂM CHỨNG.
