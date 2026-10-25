@@ -1,6 +1,6 @@
-# Bot Zalo 1.7.3
+# Bot Zalo 1.7.4
 
-Mới: tự dọn thư mục nhạc/giải nén mồ côi lúc khởi động và mỗi 10 phút; thư mục giải nén riêng được xóa sau từng lần chạy. File đang tải/gửi, phiên đăng nhập và cấu hình được giữ. Gõ `!storage` xem dung lượng, `!clean` dọn ngay; không cần `!setup`. Không xóa tay `data/` hoặc `.env`. Bản 1.7.3 dọn thêm cache tải FFmpeg trong `ffmpeg-static-nodejs`, sau khi thử FFmpeg đã cài. Giữ binary đang dùng trong `node_modules`; bỏ qua symlink, file cache đang mở hoặc mới thay đổi dưới một phút. Nếu chưa dọn được, `!clean`/`!storage` hiện lý do; thử lại khi bộ cài đã xong. Không dọn cache npm. Phản hồi host của bạn cho thấy cache FFmpeg chiếm 560,7 MB.
+Mới: tự dọn thư mục nhạc/giải nén mồ côi lúc khởi động và mỗi 10 phút; thư mục giải nén riêng được xóa sau từng lần chạy. File đang tải/gửi, phiên đăng nhập và cấu hình được giữ. Gõ `!storage` xem dung lượng, `!clean` dọn ngay; không cần `!setup`. Không xóa tay `data/` hoặc `.env`. Bản 1.7.4 dọn thêm cache tải FFmpeg trong `ffmpeg-static-nodejs`, sau khi thử FFmpeg đã cài. Giữ binary đang dùng trong `node_modules`; bỏ qua symlink, file cache đang mở hoặc mới thay đổi dưới một phút. Nếu chưa dọn được, `!clean`/`!storage` hiện lý do; thử lại khi bộ cài đã xong. Không dọn cache npm. Phản hồi host của bạn cho thấy cache FFmpeg chiếm 560,7 MB.
 
 Setup tự động mới M15/M30/H4 tag cả nhóm **@All**; H1/scalp, `!status` và hỏi setup thủ công không tag. Nhóm cần đã bật khung tương ứng. Không gửi bù tin cũ. Kiểm tra tích hợp hiện dùng API Zalo giả lập, chưa thử gửi nhóm thật.
 
@@ -8,7 +8,7 @@ Setup tự động mới M15/M30/H4 tag cả nhóm **@All**; H1/scalp, `!status`
 
 ## Cập nhật Botkeep
 
-Stop bot → upload `zalo-music-bot-1.7.3.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.7.3`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
+Stop bot → upload `zalo-music-bot-1.7.4.zip` → Extract/Unarchive và ghi đè toàn bộ code ở thư mục chính → Start. Giữ nguyên `data` và `.env` riêng của bạn. Console phải hiện `1.7.4`. ZIP chỉ nằm trong Files chưa có nghĩa là đã cập nhật.
 
 Không có dependency mới so với 1.3.0. Nếu cần cài lại thì dùng quy trình `npm ci` của host. Console chạy bot không phải Terminal để nhập lệnh shell.
 
@@ -68,7 +68,7 @@ Nếu dữ liệu lịch hỏng (`CONTROL_STATE_INVALID`), giữ bản sao rồi
 Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài khoản Zalo cá nhân zca-js.
 
 
-## Nhạc thịnh hành ngẫu nhiên (1.7.3)
+## Nhạc thịnh hành ngẫu nhiên (1.7.4)
 
 ```text
 !scl randoom
@@ -76,19 +76,19 @@ Không chia sẻ `.env`, `data/session.json` hay QR. Bot dùng thư viện tài 
 ?scl random
 ```
 
-Dùng trong nhóm điều khiển đã chọn. Cả `!` và `?` luôn được nhận; tiền tố riêng trong `.env` vẫn dùng được. `randoom` và `random` cùng một chức năng, không bị tìm thành tên bài. Hai dấu này cũng được chặn ở đầu nội dung PR để tránh bot tự gọi lệnh.
+Dùng ngay trong nhóm bot đã tham gia. Cả `!` và `?` luôn được nhận; tiền tố riêng trong `.env` vẫn dùng được. `randoom` và `random` cùng một chức năng, không bị tìm thành tên bài. Hai dấu này cũng được chặn ở đầu nội dung PR để tránh bot tự gọi lệnh.
 
-Bot lấy bảng most-played Apple Music Việt Nam và các thị trường quốc tế Mỹ/Anh/Hàn Quốc, ưu tiên luân phiên hai nguồn VN/quốc tế khi tìm được bản phù hợp. Đây là bảng các bài đang được nghe nhiều, **không phải danh sách bài chỉ mới phát hành trong vài ngày gần đây**, và cũng không phải bảng xếp hạng của SoundCloud. Bài hay phụ thuộc gu nghe của bạn.
+Bot chỉ lấy bảng most-played Apple Music Việt Nam, lọc thêm tên/thể loại có bằng chứng nhạc Việt và tìm bản SoundCloud phù hợp. Không gọi bảng Mỹ/Anh/Hàn hoặc đổi sang nhạc nước ngoài khi hết bài. Đây là bảng bài đang được nghe nhiều, không bảo đảm bài vừa phát hành. Bộ lọc dựa trên metadata, không phân tích toàn bộ lời hát; có thể bỏ qua bài Việt mang tên tiếng Anh thiếu bằng chứng.
 
-- Nguồn: https://rss.marketingtools.apple.com/api/v2/vn/music/most-played/100/songs.json (đổi `vn` thành `us`, `gb`, `kr` cho thị trường khác).
+- Nguồn: https://rss.marketingtools.apple.com/api/v2/vn/music/most-played/100/songs.json.
 - Cache 6 giờ; khi nguồn lỗi có thể dùng cache còn trong 48 giờ. Từ chối feed có ngày cập nhật quá 7 ngày hoặc không hợp lệ. Không thay bằng danh sách nhạc cố định khi nguồn lỗi.
 - Tìm tối đa ba kết quả SoundCloud cho mỗi bài được chọn, đối chiếu tên bài/nghệ sĩ. Bỏ bản dưới 90 giây, quá giới hạn thời lượng, remix/cover/mashup không yêu cầu. Không bảo đảm mọi bài trong bảng đều có bản phù hợp để tải trên SoundCloud.
-- Ghi nhớ 80 lượt random gần nhất cho mỗi nhóm, cả tên bài/nghệ sĩ và URL SoundCloud, ở `data/music-history.json`. Tránh chọn lại trong phạm vi lịch sử này. Nếu không có bài phù hợp/chưa phát thì báo lỗi, không cố phát lại bài cũ. Giữ `data` để còn lịch sử qua restart.
+- Giữ lịch sử đã có và ghi nhớ lâu dài ở `data/music-history.json`, theo từng nhóm. So tên bài không phụ thuộc nghệ sĩ/đuôi remix/live và chuẩn hóa link SoundCloud để tránh phát lại qua bản upload khác hoặc link thêm tracking. Bỏ giới hạn quay vòng 80 lượt. Lịch sử tối đa 5.000 bài/nhóm; đầy thì dừng random, giữ nguyên lịch sử. Hết bài phù hợp thì báo chờ, không tự lặp. Giữ `data` qua restart; không khôi phục được bài mà bản cũ đã loại khỏi 80 lượt lịch sử.
 - Lịch sử được ghi trước khi gửi voice để tránh gửi trùng khi kết quả Zalo không rõ; lượt gửi thất bại có thể vẫn nằm trong lịch sử.
 - `data/trends-cache.json` là cache có thể tải lại; nếu `music-history.json` hỏng thì giữ bản sao và sửa file, không xóa phiên Zalo. Lỗi lịch sử nhạc không ngăn bot đăng nhập hay chạy lệnh PR.
 - Mỗi người gọi nhạc cách ít nhất 10 giây; yêu cầu random mới không bị bộ chống lặp tên lệnh 30 giây chặn nhầm. Chỉ một bài xử lý và tối đa hai bài chờ như trước.
 
-Đã chạy thử tải bài Việt Nam và quốc tế từ bảng hiện tại rồi chuyển AAC; chưa thử gửi trực tiếp vào tài khoản Zalo của bạn. Việc đối chiếu metadata không bảo đảm tuyệt đối bản SoundCloud là bản gốc/chính thức.
+Kiểm tra tự động xác nhận chỉ chọn nhạc Việt, chống trùng qua restart và hai yêu cầu cùng lúc. Chưa thử gửi bản mới trực tiếp vào tài khoản Zalo của bạn; metadata không bảo đảm tuyệt đối bản SoundCloud là bản gốc/chính thức.
 
 
 ## Báo setup demo
@@ -105,7 +105,7 @@ Không giới hạn nhóm; bot phải có mặt và có quyền nhắn tin trong
 Đã chạy kiểm tra tự động bằng API Zalo giả lập. Chưa có quyền host Botkeep hoặc phiên Zalo nên chưa cập nhật host, chưa gửi tin thật. Cập nhật ZIP trên host cũ và restart, giữ toàn bộ `data/`/`.env`; không cần `!setup`.
 
 
-## Scalp bổ sung — 1.7.3
+## Scalp bổ sung — 1.7.4
 
 `!scalp` bật thông báo scalp BTC/ETH trong nhóm và xem setup mới nếu có. `!scalp BTC` hoặc `!scalp ETH` chọn riêng. Không cần !on hoặc !setup trước đó. Các thông báo M15/M30/H1/H4 đang bật vẫn được giữ.
 
@@ -116,33 +116,33 @@ Scalp dùng nến M1, ATR M5 và bộ chỉ báo riêng từng tài sản/khung 
 Vòng scalp 10 giây chạy riêng vòng khung lớn 30 giây. Chỉ tính lại chỉ báo khi nến M1 đổi, dùng chung dữ liệu giữa các nhóm. Đăng ký và nến đã gửi giữ qua restart; không có giới hạn số nhóm trong code. Mọi setup scalp hiện là demo chưa vượt kiểm chứng, không tự đặt lệnh lên sàn.
 
 
-Giá lệnh bản1.7.3: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
+Giá lệnh bản1.7.4: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
 
 Để khớp đúng nguồn tài khoản, cần kết nối chính tài khoản bằng cầu nối terminal MT5 chỉ đọc hoặc API chính thức nếu là tài khoản Exness được hỗ trợ. Exness API hiện không hỗ trợ tài khoản MetaTrader tiêu chuẩn. Tên BTC trong app không đủ xác định mã/suffix. Không gửi mật khẩu/khóa bí mật vào chat; thông tin kết nối phải cấu hình trực tiếp trên máy chủ của chủ tài khoản.
 
-## Khi không nhận được setup — 1.7.3
+## Khi không nhận được setup — 1.7.4
 
-1. Stop → Upload ZIP1.7.3 → Extract/Unarchive ghi đè code ở thư mục gốc → Start. Giữ nguyên `data/` và `.env`.
-2. Gõ `!status`: phải ghi `Bot 1.7.3`. Nếu không nhận lệnh này, kiểm tra lại thư mục giải nén và dòng phiên bản trong Console.
+1. Stop → Upload ZIP1.7.4 → Extract/Unarchive ghi đè code ở thư mục gốc → Start. Giữ nguyên `data/` và `.env`.
+2. Gõ `!status`: phải ghi `Bot 1.7.4`. Nếu không nhận lệnh này, kiểm tra lại thư mục giải nén và dòng phiên bản trong Console.
 3. Gõ `!scalp BTC` (BTC) hoặc `!scalp` (BTC+ETH). Không cần `!on` hay `!setup` trước. Đăng ký cũ vẫn giữ qua restart.
 4. Gõ `!status` sau khoảng20giây. Dòng `quét ...s trước` và giờ nến phải cập nhật. Xem lý do riêng: chờ tín hiệu, nguồn lỗi/giá cũ, hay Zalo chưa xác nhận gửi. Status chỉ hiển thị đăng ký của nhóm hiện tại.
 
 Bot kiểm tra mỗi10giây, không phải phát một lệnh mỗi10giây. Mọi tín hiệu vẫn phải mới và có Bid/Ask Exness hợp lệ. Các bộ hiện vẫn chưa đạt kiểm chứng và chỉ dùng demo.
 
-## Kiểm tra trực tiếp nguồn — 1.7.3
+## Kiểm tra trực tiếp nguồn — 1.7.4
 
-Sau khi cập nhật và restart, gửi `!check BTC` trong nhóm. Phải thấy `Bot 1.7.3`; các dòng nến, giá quy đổi và giá Exness phải OK. `!check ETH` làm tương tự cho ETH. LỖI HTTP, tick quá5giây hoặc lệch đồng hồ là lý do chưa tạo setup; không cần chờ một tín hiệu để thấy lỗi này. Lệnh không thay đăng ký nhóm.
+Sau khi cập nhật và restart, gửi `!check BTC` trong nhóm. Phải thấy `Bot 1.7.4`; các dòng nến, giá quy đổi và giá Exness phải OK. `!check ETH` làm tương tự cho ETH. LỖI HTTP, tick quá5giây hoặc lệch đồng hồ là lý do chưa tạo setup; không cần chờ một tín hiệu để thấy lỗi này. Lệnh không thay đăng ký nhóm.
 
 Status mới giữ “Chặn gần nhất” khi lượt tiếp theo đã chuyển sang chờ; hiện “Đã thấy trong phiên” riêng với tín hiệu lịch sử. Thông tin chẩn đoán này bắt đầu lại khi restart; giờ khởi động được ghi rõ, không xóa lịch sử nến đã xử lý.
 
-## Chỉ báo/thuật toán mới — 1.7.3
+## Chỉ báo/thuật toán mới — 1.7.4
 
 - !indicators: số lượng trong catalog và đợt sàng lọc.
 - !research BTC: thuật toán thử cho scalp theo phiên hiện tại; !research ETH H1: theo mã/khung/phiên. Đây là tra cứu nghiên cứu, không bật bộ rejected hoặc tạo Entry giả.
 - 0bộ mới đủ điều kiện tự bật. Bot vẫn demo theo các bộ phiên cũ; TP/SL mới chưa được mặc định áp dụng vì chưa có bằng chứng cải thiện ổn định.
 - Mẫu tin được rút gọn nhưng giữ nguồn, thời gian, Entry, TP, SL, R:R và nhãn DEMO.
 
-## Quản lý rủi ro và kỷ luật — 1.7.3
+## Quản lý rủi ro và kỷ luật — 1.7.4
 
 - `!risk 1000 0.5` tính ngân sách5 đơn vị tiền cho SL. `!risk 1000 0.5 100 2` dùng vốn1000, risk0.5%, khoảng Entry–SL100 và phí/trượt thêm2 mỗi đơn vị cơ sở: khối lượng tối đa0.049019 đơn vị cơ sở, **chưa phải lot Exness**. Cùng đồng tiền; dấu chấm/phẩy là thập phân, không dùng phân cách nghìn. Công thức áp dụng sản phẩm tuyến tính. Cần kiểm tra contract size, min/step lot và margin ở sàn; gap có thể vượt ngân sách. Lệnh không lưu thông tin vốn.
 - `!rr 80000 79900 80150 2` tính R:R sau phí bổ sung đã nhập và tỷ lệ thắng hòa vốn toán học nếu chỉ có kết quảTP/SL. Đây không phải xác suất thắng dự báo hay expectancy đo từ giao dịch. Spread đã nằm trong Entry Bid/Ask thì không cộng lần nữa; phí thực tế vẫn phải nhập đúng.

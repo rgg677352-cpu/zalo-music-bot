@@ -1,3 +1,10 @@
+## 1.7.4 — 2026-10-25
+
+- !scl random / !scl randoom và !nhac random chỉ lấy bảng Apple Music VN, lọc thêm tên/thể loại có bằng chứng nhạc Việt. Bỏ luân phiên và mọi nguồn quốc tế US/GB/KR, kể cả cache quốc tế cũ; hết bài phù hợp thì báo chờ. Bộ lọc dựa trên metadata, có thể bỏ qua bài Việt mang tên tiếng Anh thiếu bằng chứng.
+- Giữ lịch sử đã có và bỏ quay vòng 80 lượt. Chống trùng theo tên bài qua thay đổi nghệ sĩ/phiên bản, chuẩn hóa link SoundCloud bỏ tracking; lưu qua restart. Tối đa 5.000 bài/nhóm rồi dừng random, không tự xóa bài cũ để phát lại. Các yêu cầu cùng nhóm được xếp hàng để tránh chọn trùng lúc đồng thời.
+- 141 kiểm tra qua. Kiểm tra bảng thật ngày 25/10/2026: 100 bài, bộ lọc giữ 67; tải và chuyển AAC thành công “hoá ra…” – GREY D, dài 146,423 giây, dọn audio thử sau đó. Chưa gửi bản mới vào nhóm Zalo thật hoặc cập nhật Botkeep.
+- Không có dependency mới; giữ dọn cache FFmpeg, @All khung lớn và các chức năng trade cũ. Không thêm !testall.
+
 ## 1.7.3 — 2026-10-25
 
 - Phản hồi !storage trên Botkeep xác định cache tải FFmpeg chiếm 560,7 MB; file tạm đã sạch. Bản 1.7.2 chỉ báo dung lượng cache này, chưa xóa.

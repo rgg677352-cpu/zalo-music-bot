@@ -52,7 +52,7 @@ Lịch giữ qua restart, không gửi bù dồn khi host tắt. Gửi lỗi th�
 
 Nhạc
 ?nhac tên bài hoặc ?scl link SoundCloud — voice kèm ảnh, tối đa ${Math.floor(maxDuration / 60)} phút.
-!scl randoom hoặc !scl random — bài trong bảng xếp hạng VN/quốc tế, tìm bản SoundCloud đủ dài, tránh lặp 80 lượt random gần đây. Không tải được nguồn thì báo lỗi, không dùng danh sách cố định.\n?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
+!scl randoom hoặc !scl random — chỉ nhạc Việt đang hot, nhớ bài đã phát theo nhóm qua restart. Hết bài phù hợp thì báo, không tự phát lại hoặc đổi sang nhạc nước ngoài.\n?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
 Các lệnh cũ vẫn được giữ để tương thích.`;
 }
 export function createControl(api, { statePath, prefix = '!', now = Date.now, autoStart = true, requestTimeout = 30000, maxDuration = 600 }) {
