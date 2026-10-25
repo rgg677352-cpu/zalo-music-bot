@@ -37,7 +37,7 @@ test('chỉ thử kho CA hệ thống khi có lỗi chứng chỉ, giữ xác mi
   assert.ok(!calls[0].args.includes('no-certifi'));
   assert.ok(calls[1].args.includes('no-certifi'));
   assert.ok(calls.every(x => !x.args.includes('--no-check-certificates')));
-  assert.match(calls[0].settings.env.TMPDIR, /tmp\/native$/);
+  assert.match(calls[0].settings.env.TMPDIR, /tmp\/native\/run-[a-zA-Z0-9_-]+$/);
 });
 
 test('không đổi CA/thử lặp khi gặp HTTP 403', async () => {

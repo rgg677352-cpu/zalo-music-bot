@@ -1,5 +1,15 @@
 import { spawn } from 'node:child_process';
 import { basename } from 'node:path';
+const children = new Set();
+function terminate(child) {
+  if (!child.pid) return;
+  try {
+    if (process.platform !== 'win32') process.kill(-child.pid, 'SIGKILL');
+    else child.kill('SIGKILL');
+  } catch { try { child.kill('SIGKILL'); } catch {} }
+}
+export function stopMediaProcesses() { for (const child of children) terminate(child); }
+process.once('exit', stopMediaProcesses);
 
 export function redactDiagnostics(value) {
   return String(value || '')
@@ -48,19 +58,20 @@ export function diagnosticMessage(error) {
 
 export function run(command, args, { timeout = 180_000, maxOutput = 2_000_000, stage = 'runtime', env = {} } = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { stdio: ['ignore', 'pipe', 'pipe'], shell: false, env: { ...process.env, ...env } });
+    const child = spawn(command, args, { stdio: ['ignore', 'pipe', 'pipe'], shell: false, detached: process.platform !== 'win32', env: { ...process.env, ...env } });
+    children.add(child);
     let stdout = '', stderr = '', bytes = 0, failure;
     const timer = setTimeout(() => {
       failure = new Error('Xử lý quá lâu. Hãy thử bài khác hoặc thử lại sau.');
       failure.reason = 'NETWORK';
-      child.kill('SIGKILL');
+      terminate(child);
     }, timeout);
     for (const [stream, isError] of [[child.stdout, false], [child.stderr, true]]) {
       stream.on('data', chunk => {
         bytes += chunk.length;
         if (bytes > maxOutput) {
           failure = new Error('Dữ liệu phản hồi quá lớn.');
-          child.kill('SIGKILL');
+          terminate(child);
           return;
         }
         if (isError) stderr += chunk.toString(); else stdout += chunk.toString();
@@ -76,12 +87,16 @@ export function run(command, args, { timeout = 180_000, maxOutput = 2_000_000, s
     };
     child.once('error', error => {
       clearTimeout(timer);
+      children.delete(child);
       error.reason = 'RUNTIME';
       stderr ||= error.message;
       reject(decorate(error));
     });
     child.once('close', (code, signal) => {
       clearTimeout(timer);
+      // Also stop descendants with ignored stdio; they must not outlive the job.
+      terminate(child);
+      children.delete(child);
       if (failure) return reject(decorate(failure));
       if (code !== 0) {
         const error = new Error('Không lấy được âm thanh. Nguồn nhạc hoặc kết nối có thể đang lỗi.');

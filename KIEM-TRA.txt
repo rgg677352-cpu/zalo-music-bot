@@ -1,5 +1,5 @@
-Bản 1.7.0 — 2026-10-24
-Console: BOT SẴN SÀNG 1.7.0
+Bản 1.7.2 — 2026-10-24
+Console: BOT SẴN SÀNG 1.7.2
 Giữ data/ và .env, cập nhật code trên host cũ rồi restart.
 Bot đã vào nhóm là dùng được: ?help, ?list, ?pr, ?nhac. Không cần !setup/?setup.
 !on bật thông báo trade nhóm này; !BTC/!ETH/!XAUU hỏi và bật riêng tài sản; !off BTC tắt riêng BTC.
@@ -10,10 +10,15 @@ Bật !on để tự nhận setup DEMO BTC/ETH mới, kèm Entry/TP/SL; bộ ch�
 Scalp M1/M5, giữ 1–3 phút, kiểm tra 10 giây, giá lệnh chỉ từ Exness công khai; thiếu giá thì dừng, không đổi nguồn.
 
 
-Giá lệnh bản1.7.0: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
+Giá lệnh bản1.7.2: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
 
 Để khớp đúng nguồn tài khoản, cần kết nối chính tài khoản bằng cầu nối terminal MT5 chỉ đọc hoặc API chính thức nếu là tài khoản Exness được hỗ trợ. Exness API hiện không hỗ trợ tài khoản MetaTrader tiêu chuẩn. Tên BTC trong app không đủ xác định mã/suffix. Không gửi mật khẩu/khóa bí mật vào chat; thông tin kết nối phải cấu hình trực tiếp trên máy chủ của chủ tài khoản.
 
-Bản1.7.0 thêm !status để xem vòng quét/nguồn/gửi; phải thấy đúng Bot1.7.0 sau cập nhật. Nhóm đã bật giữ đăng ký qua restart. !scalp BTC bật riêngBTC; !scalp bậtBTC+ETH. Mỗi10giây kiểm tra, không phải mỗi10giây đều có lệnh.
+Bản1.7.2 thêm !status để xem vòng quét/nguồn/gửi; phải thấy đúng Bot1.7.2 sau cập nhật. Nhóm đã bật giữ đăng ký qua restart. !scalp BTC bật riêngBTC; !scalp bậtBTC+ETH. Mỗi10giây kiểm tra, không phải mỗi10giây đều có lệnh.
 
 !check BTC / !check ETH: thử nguồn nến và giá ngay, không đợi tín hiệu; báo tuổi tick/HTTP/lệch giờ. !status giờ có lúc khởi động và Chặn gần nhất, không bị trạng thái chờ mới che mất lý do cũ.
+
+1.7.2: tự dọn file tạm mồ côi khi khởi động/mỗi10phút; !storage xem dung lượng, !clean dọn ngay. Giữ file đang dùng, data/ và .env.
+Setup tự động mới M15/M30/H4 tag @All; H1/scalp và hỏi thủ công không tag.
+!research BTC M15 / !research ETH H4 xem đúng bộ đang cấu hình. 0/288 bộ đạt; thuật toán/TP-SL chưa đổi.
+127 kiểm tra qua bằng API giả lập; chưa cập nhật host hoặc gửi Zalo thật.

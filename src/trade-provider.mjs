@@ -38,6 +38,7 @@ export function createTradeProvider({mode='demo',exnessFetcher,quoteTransport='p
  async function research(asset='BTC',frame='SCALP',live=true){
   const session=sessionAt(market.clock()),idx=['asia','europe','overlap','us_late','quiet'].indexOf(session.id),profile=lab.profiles.find(p=>p.asset===asset&&p.frame===frame&&p.session===idx);
   const out={catalog:lab.catalog,algorithms:lab.algorithms,candidates:lab.candidates,finalists:lab.finalists,accepted:lab.accepted,asset,frame,session:session.name+' · '+session.hours+' VN',profile,active_new:false};
+  if(FRAMES[frame]&&study.profiles[asset]?.[frame])out.active={...study.profiles[asset][frame],period:study.periods[['H1','H4'].includes(frame)?'H1_H4':'M15_M30'],session_specific:false,notifications:mode==='demo'&&['BTC','ETH'].includes(asset)};
   if(live&&profile&&['BTC','ETH'].includes(asset)&&frame==='SCALP'){try{const bars=await market.candles(asset,'SCALP'),[key,v]=profile.algorithm.split(':'),signal=algorithmSeries(bars,asset,key,Number(v)).at(-1);out.rule=ALGORITHMS[key];out.current={side:signal.side,known:signal.known,checks:signal.checks};}catch{out.live_reason='Chưa lấy được nến cho kiểm tra nghiên cứu.'}}
   return out;
  }

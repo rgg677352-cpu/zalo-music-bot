@@ -1,3 +1,11 @@
+## 1.7.2 — 2026-10-25
+
+- Sửa thư mục giải nén yt-dlp bị bỏ lại khi hết thời gian/dừng ép: tách thư mục theo tác vụ, xóa ở finally sau cả lần thử TLS; dừng cả nhóm tiến trình con. Tự quét thư mục tạm mồ côi khi khởi động và mỗi 10 phút, có lease/PID và bảo vệ file đang dùng; không theo symlink hoặc xóa data/.env.
+- Thêm !storage / !clean không cần setup và npm run storage / npm run clean. Báo riêng file tạm, thư viện, công cụ, dữ liệu, cache và RAM Node. Chưa đo trực tiếp 600 MB của host, không tự xóa thư viện/cache cài đặt dùng chung.
+- Setup tự động mới M15/M30/H4 dùng mention @All thật của Zalo; H1/scalp, hỏi thủ công và trạng thái không tag. Giữ đăng ký, chống trùng qua restart, kiểm tra hạn và nguồn giá.
+- !research BTC M15 / !research ETH H4 báo đúng profile khung lớn đang cấu hình và kết quả sau phí/tăng phí. 0/288 bộ đạt, chưa kiểm chứng riêng từng phiên hoặc khớp lệnh tài khoản Exness; không bật thuật toán/TP-SL mới chưa đạt.
+- 127 kiểm tra tự động qua, gồm an toàn dọn file và luồng phát mention qua API giả lập. Chưa gửi tin Zalo thật hoặc cập nhật host Botkeep.
+
 ## 1.7.1 — 2026-10-25
 
 - Trích lời60video (~60.49phút) bằng Whisper và đối chiếu các điểm trọng tâm. Bổ sung công cụ quản lý rủi ro sau khi đọc4khóa Forex/Price Action/Quản lý vốn/Tâm lý: !risk tính ngân sách và khối lượng cơ sở sau chi phí đã nhập; !rr tính R:R sau chi phí và tỷ lệ hòa vốn toán học. Không tự đoán lot, contract size, phí hoặc vốn tài khoản.

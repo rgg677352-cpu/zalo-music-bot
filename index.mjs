@@ -10,6 +10,9 @@ import { createTrending } from './src/trends.mjs';
 import { checkTools } from './src/music.mjs';
 import { diagnosticMessage } from './src/process.mjs';
 import { BOT_VERSION } from './src/version.mjs';
+import { storage, sizeLabel } from './src/storage.mjs';
+import { createMaintenance } from './src/maintenance.mjs';
+import { stopMediaProcesses } from './src/process.mjs';
 
 const dataDir = fileURLToPath(new URL('./data/', import.meta.url));
 const sessionPath = `${dataDir}session.json`;
@@ -58,6 +61,10 @@ async function login() {
 }
 
 try {
+  try {
+    const swept = await storage.start();
+    if (swept.removed) console.log(`Đã dọn file tạm cũ: ${swept.removed} thư mục, ${sizeLabel(swept.bytes)}.`);
+  } catch { console.warn('Chưa dọn được file tạm lúc khởi động; bộ dọn sẽ thử lại sau. !storage để kiểm tra.'); }
   console.log(`Zalo Music Bot ${BOT_VERSION} — mọi nhóm dùng ngay, không cần setup.`);
   const api = await login();
   const control = createControl(api, { statePath: `${dataDir}control.json`, prefix, maxDuration, autoStart: false });
@@ -69,7 +76,7 @@ try {
   };
   const handler = createHandler(api, {
     prefix, maxDuration,
-  }, undefined, { control, trading, trending: randomMusic });
+  }, undefined, { control, trading, maintenance: createMaintenance(api, { prefix }), trending: randomMusic });
   // Lưu cookie được làm mới sau lần đăng nhập này.
   const credentials = JSON.parse(readFileSync(sessionPath, 'utf8'));
   credentials.cookie = api.getCookie().toJSON().cookies;
@@ -83,6 +90,8 @@ try {
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
     control.stop();
     trading.stop();
+    storage.stop();
+    stopMediaProcesses();
     api.listener.stop();
     process.exit(0);
   });
@@ -93,6 +102,7 @@ try {
     console.error(`Dùng ${prefix}kiemtra trong nhóm để thử lại.`);
   });
 } catch (error) {
+  storage.stop();
   console.error('Không khởi động/đăng nhập được:', error.code || error.name || 'Error');
   if (['CONTROL_STATE_INVALID', 'TRADING_STATE_INVALID'].includes(error.code)) console.error(error.message);
   console.error('Kiểm tra mạng, dung lượng và quyền ghi data. Nếu data/control.json lỗi, giữ bản sao và sửa file. Chỉ xóa data/session.json khi xác định phiên đăng nhập lỗi.');

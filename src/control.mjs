@@ -41,6 +41,8 @@ Mỗi lượt chỉ gửi một câu, lần lượt từ đầu đến cuối r�
 Dùng một dấu | để tách các câu; mỗi câu không chứa dấu |. Tối đa 50 câu, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự. Nhập ID đầy đủ, không dùng số thứ tự trong danh sách. Bot phải có quyền nhắn ở nhóm đích.
 
 Quản lý
+!storage — dung lượng file tạm/thư viện/cache; RAM hiện riêng.
+!clean — dọn file tạm mồ côi, giữ phiên đăng nhập và cấu hình.
 ?lich — xem lịch đang có; ?lich L1 — chi tiết.
 ?dung L1 — dừng một lịch; ?dung all — dừng tất cả.
 ?tieptuc L1 — chạy lại sau 10 phút (với lịch PR).

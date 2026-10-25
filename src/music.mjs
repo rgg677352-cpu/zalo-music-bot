@@ -1,12 +1,12 @@
-import { mkdtemp, readdir, stat, rm, mkdir } from 'node:fs/promises';
+import { readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ffmpeg from 'ffmpeg-static';
 import { run } from './process.mjs';
+import { storage } from './storage.mjs';
+export { tempRoot, runtimeTemp } from './storage.mjs';
 
 export const downloader = fileURLToPath(new URL('../bin/yt-dlp', import.meta.url));
-export const tempRoot = fileURLToPath(new URL('../tmp/', import.meta.url));
-export const runtimeTemp = join(tempRoot, 'native');
 const common = ['--ignore-config', '--no-cache-dir', '--no-playlist', '--playlist-items', '1', '--no-warnings',
   '--no-progress', '--no-colors', '--socket-timeout', '15', '--retries', '2', '--extractor-retries', '1'];
 const maxFileSize = 30 * 1024 * 1024;
@@ -43,16 +43,19 @@ export function pickTrack(result, maxDuration) {
 
 export async function runDownloader(args, options = {}, execute = run) {
   // PyInstaller cần thư mục có thể chạy file; không phụ thuộc /tmp của container.
-  await mkdir(runtimeTemp, { recursive: true, mode: 0o700 });
-  const settings = { ...options, env: { ...options.env, TMPDIR: runtimeTemp } };
+  const job = await storage.createJob('native');
+  const settings = { ...options, env: { ...options.env, TMPDIR: job.directory } };
   try {
-    return await execute(downloader, [...common, ...args], settings);
-  } catch (error) {
-    // Một số host dùng CA hệ thống/proxy; chỉ đổi kho CA khi gặp đúng lỗi TLS.
-    // Không bao giờ tắt kiểm tra chứng chỉ HTTPS.
-    if (error.reason !== 'TLS') throw error;
-    console.log(`[${options.stage || 'runtime'}] Đang thử lại với kho chứng chỉ hệ thống.`);
-    return execute(downloader, ['--compat-options', 'no-certifi', ...common, ...args], settings);
+    try {
+      return await execute(downloader, [...common, ...args], settings);
+    } catch (error) {
+      // Chỉ đổi kho CA khi đúng lỗi TLS, vẫn xác minh HTTPS.
+      if (error.reason !== 'TLS') throw error;
+      console.log(`[${options.stage || 'runtime'}] Đang thử lại với kho chứng chỉ hệ thống.`);
+      return await execute(downloader, ['--compat-options', 'no-certifi', ...common, ...args], settings);
+    }
+  } finally {
+    try { await job.cleanup(); } catch { console.warn('Chưa xóa được file giải nén tạm; bộ dọn tự động sẽ thử lại.'); }
   }
 }
 
@@ -70,8 +73,8 @@ export async function checkTools() {
 
 export async function prepareMusic(input, maxDuration = 600) {
   const track = await inspectTrack(input, maxDuration);
-  await mkdir(tempRoot, { recursive: true });
-  const directory = await mkdtemp(join(tempRoot, 'track-'));
+  const job = await storage.createJob('track');
+  const directory = job.directory;
   try {
     await runDownloader(['--format', 'bestaudio/best', '--max-filesize', '30M',
       '--match-filter', `duration <= ${maxDuration}`, '--ffmpeg-location', ffmpeg,
@@ -90,10 +93,10 @@ export async function prepareMusic(input, maxDuration = 600) {
       thumbnail: track.thumbnail || track.thumbnails?.at(-1)?.url || null,
       url: track.webpage_url,
       duration: track.duration,
-      cleanup: () => rm(directory, { recursive: true, force: true }),
+      cleanup: () => job.cleanup(),
     };
   } catch (error) {
-    await rm(directory, { recursive: true, force: true });
+    try { await job.cleanup(); } catch { console.warn('Chưa xóa được nhạc tạm; bộ dọn tự động sẽ thử lại.'); }
     throw error;
   }
 }

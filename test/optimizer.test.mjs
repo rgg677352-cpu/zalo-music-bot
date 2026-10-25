@@ -22,3 +22,17 @@ import{mkdtempSync,rmSync}from'node:fs';import{tmpdir}from'node:os';import{join}
 test('multi-asset waiting reply stays compact but does not hide a quote failure',async t=>{
  const dir=mkdtempSync(join(tmpdir(),'optimizer-comms-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));const replies=[],bot=createTrading({sendMessage:async text=>replies.push(text)},{statePath:join(dir,'s.json'),provider:{snapshot:async()=>({status:'stale',reason:'Giá Exness chưa mới · HTTP 503'})}});t.after(()=>bot.stop());await bot.handle({type:ThreadType.Group,threadId:'100',data:{content:'!scalp',uidFrom:'x',msgId:'1'}});assert.match(replies[0],/BTC\/ETH · SCALP/);assert.match(replies[0],/HTTP 503/);assert.doesNotMatch(replies[0],/SCALP\/SCALP/);
 });
+
+test('HTF research reports the profile actually used by notifications, not the separate experiment winner',async()=>{
+ const study=JSON.parse(fs.readFileSync(new URL('../assets/htf-study.json',import.meta.url))),provider=createTradeProvider({now:()=>1792846800,fetcher:()=>assert.fail('HTF research reads frozen results, not prices')});
+ for(const asset of ['BTC','ETH'])for(const frame of ['M15','M30','H1','H4']){
+  const d=await provider.research(asset,frame),p=study.profiles[asset][frame];
+  assert.equal(d.active.rule,p.rule);assert.deepEqual(d.active.test,p.test);assert.deepEqual(d.active.stress,p.stress);assert.equal(d.active.session_specific,false);assert.equal(d.active.notifications,true);assert.equal(d.active.accepted,false);assert.deepEqual(d.active.period,study.periods[['H1','H4'].includes(frame)?'H1_H4':'M15_M30']);
+ }
+ const qualified=createTradeProvider({mode:'qualified',fetcher:()=>assert.fail('no network')});assert.equal((await qualified.research('BTC','M15')).active.notifications,false);
+});
+test('research command exposes negative results for current demo without claiming that it is an unused strategy',async t=>{
+ const dir=mkdtempSync(join(tmpdir(),'active-quality-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));const sent=[],provider=createTradeProvider({fetcher:()=>assert.fail('no prices needed')}),bot=createTrading({sendMessage:async text=>sent.push(text)},{statePath:join(dir,'state.json'),provider});t.after(()=>bot.stop());
+ await bot.handle({type:ThreadType.Group,threadId:'100',data:{content:'!research BTC M15',uidFrom:'x',msgId:'1'}});
+ assert.match(sent[0],/BỘ HIỆN TẠI/);assert.match(sent[0],/Donchian55/);assert.match(sent[0],/27 lệnh · -5.19R/);assert.match(sent[0],/tăng phí -7.36R/);assert.match(sent[0],/Đang dùng để phát DEMO/);assert.match(sent[0],/Chưa kiểm chứng riêng từng phiên/);assert.doesNotMatch(sent[0],/chưa bật gửi setup từ bộ này/);
+});

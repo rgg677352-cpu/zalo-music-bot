@@ -37,6 +37,7 @@ export function createHandler(api, config, prepare = prepareMusic, options = {})
     const text = event.data.content.trim();
     const activePrefix = commandPrefix(text, config.prefix);
     if (!activePrefix) return;
+    if (options.maintenance && await options.maintenance.handle(event)) return;
     if (options.trading && await options.trading.handle(event)) return;
     if (options.control) {
       if (await options.control.handle(event)) return;

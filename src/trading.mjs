@@ -19,6 +19,10 @@ export function formatSetup(s){
  lines.push(s.rule+(session?' · '+session+' VN':''),`DEMO${s.accepted?'':' · CHƯA ĐẠT KIỂM CHỨNG'}`,`${s.source}${s.candle_source?' · nến '+s.candle_source+' tham chiếu':''}`);
  return lines.join('\n');
 }
+export function automaticSetupMessage(s) {
+ const msg=formatSetup(s);
+ return ['M15','M30','H4'].includes(s.frame)?{msg:'@All\n'+msg,mentions:[{pos:0,len:4,uid:'-1'}]}:msg;
+}
 export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,pollMs=30000,scalpPollMs=10000,requestTimeout=15000,autoStart=false}){
  if(!provider?.snapshot)throw Error('Trading provider required');
  let state={version:1,groups:{}},persistenceFailed=false;
@@ -121,6 +125,10 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
     const a=args[0]?alias(args[0]):'BTC',f=args[1]?frame(args[1]):'SCALP';if(!a||!f||args.length>2){await say('Dùng !indicators hoặc !research BTC SCALP / !research ETH H1.',id);return true}
     const d=await deadline(()=>provider.research(a,f,name==='RESEARCH'),requestTimeout);
     if(name==='INDICATORS'){await say(`Danh mục tham khảo: TA-Lib ${d.catalog.talib_installed_functions} hàm; Pandas TA Classic ${d.catalog.pandas_ta_unique} mục. Có phần trùng và hàm toán, không cộng thành chỉ báo độc lập.\nThử mới: ${d.algorithms.length} thuật toán · ${d.candidates.toLocaleString('en-US')} cấu hình theo tài sản/phiên/TP-SL.\n${d.accepted} bộ mới đủ tiêu chuẩn bật. !research BTC hoặc !research ETH H1 xem chi tiết.`,id);return true}
+    if(d.active){
+     const p=d.active,lines=[`${a} · ${f} · BỘ HIỆN TẠI`,`${p.rule} · thoát ${p.exit}`,`Mẫu: ${p.period.join(' → ')}`,`Test: ${p.test.n} lệnh · ${p.test.net.toFixed(2)}R · tăng phí ${p.stress.net.toFixed(2)}R`,`PF: ${p.test.pf.toFixed(2)}`,p.reason,'Chưa kiểm chứng riêng từng phiên hoặc khớp lệnh tài khoản Exness.',p.notifications?'Đang dùng để phát DEMO · CHƯA ĐẠT KIỂM CHỨNG.':'Chưa phát setup từ bộ này.'];
+     await say(lines.filter(Boolean).join('\n'),id);return true;
+    }
     const p=d.profile,base=p?.tick?.test?.base||p?.test,stress=p?.tick?.test?.stress||p?.stress;
     const lines=[`${a} · ${f} · NGHIÊN CỨU`,d.session,p?'Bộ thử: '+(d.rule||p.algorithm):'Chưa có bộ cho mục này.'];
     if(base)lines.push(`Test: ${base.n} lệnh · ${base.net.toFixed(2)}R · tăng phí ${stress.net.toFixed(2)}R`);
@@ -170,7 +178,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
      if(token!==generation||persistenceFailed||paused(g)||!g.enabled.includes(key)||(g.delivered[key]||0)>=s.candle||!valid(s,a,f))return;
      // Reserve before sending: an ambiguous Zalo timeout must not resend the same candle.
      g.delivered[key]=s.candle;save();deliveries.set(id+':'+key,{status:'uncertain',at:now()/1000});
-     try{await say(formatSetup(s),id);deliveries.set(id+':'+key,{status:'sent',at:now()/1000});console.log(`[trade] ${key}: Zalo đã xác nhận thông báo setup.`)}
+     try{await say(automaticSetupMessage(s),id);deliveries.set(id+':'+key,{status:'sent',at:now()/1000});console.log(`[trade] ${key}: Zalo đã xác nhận thông báo setup.`)}
      catch{console.warn(`[trade] ${key}: chưa được Zalo xác nhận; !status xem chi tiết.`)}
     });
    });
