@@ -1,3 +1,11 @@
+## 1.7.1 — 2026-10-25
+
+- Trích lời60video (~60.49phút) bằng Whisper và đối chiếu các điểm trọng tâm. Bổ sung công cụ quản lý rủi ro sau khi đọc4khóa Forex/Price Action/Quản lý vốn/Tâm lý: !risk tính ngân sách và khối lượng cơ sở sau chi phí đã nhập; !rr tính R:R sau chi phí và tỷ lệ hòa vốn toán học. Không tự đoán lot, contract size, phí hoặc vốn tài khoản.
+- Setup có thêm ngữ cảnh pivot đã xác nhận từ nến đóng: báo cản tham chiếu trước TP hoặc SL nằm trước swing. Không vẽ nhầm đó là cấu trúc từ feed tài khoản Exness, không tự sửa SL/TP hay thêm bộ lọc chưa kiểm chứng. Khung lớn ghi rõ phiên hiện tại.
+- !pause 15m / !resume tạm nghỉ báo trade theo nhóm, giữ đăng ký và thời hạn qua restart. Các nhóm khác vẫn hoạt động; không tiêu thụ tín hiệu lúc nghỉ, không gửi bù setup hết hạn. Không tự suy đoán lệnh đã khớp hoặc P&L của người dùng.
+- Replay so sánh chốt50% tại1R, hòa vốn có chi phí và hai cách trailing với baseline, riêng từng tài sản/phiên trên tick có Bid/Ask. Đây là phép thử mô tả trên mẫu cũ; kết quả âm sau phí, không bật exit mới. Chi tiết assets/course-review.md và assets/course-exits.json.
+- Không cập nhật host Botkeep hay gửi tin Zalo thật từ môi trường nghiên cứu.
+
 ## 1.7.0 — 2026-10-24
 
 - Sàng lọc5.520 cấu hình từ16 thuật toán kết hợp chỉ báo/regime,2biến thể riêng tài sản,5phiên và6gói TP/SL scalp.70 lựa chọn đóng băng trước test;10 scalp finalist chạy lại tick Exness, stress và delay15. Khung nhỏ giữ1tháng, H1/H4 khoảng9tháng.0bộ mới đủ điều kiện bật tự động;1bộH1 chỉ qua số học trong mẫu, chưa forward độc lập.

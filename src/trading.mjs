@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
 import { ThreadType } from 'zca-js';
 import { commandPrefix, createDeduper, deadline } from './runtime.mjs';
 import { BOT_VERSION } from './version.mjs';
+import { riskCommand } from './risk-tools.mjs';
 const ASSETS=['BTC','ETH','XAUUSD'], FRAMES=['M15','M30','H1','H4'], SCALP_ASSETS=['BTC','ETH'];
 const alias=x=>({BTC:'BTC',BITCOIN:'BTC',ETH:'ETH',ETHEREUM:'ETH',XAUU:'XAUUSD',XAU:'XAUUSD',XAUUSD:'XAUUSD',GOLD:'XAUUSD'})[String(x).toUpperCase()];
 const frame=x=>({M15:'M15','15M':'M15',M30:'M30','30M':'M30',H1:'H1','1H':'H1',H4:'H4','4H':'H4',SCALP:'SCALP'})[String(x).toUpperCase()];
@@ -12,6 +13,8 @@ export function formatSetup(s){
  const scalp=s.frame==='SCALP',tf=scalp?'SCALP M1/M5':s.frame,hold=s.hold>=3600?Number((s.hold/3600).toFixed(1))+'h':Math.round(s.hold/60)+' phút';
  const lines=[`${s.instrument||s.asset} · ${s.side===1?'BUY':'SELL'} · ${tf}`,`Entry: ${price(s.entry)}`,`TP: ${price(s.tp)}`,`SL: ${price(s.sl)}`,`R:R 1:${Number(s.rr.toFixed(2))} · giữ ≤${hold}`,`MARKET · hạn ${vnTime(s.expires)} VN`];
  if(Number.isFinite(s.quote_bid)&&Number.isFinite(s.quote_ask))lines.push(`Giá ${vnTime(s.quote_time)}: Bid ${price(s.quote_bid)} / Ask ${price(s.quote_ask)}`);
+ if(s.context?.tp_beyond_obstacle)lines.push(`Cản tham chiếu: ${price(s.context.opposing.price)} trước TP · ${s.context.headroom_r.toFixed(2)}R`);
+ if(s.context?.sl_inside_structure)lines.push('SL nằm trước swing tham chiếu.');
  const session={asia:'Á 07–14h',europe:'Âu 14–19h',overlap:'Âu–Mỹ 19–23h',us_late:'Mỹ 23–04h',quiet:'Rạng sáng 04–07h'}[s.session];
  lines.push(s.rule+(session?' · '+session+' VN':''),`DEMO${s.accepted?'':' · CHƯA ĐẠT KIỂM CHỨNG'}`,`${s.source}${s.candle_source?' · nến '+s.candle_source+' tham chiếu':''}`);
  return lines.join('\n');
@@ -23,7 +26,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   try{
    const saved=JSON.parse(readFileSync(statePath,'utf8'));
    if(saved?.version!==1||!saved.groups||Array.isArray(saved.groups)||typeof saved.groups!=='object')throw Error();
-   for(const[id,g]of Object.entries(saved.groups))if(!/^\d+$/.test(id)||!Array.isArray(g.enabled)||!g.delivered||typeof g.delivered!=='object'||Array.isArray(g.delivered)||g.enabled.some(k=>!validKey(k))||Object.entries(g.delivered).some(([k,v])=>!validKey(k)||!Number.isSafeInteger(v)||v<0))throw Error();
+   for(const[id,g]of Object.entries(saved.groups))if(!/^\d+$/.test(id)||!Array.isArray(g.enabled)||!g.delivered||typeof g.delivered!=='object'||Array.isArray(g.delivered)||g.pausedUntil!==undefined&&(!Number.isSafeInteger(g.pausedUntil)||g.pausedUntil<0)||g.enabled.some(k=>!validKey(k))||Object.entries(g.delivered).some(([k,v])=>!validKey(k)||!Number.isSafeInteger(v)||v<0))throw Error();
    state=saved;
   }catch{throw Object.assign(new Error('Không đọc được trading-subscriptions.json; giữ bản sao để kiểm tra.'),{code:'TRADING_STATE_INVALID'})}
  }
@@ -32,6 +35,8 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  const duplicate=createDeduper(),cooldown=new Map(),busy=new Set();let timers=[],generation=0,connected=false;
  const say=(msg,id)=>deadline(()=>api.sendMessage(msg,id,ThreadType.Group),requestTimeout);
  const group=id=>state.groups[id]||=({enabled:[],delivered:{}});
+ const paused=g=>Number.isFinite(g?.pausedUntil)&&g.pausedUntil>now()/1000;
+ const pauseText=g=>'Đang nghỉ báo trade tới '+vnTime(g.pausedUntil)+' VN. !resume để tiếp tục sớm.';
  function valid(s,a,f){const t=now()/1000;return s?.status==='setup'&&s.asset===a&&s.frame===f&&(s.accepted===true||(s.accepted===false&&s.experimental===true&&s.demo===true))&&[1,-1].includes(s.side)&&typeof s.rule==='string'&&typeof s.source==='string'&&['entry','low','high','sl','tp','risk','rr','hold','candle','expires','created','quote_time'].every(k=>Number.isFinite(s[k]))&&s.candle>0&&s.quote_time<=t+3&&t-s.quote_time<=(f==='SCALP'?5:10)&&s.expires>t&&s.created<=t+3&&t-s.created<=15&&s.entry>0&&s.low<=s.entry&&s.high>=s.entry&&s.risk>0&&s.rr>0&&s.hold>0&&s.sl>0&&s.tp>0&&(s.entry-s.sl)*s.side>0&&(s.tp-s.entry)*s.side>0&&Math.abs(Math.abs(s.entry-s.sl)-s.risk)<s.risk*.00001&&Math.abs(Math.abs(s.tp-s.entry)/s.risk-s.rr)<.00001&&(f!=='SCALP'||s.hold<=180&&s.candle%60===0&&s.candle+62<=t&&s.expires<=s.candle+107)}
  function reasonFor(s,a,f){
   if(s?.status!=='setup')return s?.reason||'Đang chờ tín hiệu mới.';
@@ -56,7 +61,8 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  }
  function statusMessage(id){
   const g=state.groups[id],keys=g?.enabled||[],t=now()/1000;
-  const lines=[`Bot ${BOT_VERSION} · BÁO TRADE ${persistenceFailed?'DỪNG DO LỖI LƯU FILE':connected&&timers.length?'ĐANG CHẠY':'ĐANG DỪNG / MẤT KẾT NỐI'}`,`Bộ báo khởi động ${vnTime(bootTime)} VN.`, `Scalp ${Math.round(scalpPollMs/1000)}s · M15–H4 ${Math.round(pollMs/1000)}s · giá setup Exness công khai.`];
+  const lines=[`Bot ${BOT_VERSION} · BÁO TRADE ${persistenceFailed?'DỪNG DO LỖI LƯU FILE':paused(g)?'ĐANG NGHỈ':connected&&timers.length?'ĐANG CHẠY':'ĐANG DỪNG / MẤT KẾT NỐI'}`,`Bộ báo khởi động ${vnTime(bootTime)} VN.`, `Scalp ${Math.round(scalpPollMs/1000)}s · M15–H4 ${Math.round(pollMs/1000)}s · giá setup Exness công khai.`];
+  if(paused(g))lines.push(pauseText(g));
   if(!keys.length)lines.push('Nhóm này chưa bật báo. Dùng !scalp BTC hoặc !on.');
   for(const key of keys){const h=health.get(key),send=deliveries.get(id+':'+key),issue=lastIssues.get(key),seen=observedSignals.get(key),age=h?Math.max(0,Math.floor(t-h.checked)):null,checks=h?.checks?.filter(r=>r[3]===true).length;
    lines.push(`\n${key.replace(':',' ')} · ${h?'quét '+age+'s trước':'chưa quét'}${busy.has(key.endsWith(':SCALP'))?' · vòng quét đang chạy':''}`);
@@ -74,6 +80,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   return snapshots.map((result,i)=>({a,f:frames[i],s:result.status==='fulfilled'?result.value:null}));
  }
  async function sendCurrent(g,id,replies,header=''){
+  if(paused(g)){await say(pauseText(g),id);return}
   const texts=[],included=[];
   for(const {a,f,s}of replies){const key=a+':'+f;
    if(!g.enabled.includes(key)){texts.push(`${a} ${f}: đã tắt báo.`);continue}
@@ -102,12 +109,13 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   if(event.type!==ThreadType.Group||typeof event.data?.content!=='string')return false;
   const text=event.data.content.trim(),p=commandPrefix(text,prefix);if(!p)return false;
   const[raw,...args]=text.slice(p.length).split(/\s+/),name=raw.toUpperCase(),asset=alias(name);
-  if(!asset&&!['ON','OFF','SCALP','STATUS','CHECK','INDICATORS','RESEARCH'].includes(name))return false;
+  if(!asset&&!['ON','OFF','SCALP','STATUS','CHECK','INDICATORS','RESEARCH','RISK','RR','PAUSE','RESUME'].includes(name))return false;
   if(duplicate(event))return true;const id=String(event.threadId);if(!/^\d+$/.test(id))return true;
   const key=id+':'+event.data.uidFrom+':'+text.toUpperCase();
   if((asset||name==='SCALP'||name==='CHECK')&&cooldown.has(key)&&now()-cooldown.get(key)<1500)return true;
   cooldown.set(key,now());if(cooldown.size>2000)cooldown.delete(cooldown.keys().next().value);
   try{
+   if(name==='RISK'||name==='RR'){await say(riskCommand(name,args),id);return true}
    if(name==='INDICATORS'||name==='RESEARCH'){
     if(!provider.research){await say('Bản này chưa có kết quả nghiên cứu.',id);return true}
     const a=args[0]?alias(args[0]):'BTC',f=args[1]?frame(args[1]):'SCALP';if(!a||!f||args.length>2){await say('Dùng !indicators hoặc !research BTC SCALP / !research ETH H1.',id);return true}
@@ -123,6 +131,13 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
    if(name==='CHECK'){const selected=args[0]?alias(args[0]):null;if(args.length>1||selected&&!SCALP_ASSETS.includes(selected)||args[0]&&!selected){await say('Dùng !check BTC hoặc !check ETH.',id);return true}if(!provider.check){await say('Bộ nguồn chưa hỗ trợ kiểm tra trực tiếp.',id);return true}const results=await Promise.allSettled((selected?[selected]:SCALP_ASSETS).map(a=>deadline(()=>provider.check(a),requestTimeout)));await say(results.map(r=>r.status==='fulfilled'?formatCheck(r.value):'Kiểm tra nguồn vượt thời gian chờ; chưa xác nhận được giá.').join('\n\n'),id);return true}
    if(name==='STATUS'){await say(statusMessage(id),id);return true}
    if(persistenceFailed)throw Error('storage');
+   if(name==='PAUSE'||name==='RESUME'){
+    const m=/^(\d+)(m|h)$/i.exec(args[0]||''),seconds=m?Number(m[1])*(m[2].toLowerCase()==='h'?3600:60):0;
+    if(name==='PAUSE'&&(args.length!==1||!Number.isSafeInteger(seconds)||seconds<60||seconds>86400)||name==='RESUME'&&args.length){await say('Dùng !pause 15m (1 phút–24h) hoặc !resume.',id);return true}
+    const g=group(id);g.pausedUntil=name==='PAUSE'?Math.ceil(now()/1000+seconds):0;save();
+    await say(name==='PAUSE'?pauseText(g)+' Đăng ký được giữ.':'Đã tiếp tục báo trade theo đăng ký cũ; chỉ nhận tín hiệu còn hiệu lực.',id);return true;
+   }
+   if((asset||name==='ON'||name==='SCALP')&&paused(state.groups[id])){await say(pauseText(state.groups[id]),id);return true}
    if(name==='SCALP'||name==='OFF'&&args[0]?.toUpperCase()==='SCALP'){
     const off=name==='OFF',words=off?args.slice(1):args,a=words[0]?alias(words[0]):null;
     if(words.length>1||words[0]&&!SCALP_ASSETS.includes(a)){await say('Scalp hỗ trợ BTC/ETH. '+usage,id);return true}
@@ -145,14 +160,14 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  async function sweep(scalp){
   if(busy.has(scalp)||!connected||persistenceFailed)return;busy.add(scalp);const token=generation;
   try{
-   const keys=[...new Set(Object.values(state.groups).flatMap(g=>g.enabled))].filter(k=>k.endsWith(':SCALP')===scalp);
+   const keys=[...new Set(Object.values(state.groups).flatMap(g=>paused(g)?[]:g.enabled))].filter(k=>k.endsWith(':SCALP')===scalp);
    // BTC and ETH progress independently; a slow feed must not consume the other scalp's entry window.
    await parallel(keys,2,async key=>{
     if(token!==generation||persistenceFailed)return;const[a,f]=key.split(':');let s;
     try{s=await snapshot(a,f,token)}catch{return}
     if(token!==generation||persistenceFailed||!valid(s,a,f))return;
     await parallel(Object.entries(state.groups),4,async([id,g])=>{
-     if(token!==generation||persistenceFailed||!g.enabled.includes(key)||(g.delivered[key]||0)>=s.candle||!valid(s,a,f))return;
+     if(token!==generation||persistenceFailed||paused(g)||!g.enabled.includes(key)||(g.delivered[key]||0)>=s.candle||!valid(s,a,f))return;
      // Reserve before sending: an ambiguous Zalo timeout must not resend the same candle.
      g.delivered[key]=s.candle;save();deliveries.set(id+':'+key,{status:'uncertain',at:now()/1000});
      try{await say(formatSetup(s),id);deliveries.set(id+':'+key,{status:'sent',at:now()/1000});console.log(`[trade] ${key}: Zalo đã xác nhận thông báo setup.`)}

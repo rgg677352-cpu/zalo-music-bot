@@ -18,6 +18,9 @@ Bot có mặt trong nhóm là mọi thành viên dùng được lệnh, không c
 Thông báo setup · chỉ demo
 !indicators — danh mục và số cấu hình đã kiểm tra.
 !research BTC / !research ETH H1 — bộ thử theo phiên, chưa bật nếu không đạt.
+!risk 1000 0.5 100 2 — ngân sách rủi ro/khối lượng, không tự đoán lot.
+!rr 80000 79900 80150 2 — R:R và tỷ lệ hòa vốn sau phí đã nhập.
+!pause 15m / !resume — nghỉ báo trade trong nhóm, giữ đăng ký qua restart.
 !status — bản bot, giờ khởi động, lần quét và lần chặn setup gần nhất.
 !check BTC / !check ETH — thử nguồn nến và giá ngay, không cần đợi tín hiệu.
 !on — bật BTC/ETH/XAUUSD trong nhóm hiện tại, M15/M30/H1/H4.

@@ -1,0 +1,623 @@
+{
+  "date": "2026-10-25",
+  "courses": 4,
+  "lessons": 60,
+  "audio_minutes": 60.49,
+  "method": "Public lesson stream -> mono16kHz PCM audio -> faster-whisper1.2.1 small CPU/int8; av16.1.0",
+  "model_revision": "536b0662742c02347bc0e980a01041f333bce120",
+  "language": "vi",
+  "asr_may_contain_errors": true,
+  "all_words_manually_verified": false,
+  "video_or_full_transcript_redistributed": false,
+  "ASR_added_to_bot_runtime": false,
+  "visual_spot_checks": [
+    "forex-101-01",
+    "price-action-101-01",
+    "quan-ly-von-101-02-risk-per-trade-quy-tac-1-2",
+    "quan-ly-von-101-06-stop-loss-dat-o-dau-tai-sao",
+    "quan-ly-von-101-07-take-profit-trailing-stop",
+    "trading-psychology-01-tai-sao-90-trader-thua"
+  ],
+  "sources": [
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-01",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 61.397,
+      "audio_sha256": "9a7a92c2d39dcdb20bdebcafc577c8b700f47aa027eb8bd4ee4a0ce5ac4b28fe",
+      "transcript_sha256": "dbf34d75321acea01c7b0761b12bf1948f0ee10fdf26fb3c298104d2a01328c9",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-02",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 55.851,
+      "audio_sha256": "494bb8c66af7b9414ac77a899dce2eb5e62e96db9cf5c83448318111ef878015",
+      "transcript_sha256": "91df0051300caee7e217775be2d7102b83bcba9bbc1d0df1555ff0fc9aec75f7",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-03",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 59.285,
+      "audio_sha256": "1dedc7dfea0ee9e3c79a1d1418d90bf080ca821f4810bfb685bf0733caab42b1",
+      "transcript_sha256": "b9af6815c5096c5950b3bb11cafcd8f4ae19c8e74886b43307421f0679014493",
+      "segments": 21
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-04",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 55.36,
+      "audio_sha256": "3a8d8f99432ddc21364af9726ea0b42174da1ec9212dcfe6215ead2496a41938",
+      "transcript_sha256": "a10abcceabd47b0c7b0cae06d9aff1e832288320431f723bccc1ec062abc2352",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-05",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 57.579,
+      "audio_sha256": "160cc3cd1f7fa6fa4472c75cd22bbca48922f0f76f3793b586fe8c0b224730f4",
+      "transcript_sha256": "c5ea788ca53350b694de826c1cb9aecad321402df76f95913a95ad49c85fcad4",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-06",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 50.155,
+      "audio_sha256": "345d8ef9b88a8971b98a686afce153682b4c1402aab340091cd87dbebbd56e0a",
+      "transcript_sha256": "9d43caa22395084a9b16ae49c8273cad359fcdcc8ba9bc68621c0cbb183ef086",
+      "segments": 11
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-07",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 49.856,
+      "audio_sha256": "818f792a2935ac27df99f765be5f8cb29292d46a0aaf1566e2056584260f0463",
+      "transcript_sha256": "442b78a504ee72836d211ec1d6fbb9fa3fe3918433b1f2b238bc0d92d83670ca",
+      "segments": 16
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-08",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 49.621,
+      "audio_sha256": "69e27fa3c543e36bb44e8270a67acb056bad21d69697367bee71e7a13528161c",
+      "transcript_sha256": "a5869b36f5cc17c904ed0099b5a1b8cc14b39b47ea12623ef327ba173feb0949",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-09",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 60.8,
+      "audio_sha256": "d98e64c2c8fc3fe6e5ee7770976ef7609e059545c58fbea5b6b59b44f76f7fa0",
+      "transcript_sha256": "c0b502fc04b55b443a8be805dc33827716490ae82b6d9913805bc625db12f6db",
+      "segments": 19
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-10",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 54.315,
+      "audio_sha256": "6e5f103811623ee1633deacf54690b39bc279645925625639d49ae3b26b7e558",
+      "transcript_sha256": "2bafa6d1e98ab781aee29888106f5f5f7615dde09177e64842925299c6f7b42c",
+      "segments": 17
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-11",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 56.811,
+      "audio_sha256": "08ee02e4c7563b53633715928f5e2ded3fe7c16f3b19a98d7cfd6083f64518fa",
+      "transcript_sha256": "33e9334ea907fc2b6027815b0727d7aa3fa248966159fa26013783c5bc96bb3d",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-12",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 49.963,
+      "audio_sha256": "a84d6176a3d904e41de3a02c35db94e2a842a0bf2a939c59f2058c93a031e145",
+      "transcript_sha256": "1c76f639b96a36c73c705381d2d3d16f5025fa80bfb984bd835fb2839e903742",
+      "segments": 12
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-13",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 56.384,
+      "audio_sha256": "2f6c2b90b6f59c52d3072ea87d06206530cc89aee36dd3adf552777f6066c831",
+      "transcript_sha256": "ee29a0dddc92770cc1fbf9dfc60b8e30bef4cb157c404fd9b3644708be426577",
+      "segments": 17
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-14",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 52.693,
+      "audio_sha256": "f067ea167b8321c974b952df497cedeb3baff27bca74ccdefef185c0e330eb48",
+      "transcript_sha256": "9131331423b24f61d6eba8caaa36e2bdf269b1b3ec97c79f58c3dab29900ce46",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-15",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 58.347,
+      "audio_sha256": "3f8ced0a851be0f563e92e55d4e38057e39f527df5d5fcfa51bb1618ec97bf14",
+      "transcript_sha256": "3a29a586f7bffe1bb87b76b040b6437ed58658b4ee73e2f6d91376d1e516e4e0",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-16",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 56.683,
+      "audio_sha256": "ad704501409c6dd8b9cf894732b8c25be1b30075adf08e8016b7dac91c114dce",
+      "transcript_sha256": "c23fa688580487a4ab2029377b9e52dc341464fbbda00093026607a9f56bab4b",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-17",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 63.403,
+      "audio_sha256": "377e3c58328631fe6d1fe25880357c8e0b10e14731e470d6cd0d85e3337951b9",
+      "transcript_sha256": "56319c84c0c0d0c57e88a9a8c0100a0c710d6a7c65e5f67a709be1f2a0f2cb00",
+      "segments": 16
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-18",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 59.52,
+      "audio_sha256": "d5865846f909094c9c0514b5c5b2ca6b9a17466ec23ab97eb0e8f1d012ce88bb",
+      "transcript_sha256": "8a80f85748f5312a2053b14c0e2461f3df3cf5f67410bfd6146cedd74154fa6b",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-19",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 62.741,
+      "audio_sha256": "8e3786a37ef34d59fa08daf905516bd83c43f6cd126030f140497ef9b7a612a1",
+      "transcript_sha256": "cc45b1b870b309eb7b26d06e5c1be4b7584974eda4830f8b7ec3abc2b2e79eee",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/forex-101/lessons/forex-101-20",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 67.627,
+      "audio_sha256": "56e3c38fc0fe1a8c362a4486eced63765c5e95d1497505e4f5e9cb483ecd7580",
+      "transcript_sha256": "7a3e7bc87f7dc50a1e0202beb64f0764983edd7adee381753481d20ceec34311",
+      "segments": 16
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-01",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 58.347,
+      "audio_sha256": "91e8ed00e477e3db46514b07a962ed38df2a3dfbb1696212a2c1aef28c687e18",
+      "transcript_sha256": "8c6d50d1ff89e2233d9643edeb8282a4586440c8a5a37610e90f1c2042d80268",
+      "segments": 17
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-02",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 58.219,
+      "audio_sha256": "779e281566d5dfad0d83197502a018fe38e96e8e355fcdbab2e3436037be762d",
+      "transcript_sha256": "7615325fc022c41a5b3cb1b8a184e4cfd695d2c7db1aa6f3daf86599556dc45e",
+      "segments": 16
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-03",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 58.517,
+      "audio_sha256": "bae0f803020380f1febfa417ec2fb3aa35191a604839e0eb2e91f4244fa900ab",
+      "transcript_sha256": "fa5f581a8a9862a6c2e7c186f363e3d78d9797ca575dff9e3e35ae8de3068d08",
+      "segments": 19
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-04",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 46.592,
+      "audio_sha256": "fb07e1dbffec9d2b32c1d8d5003b73aeeb29d1d40e6a8320688ed5648dc6ee37",
+      "transcript_sha256": "34efc3fabe5a316b8b63918087ba6f62d95e053bfde5963bd28c3f144aa796a8",
+      "segments": 13
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-05",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 53.611,
+      "audio_sha256": "93032fdda347bdd1498b13bbda119f8a3f68a9c6f6ac32d6f9370897d9906d56",
+      "transcript_sha256": "268fb7fc6579ac7a4ec0079e4944804be8912de51566bde4e5721cfe101dc8ff",
+      "segments": 16
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-06",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 54.549,
+      "audio_sha256": "ecbefaee2e93a6818235372195a364114f2f016356251969449478970dc21e74",
+      "transcript_sha256": "c5f384761d37f4578f40e245980b05f34ae6b72007a8c9f0916b6564d1a32ca4",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-07",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 51.861,
+      "audio_sha256": "2b85750574358a625ee47a29d9b5119d887daa8ab83ea785ded1b66457a812c8",
+      "transcript_sha256": "b0b732bb38489383ba7f91b884d647529a1b568b565ed3f000a9a943e2ef8d04",
+      "segments": 10
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-08",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 51.584,
+      "audio_sha256": "8e6a24ac6ee1f07f7668e8aa8e5ff973289a2b6116a3a8b771f54d9110208c17",
+      "transcript_sha256": "84149943d84d23471f2527c4e934628ffb07401db11b56d63d4d12de373df26b",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-09",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 56.661,
+      "audio_sha256": "d65e3962443caf06157e7f2c3c030b16c9049e14063c9001846522085d33f83d",
+      "transcript_sha256": "ef56ca63cf386162365edefec7131a2fc9dde4c6804f10d30c03fc61f94dc776",
+      "segments": 17
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-10",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 50.112,
+      "audio_sha256": "9ca6d06a36dab1b013793efff12c35b04e884827f4d96ac4fa1e0f411b702c82",
+      "transcript_sha256": "2f6b25b151583bf89dcacb12fa21e0c54497758a39ef8652918c450e1b2f9e97",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-11",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 52.992,
+      "audio_sha256": "f3a5c95247792186a42e34374c53aca31c20b856eac391eadc93a7ac5a3c301c",
+      "transcript_sha256": "e0c546e483551ebfa9da7a9ef01d54726ff28d656cd27ff566d164efc8b6beaf",
+      "segments": 13
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-12",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 57.493,
+      "audio_sha256": "4bf6be4db2a67f6bf550623f63c59ede7847190ec98f5a7ec0932c06b46cce02",
+      "transcript_sha256": "c30d5b4276e8729d7bab09557536b2abf2abb65d8d4a6c5a02a4565a27c57a4b",
+      "segments": 20
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-13",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 52.523,
+      "audio_sha256": "1c710f589bde4bc7d4bdb9903c275a60fa9f6893ef26457ff5856d338320d672",
+      "transcript_sha256": "14f196f00c6be72cec28bd07dc7ac05c293dca8df49467336980767f3c4514fa",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-14",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 57.323,
+      "audio_sha256": "31c3e044c8c50707df47832aba93a0ecfa351e5be79eb3c2786e0adca488fc6f",
+      "transcript_sha256": "b3d6b87abcdb6f6af156a6361b6625173fcc3c3a153d003183b52468ff2abe72",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-15",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 56.085,
+      "audio_sha256": "b8a96541142c9f0c2c9af110bb85b59b4fff7aa9ef72d55f8ade379ad8570c7d",
+      "transcript_sha256": "487d029b354726103353b79f3845c16a581e0b0ff9b5bb00cf5c235c82ea7f6e",
+      "segments": 19
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-16",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 54.08,
+      "audio_sha256": "36107b56a5de4d2db8b5897c3e2e78c7fe8c3cc582c43530bd2dee9e477cc721",
+      "transcript_sha256": "28bc76407c7319309db6382ec14c0c1ad87a943c34c8716f9882f7b154d31329",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-17",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 54.357,
+      "audio_sha256": "94086b20e8b4b406f2d5db9653f63430fa0fad0ae5fa165d79fc2c2233da19e6",
+      "transcript_sha256": "98f67922eaf91a688ef8e0e7a931afa8a668d9004730feb0824a03fd4964bf34",
+      "segments": 19
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-18",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 53.397,
+      "audio_sha256": "c65f7322915796096f080a622ed193cbc66f4761c6fadcac534595a12b9bbc9f",
+      "transcript_sha256": "f1671ce97dee6d1571ded9f6417c71f9fd811d322fc3db191216988a3c353f60",
+      "segments": 16
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-19",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 60.928,
+      "audio_sha256": "3d33121827f5d7ef90d926444f9e4d537df17df3ff64bffe12507268119c6035",
+      "transcript_sha256": "8c23918cd6656cbcf0128a62393acbcf361e2ec40ffaba8e603811c069b6c5f2",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/price-action-101/lessons/price-action-101-20",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 54.485,
+      "audio_sha256": "9a7eb1a0e0c6ed727d9e02d4a79f64a9a748f13829284d82db9d02b42cb0fa51",
+      "transcript_sha256": "ca72f1155fb6aadd1d8387831a551c18bfed1815758c2804e4032bd5dbfeeeeb",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-01-vi-sao-90-trader-chay-tai-khoan",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 75.029,
+      "audio_sha256": "e06f6f0a9d025e7c3484305dfd93d3e053f598b59615a3f038798c1ef26755b2",
+      "transcript_sha256": "0c69373c4a58562aa679f27085daf315bef88a2876cb288af7e60ce2844ab826",
+      "segments": 23
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-02-risk-per-trade-quy-tac-1-2",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 72.981,
+      "audio_sha256": "598149fcecdc5f0f2b517bb8cbd5996da4e02c6d03bc274b9101578a78979ad3",
+      "transcript_sha256": "5b0d00d5ea589763a4129e4b21ee2e64021663c32e6c548c9c0e1c564d449da7",
+      "segments": 21
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-03-riskreward-ratio",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 75.328,
+      "audio_sha256": "e9f986f166bb082beaa70be312dbdd59d19697b0f4e0dd88d5591eb51b010c83",
+      "transcript_sha256": "1609766c4b59b007914456b787b272553686beaa37ce96869dd5a0d32b9da1cf",
+      "segments": 24
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-04-win-rate-vs-riskreward",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 80.192,
+      "audio_sha256": "5250e6c0ff6c22c205d83f4d02187a6712e079d73915e3e8c23d7dd4c3da77a8",
+      "transcript_sha256": "c8b739bb262cdd07e5d0525e68e1c09be79c11b4c049c030cc17692afe29750b",
+      "segments": 24
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-05-position-sizing-trong-thuc-te",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 76.523,
+      "audio_sha256": "e97b646cadd7b303ba63606eee050262a59040bf88632425c4d0fdbb650374f8",
+      "transcript_sha256": "0cee12999299c37c303c96d1cec81f129c595aeec7a148f15929f023e04e5802",
+      "segments": 27
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-06-stop-loss-dat-o-dau-tai-sao",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 71.616,
+      "audio_sha256": "829692cbd518aed722c3b0d5dfc1485f15d77941122499b29dc1a469de7a2b97",
+      "transcript_sha256": "9e9c9dbe40e6c939705702763c9e0272912d91045fc06fa08774ddf6ae5319c3",
+      "segments": 22
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-07-take-profit-trailing-stop",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 78.72,
+      "audio_sha256": "2b3bb595205851b6557fe479d971c705d4cdd8512e8fef6ccd1789c3cd35212d",
+      "transcript_sha256": "65b303255998aa59c2b8145212fddc5bf3d0942585b494569bf6e298665dbd9c",
+      "segments": 23
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-08-drawdown-hieu-song-sot",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 80.192,
+      "audio_sha256": "264fdc90595bfd462907e6a440b09752e0a5c7ece78ec591cee2c9c2b20705e3",
+      "transcript_sha256": "c55fd51507616e0476ba294d57eabbfa1efc960754a0b6870a75597b8619a57c",
+      "segments": 31
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-09-compound-growth-lai-kep",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 82.56,
+      "audio_sha256": "64253d5c54b80d863f5a56aacecf6360bdc7b229c7375f1f3124cd306f7931f0",
+      "transcript_sha256": "940ba9033140cc6b85611f37abc1c6a8d4592444cde8cdd06797ae3ad6de51d9",
+      "segments": 34
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/quan-ly-von-101/lessons/quan-ly-von-101-10-quy-tac-10-dieu-cua-trader-song-sot",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 77.12,
+      "audio_sha256": "80328ad0cf709abe3414994bc4309e6662b0647099c36bcb54103db5e37760d8",
+      "transcript_sha256": "367325e5a7589e69f605cb809068390c1126c3ee45013a0a73f62f3959ed7710",
+      "segments": 25
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-01-tai-sao-90-trader-thua",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 58.048,
+      "audio_sha256": "5bd0791920d9bc8465cadaeb0ebd949715fcde249e4b6d48fdc731be03d40ef8",
+      "transcript_sha256": "5fae6330e0385cba0dfee66c41a3bfea5fab5023de048b776eae6b7967735cbc",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-02-7-loi-tam-ly-pho-bien",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 55.723,
+      "audio_sha256": "9df192a5cffbc1488faa1c4a83f68aef391499c1dff09dfd4b06ec1cdf130537",
+      "transcript_sha256": "6349d2f8da3da4c31aa87772f08d41c59f92fe8db6c4339ca5f873296c9c60fa",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-03-fomo-va-cach-kiem-soat",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 58.688,
+      "audio_sha256": "b6ac02e15688aad6c7d1feb3f70ea7d0efdb34cf8f66859be0f7c688a21929c3",
+      "transcript_sha256": "64d80221de83ae2073ff2039af5fbe20069293fd78ad32f48ebf81db15a2e520",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-04-revenge-trading-vong-lap-tu-than",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 64.896,
+      "audio_sha256": "908bbdbcc5c5caf56a1013854de43f469beca0d100b888b8e04c5180e6f88dfe",
+      "transcript_sha256": "354b253a28fc0ceda8ce001340f98168fb9e02cb149de4de294b232d0fa64e50",
+      "segments": 17
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-05-overtrading-cach-phong-tranh",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 62.229,
+      "audio_sha256": "8df39ba2721c81452154a0a76c220b4088fa480ba6068b7a222ce45550c9c45e",
+      "transcript_sha256": "a88bc69d1280758720822bdfeba510c6db21022f4e260b27a2e3685ef0e1e10f",
+      "segments": 20
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-06-tam-ly-khi-thang-bay-qua-tu-tin",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 59.477,
+      "audio_sha256": "ef1a9d20db079e6b34826b7d5565a7b174d79c8ef15d85eac138e0959f117cb6",
+      "transcript_sha256": "4e9f88222442cb8f0303545c83955e92f3adbcfdacdced0f88b9b2e96807d365",
+      "segments": 15
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-07-tam-ly-khi-thua-khong-bo-cuoc",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 66.304,
+      "audio_sha256": "3343882c829e6d2d3ca5e530ee4978b88f0b905a50a9525ac30f259450da68b0",
+      "transcript_sha256": "4f65c178ed05e5a1354c8dd6f4476e7a7585655bbc152ad50b926bf9f122a193",
+      "segments": 14
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-08-journaling-tam-ly-ghi-chep-moi-ngay",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 66.24,
+      "audio_sha256": "512e341e6fdf85278aaa6f4aad153a89eb36353915a1ae9a00a033278f1ad5a6",
+      "transcript_sha256": "0bb657085e082118a8c6532ece91efc8f1e13468abf67335a2cdf15fed69b104",
+      "segments": 18
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-09-xay-dung-ky-luat-tu-thoi-quen",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 67.84,
+      "audio_sha256": "78f273e0df6957d1c38d0a827ce851787fc2d9f0588ba4cf622395898e0d88f3",
+      "transcript_sha256": "a2e81111fb63c0e249368766f1ce1527afaf1608532b4a7b8a2e8d5a770bd6a7",
+      "segments": 20
+    },
+    {
+      "url": "https://brokershub.co/vi/courses/trading-psychology/lessons/trading-psychology-10-mindset-trader-thang-dai-han",
+      "http_status": 200,
+      "public_video_sources": 1,
+      "public_caption_track": false,
+      "audio_seconds": 67.712,
+      "audio_sha256": "66b2d6101b47bc8f88ebc8a81d8c6bd84d7d240c85340012a9f4c2a3c148431b",
+      "transcript_sha256": "7040d338fe0185017b1588bdfab6a2441db474f8c964dded382fa3a04e94e005",
+      "segments": 18
+    }
+  ]
+}

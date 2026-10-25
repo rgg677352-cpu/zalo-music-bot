@@ -1,5 +1,6 @@
 import { selectedFastHistory } from './fast-engine.mjs';
 import { quoteProblem } from './exness-quotes.mjs';
+import { priceActionContext } from './risk-tools.mjs';
 export function scalpEvent(bars, asset, study) {
   return selectedFastHistory({ provider: 'Bitget', [asset.toLowerCase() + '1']: bars }, asset, study, { allDay: true }).at(-1);
 }
@@ -38,6 +39,6 @@ export function createScalpClient({market, study, referenceQuote}) {
     const anchor=market.clock()-initialAnchor.t>4?await market.quote(asset):initialAnchor;
     const now=market.clock();
     if(!reference || reference.source!=='Exness công khai' || now-reference.t>5 || reference.t>now+3 || Math.abs(reference.t-anchor.t)>5) return result({status:'stale',asset,frame:'SCALP',reason:'Chưa có giá Exness mới; tạm dừng setup, không dùng giá Bitget làm Entry.'+(quoteFailure?' '+quoteFailure:'')});
-    return result(scalpSetup({bars,asset,study,quote:reference,anchor,now,event}));
+    return result(priceActionContext(scalpSetup({bars,asset,study,quote:reference,anchor,now,event}),bars,anchor,now));
   }};
 }

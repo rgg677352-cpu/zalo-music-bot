@@ -6,6 +6,7 @@ import{FRAMES}from'./trade-engine.mjs';
 import{sessionAt}from'./scalp-session.mjs';
 import{algorithmSeries,ALGORITHMS}from'./algorithm-lab.mjs';
 import{exnessPlan}from'./exness-plan.mjs';
+import{priceActionContext}from'./risk-tools.mjs';
 export function createTradeProvider({mode='demo',exnessFetcher,quoteTransport='pulse',...options}={}){
  if(!['demo','qualified'].includes(mode))throw Error('Unknown trade notification mode');
  const study=JSON.parse(readFileSync(new URL('../assets/htf-study.json',import.meta.url),'utf8')),fast=JSON.parse(readFileSync(new URL('../assets/fast-study.json',import.meta.url),'utf8')),market=createHTFClient(options),exness=createExnessQuotes({...options,fetcher:exnessFetcher||options.fetcher||fetch,now:market.clock,transport:quoteTransport}),scalp=createScalpClient({market,study:fast,referenceQuote:a=>exness.quote(a)});
@@ -20,7 +21,8 @@ export function createTradeProvider({mode='demo',exnessFetcher,quoteTransport='p
   let quote;try{quote=await exness.quote(asset)}catch(error){return{status:'stale',asset,frame,candle:plan.candle,signal_time,signal_side:plan.side,reason:'Chưa có giá Exness mới; tạm dừng setup, không dùng giá Bitget làm Entry. '+quoteProblem(error)}}
   let anchor={source:'Bitget',bid:plan.quote_bid,ask:plan.quote_ask,t:plan.quote_time};
   if(market.clock()-anchor.t>4)anchor=await market.quote(asset);
-  return{...exnessPlan(plan,quote,anchor,market.clock()),signal_time,signal_side:plan.side,quote_transport:quote.transport};
+  const now=market.clock(),converted={...exnessPlan(plan,quote,anchor,now),signal_time,signal_side:plan.side,quote_transport:quote.transport,session:sessionAt(now).id};
+  return priceActionContext(converted,await market.candles(asset,frame),anchor,market.clock());
  }
  async function check(asset){
   if(!['BTC','ETH'].includes(asset))return{asset,checks:[{name:'Tài sản',ok:false,detail:'Kiểm tra nguồn hiện hỗ trợ BTC/ETH.'}]};
