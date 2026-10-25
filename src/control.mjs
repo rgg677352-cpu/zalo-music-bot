@@ -42,7 +42,7 @@ Dùng một dấu | để tách các câu; mỗi câu không chứa dấu |. T�
 
 Quản lý
 !storage — dung lượng file tạm/thư viện/cache; RAM hiện riêng.
-!clean — dọn file tạm mồ côi, giữ phiên đăng nhập và cấu hình.
+!clean — dọn file tạm/cache tải FFmpeg đã cài, giữ đăng nhập và cấu hình.
 ?lich — xem lịch đang có; ?lich L1 — chi tiết.
 ?dung L1 — dừng một lịch; ?dung all — dừng tất cả.
 ?tieptuc L1 — chạy lại sau 10 phút (với lịch PR).

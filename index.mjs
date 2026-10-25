@@ -11,7 +11,7 @@ import { checkTools } from './src/music.mjs';
 import { diagnosticMessage } from './src/process.mjs';
 import { BOT_VERSION } from './src/version.mjs';
 import { storage, sizeLabel } from './src/storage.mjs';
-import { createMaintenance } from './src/maintenance.mjs';
+import { createMaintenance, cacheCleanMessage } from './src/maintenance.mjs';
 import { stopMediaProcesses } from './src/process.mjs';
 
 const dataDir = fileURLToPath(new URL('./data/', import.meta.url));
@@ -64,6 +64,7 @@ try {
   try {
     const swept = await storage.start();
     if (swept.removed) console.log(`Đã dọn file tạm cũ: ${swept.removed} thư mục, ${sizeLabel(swept.bytes)}.`);
+    if (swept.cache?.removed || swept.cache?.reason) console.log(cacheCleanMessage(swept.cache));
   } catch { console.warn('Chưa dọn được file tạm lúc khởi động; bộ dọn sẽ thử lại sau. !storage để kiểm tra.'); }
   console.log(`Zalo Music Bot ${BOT_VERSION} — mọi nhóm dùng ngay, không cần setup.`);
   const api = await login();

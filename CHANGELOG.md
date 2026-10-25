@@ -1,3 +1,10 @@
+## 1.7.3 — 2026-10-25
+
+- Phản hồi !storage trên Botkeep xác định cache tải FFmpeg chiếm 560,7 MB; file tạm đã sạch. Bản 1.7.2 chỉ báo dung lượng cache này, chưa xóa.
+- !clean và bộ dọn lúc khởi động/mỗi 10 phút xử lý thêm file HTTP cache có tên SHA-512 đúng định dạng trong ffmpeg-static-nodejs, gồm .body tải dở bị bỏ lại. Chỉ dọn sau khi FFmpeg đã cài chạy được và nằm ngoài cache. Giữ thư viện/binary, phiên Zalo và cấu hình; bỏ qua symlink, thư mục lạ, file vừa thay đổi dưới một phút và cache đang mở hoặc chưa kiểm tra được.
+- Phản hồi dọn tách số MB file tạm và cache FFmpeg, hiện lý do hoãn khi chưa đủ điều kiện. Không dọn cache npm, không đổi thuật toán hoặc TP/SL.
+- 134 kiểm tra qua, gồm mô phỏng cache 560,7 MB và chạy FFmpeg thật trước/sau khi dọn cache thử nghiệm. Chưa trực tiếp cập nhật hoặc xóa file trên Botkeep.
+
 ## 1.7.2 — 2026-10-25
 
 - Sửa thư mục giải nén yt-dlp bị bỏ lại khi hết thời gian/dừng ép: tách thư mục theo tác vụ, xóa ở finally sau cả lần thử TLS; dừng cả nhóm tiến trình con. Tự quét thư mục tạm mồ côi khi khởi động và mỗi 10 phút, có lease/PID và bảo vệ file đang dùng; không theo symlink hoặc xóa data/.env.

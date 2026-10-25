@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, readdir, lstat, readFile, readlink, writeFile, rename, 
 import { join, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
+import { cleanFFmpegCache, ffmpegCacheRoot } from './installer-cache.mjs';
 
 export const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 export const tempRoot = join(projectRoot, 'tmp');
@@ -61,7 +62,7 @@ async function sizeOf(path, budget = { left: 50000 }) {
   } catch (e) { return { bytes: 0, latest: 0, partial: e.code !== 'ENOENT' }; }
 }
 
-export function createStorage({ root = tempRoot, appRoot = projectRoot, now = Date.now, mediaRunning = hasLiveMedia, intervalMs = 10 * 60000, onError = () => console.warn('Chưa dọn được file tạm; dùng !storage để kiểm tra.') } = {}) {
+export function createStorage({ root = tempRoot, appRoot = projectRoot, now = Date.now, mediaRunning = hasLiveMedia, installerCache, intervalMs = 10 * 60000, onError = () => console.warn('Chưa dọn được file tạm/cache; dùng !storage để kiểm tra.') } = {}) {
   root = resolve(root); appRoot = resolve(appRoot);
   let canonical, timer, sweepPromise, lastSweep, usagePromise, usageCache;
   async function ready() {
@@ -135,6 +136,10 @@ export function createStorage({ root = tempRoot, appRoot = projectRoot, now = Da
         result.removed++; result.bytes += usage.bytes;
       } catch (e) { if (e.code !== 'ENOENT') { result.skipped++; result.partial = true; } }
     }
+    if (installerCache) {
+      try { result.cache = await installerCache(); }
+      catch { result.cache = { removed: 0, bytes: 0, skipped: 0, reason: 'unavailable' }; }
+    }
     lastSweep = result;
     usageCache = undefined;
     return result;
@@ -148,7 +153,7 @@ export function createStorage({ root = tempRoot, appRoot = projectRoot, now = Da
     for (const [label, path] of [['File tạm', root], ['Thư viện Node', join(appRoot, 'node_modules')], ['Công cụ nhạc', join(appRoot, 'bin')], ['Dữ liệu đăng nhập/cấu hình', join(appRoot, 'data')], ['Cache npm trong bot', join(appRoot, '.npm')]]) categories.push({ label, ...(await sizeOf(path)) });
     const npm = join(homedir(), '.npm');
     if (resolve(npm) !== resolve(join(appRoot, '.npm'))) categories.push({ label: 'Cache npm ở thư mục home', ...(await sizeOf(npm)) });
-    categories.push({ label: 'Cache tải FFmpeg', ...(await sizeOf(join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'ffmpeg-static-nodejs'))) });
+    categories.push({ label: 'Cache tải FFmpeg', ...(await sizeOf(ffmpegCacheRoot)) });
     return { categories, nodeRSS: process.memoryUsage().rss, activeJobs: [...active].filter(p => p.startsWith(root + '/')).length, lastSweep };
   }
   function usage() {
@@ -159,5 +164,5 @@ export function createStorage({ root = tempRoot, appRoot = projectRoot, now = Da
   return { createJob, sweep, usage, async start() { if (!timer) { timer = setInterval(() => void sweep().catch(onError), intervalMs); timer.unref?.(); } return sweep(); }, stop() { clearInterval(timer); timer = undefined; } };
 }
 
-export const storage = createStorage();
+export const storage = createStorage({ installerCache: cleanFFmpegCache });
 export const sizeLabel = bytes => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
