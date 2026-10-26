@@ -22,12 +22,12 @@ Thông báo setup · chỉ demo
 !rr 80000 79900 80150 2 — R:R và tỷ lệ hòa vốn sau phí đã nhập.
 !pause 15m / !resume — nghỉ báo trade trong nhóm, giữ đăng ký qua restart.
 !status — bản bot, giờ khởi động, lần quét và lần chặn setup gần nhất.
-!check BTC / !check ETH — thử nguồn nến và giá ngay, không cần đợi tín hiệu.
+!check BTC / !check ETH / !check XAU — thử nguồn nến và giá ngay, không cần đợi tín hiệu.
 !on — bật BTC/ETH/XAUUSD trong nhóm hiện tại, M15/M30/H1/H4.
 !BTC, !ETH, !XAUU — bật riêng tài sản và xem setup hiện có.
 !BTC H1 hoặc !on ETH M30 — chọn riêng khung.
 !scalp — bật thêm scalp BTC/ETH M1/M5, giữ tối đa 1–3 phút.
-!scalp BTC hoặc !scalp ETH — bật riêng và xem setup scalp mới.
+!scalp BTC / !scalp ETH / !scalp XAU — bật riêng và xem setup scalp mới.
 !off scalp — tắt scalp, giữ M15–H4; !off scalp BTC — tắt scalp BTC.
 !off BTC — tắt riêng BTC trong nhóm; !off — tắt tất cả báo trade nhóm này.
 Tự gửi setup DEMO mới có entry/TP/SL, kể cả bộ chưa đạt kiểm chứng; tin nhắn ghi rõ trạng thái. Chỉ dùng nến đóng và giá mới, không gửi bù setup hết hạn. Vàng chưa có nguồn live, chưa báo setup vàng.

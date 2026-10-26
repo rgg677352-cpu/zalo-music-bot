@@ -1,4 +1,5 @@
 const RELAY='https://pulse-btc-eth-lab.rgg677352.workers.dev';
+const symbols={BTC:'BTCUSD',ETH:'ETHUSD',XAUUSD:'XAUUSD'};
 const problem=(code,message,extra={})=>Object.assign(new Error(message),{code,...extra});
 export function quoteProblem(error){
  if(error?.code==='EXNESS_ALL_TRANSPORTS')return error.problems.join('; ');
@@ -15,7 +16,7 @@ export function createExnessQuotes({fetcher=fetch,now=()=>Date.now()/1000,monoto
  if(!['direct','pulse'].includes(transport))throw Error('Unknown Exness quote transport');
  const cache=new Map(),pending=new Map();let blockedUntil=0;
  function parse(d,asset){
-  const q={source:'Exness công khai',instrument:asset+'USD',bid:Number(d?.bid),ask:Number(d?.ask),t:Date.parse(d?.time)/1000};
+  const q={source:'Exness công khai',instrument:symbols[asset],bid:Number(d?.bid),ask:Number(d?.ask),t:Date.parse(d?.time)/1000};
   if(d?.instrument!==q.instrument)throw problem('EXNESS_SYMBOL','Mã tick Exness không khớp tài sản.');
   if(![q.bid,q.ask,q.t].every(Number.isFinite)||q.bid<=0||q.ask<q.bid)throw problem('EXNESS_VALUES','Bid/Ask Exness không hợp lệ.');
   const age=now()-q.t;if(age>5)throw problem('EXNESS_STALE','Giá Exness đã cũ.',{age});if(age< -3)throw problem('EXNESS_CLOCK','Giờ tick Exness không hợp lệ.',{age});return q;
@@ -36,21 +37,21 @@ export function createExnessQuotes({fetcher=fetch,now=()=>Date.now()/1000,monoto
   throw problem('EXNESS_HTTP','Exness public HTTP '+status,{status});
  }
  async function stream(asset){
-  const url=transport==='pulse'?RELAY+'/api/public-stream?asset='+asset:'https://www.exness.com/api/quotes/subscribe/?instruments='+asset+'USD';
+  const url=transport==='pulse'?RELAY+'/api/public-stream?asset='+asset:'https://www.exness.com/api/quotes/subscribe/?instruments='+symbols[asset];
   const r=await response(url,'text/event-stream',3500),reader=r.body.getReader(),decoder=new TextDecoder();let buffer='',size=0,lastProblem;
   try{for(;;){const {value,done}=await reader.read();if(done)break;size+=value.byteLength;if(size>64000)throw problem('EXNESS_SIZE','Oversized public quote');buffer+=decoder.decode(value,{stream:true});let at;
    while((at=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,at).trim();buffer=buffer.slice(at+1);if(!line.startsWith('data:'))continue;try{const q=parse(JSON.parse(line.slice(5)),asset);return{...q,transport:transport==='pulse'?'Pulse SSE':'SSE'}}catch(e){if(e.code)lastProblem=e}}
   }throw lastProblem||problem('EXNESS_EMPTY','Chưa nhận được tick Exness mới.')}finally{await reader.cancel().catch(()=>{})}
  }
  async function history(asset){
-  const url=transport==='pulse'?RELAY+'/api/public-history?asset='+asset:'https://www.exness.com/api/quotes/prev/?instruments='+asset+'USD'+'&intervals=1d';
-  const r=await response(url,'application/json',transport==='pulse'?5000:2500),data=await jsonBody(r,200000),rows=data?.[asset+'USD']?.['1d'];
+  const url=transport==='pulse'?RELAY+'/api/public-history?asset='+asset:'https://www.exness.com/api/quotes/prev/?instruments='+symbols[asset]+'&intervals=1d';
+  const r=await response(url,'application/json',transport==='pulse'?5000:2500),data=await jsonBody(r,200000),rows=data?.[symbols[asset]]?.['1d'];
   if(!Array.isArray(rows)||rows.length>1000)throw problem('EXNESS_SHAPE','Snapshot Exness sai cấu trúc.');
   const latest=rows.reduce((a,b)=>Date.parse(b?.time)>Date.parse(a?.time||'1970-01-01')?b:a,null);
   return{...parse(latest,asset),transport:transport==='pulse'?'Pulse HTTP':'HTTP'};
  }
  async function read(asset){
-  if(!['BTC','ETH'].includes(asset))throw Error('Unsupported quote asset');const saved=cache.get(asset);
+  if(!Object.hasOwn(symbols,asset))throw Error('Unsupported quote asset');const saved=cache.get(asset);
   if(saved&&now()-saved.t<=3&&saved.t<=now()+3)return saved;
   if(blockedUntil>monotonic())throw problem('EXNESS_COOLDOWN','Public quote cooldown',{seconds:Math.ceil((blockedUntil-monotonic())/1000)});
   // Finite HTTP first on the hosted bot avoids depending on an egress proxy flushing SSE promptly.

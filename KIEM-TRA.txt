@@ -1,28 +1,19 @@
-Bản 1.7.4 — 2026-10-25
-Console: BOT SẴN SÀNG 1.7.4
-Giữ data/ và .env, cập nhật code trên host cũ rồi restart.
-Bot đã vào nhóm là dùng được: ?help, ?list, ?pr, ?nhac. Không cần !setup/?setup.
-!on bật thông báo trade nhóm này; !BTC/!ETH/!XAUU hỏi và bật riêng tài sản; !off BTC tắt riêng BTC.
-Bật !on để tự nhận setup DEMO BTC/ETH mới, kèm Entry/TP/SL; bộ chưa đạt có nhãn rõ. Không cần mở web. Dữ liệu giá trễ/thiếu hoặc setup hết hạn thì không gửi. Vàng đang chờ nguồn live.
-Đã test API Zalo giả lập; chưa gửi tin thật hoặc cập nhật host Botkeep.
+Bot 1.7.5 — 2026-10-26
+Stop bot, giải nén ZIP ghi đè code, giữ data/ và .env, rồi Start.
+Console và !status phải ghi Bot 1.7.5. Không cần !setup/?setup.
 
-!scalp bật thêm scalp BTC/ETH; !scalp BTC chọn riêng; !off scalp tắt riêng scalp.
-Scalp M1/M5, giữ 1–3 phút, kiểm tra 10 giây, giá lệnh chỉ từ Exness công khai; thiếu giá thì dừng, không đổi nguồn.
+!scalp XAU — bật scalp vàng tự động mỗi 10 giây trong nhóm hiện tại.
+!off scalp XAU — tắt riêng scalp vàng; !off XAU — tắt mọi khung vàng.
+!check XAU — nến vàng M1 + giá Bitget tham chiếu + giá Exness phải OK.
+!research XAU — cách tính bộ vàng DEMO chưa đạt kiểm chứng lợi nhuận.
+!scalp — vẫn bật BTC/ETH như trước, không tự bật vàng.
 
+Tin vàng có BUY LIMIT/SELL LIMIT, Entry/TP/SL và giờ hủy nếu chưa khớp.
+Đặt Expiration đúng giờ hoặc tự hủy; giá đã vượt Entry/TP thì bỏ, không đuổi.
+Lệnh chờ khoảng 3 phút; giữ tối đa 3 phút SAU KHỚP. Bot không đặt/hủy/đóng lệnh thật.
+Giá: XAUUSD Exness công khai. Nến: XAUUSDT perpetual Bitget tham chiếu, không phải nến tài khoản MT5.
+M15–H4 vàng chưa có feed. Scalp dùng bộ riêng vàng theo phiên, London/New York tự tính DST.
+Nghỉ cuối tuần/rollover; đây không phải lịch nghỉ lễ tài khoản.
 
-Giá lệnh bản1.7.4: cả SCALP và M15–H4 chỉ lấy Entry BUY theo Ask, SELL theo Bid của Exness công khai; SL/TP tính lại theo độ biến động tham chiếu được quy đổi cùng thời điểm. Không dùng giá Bitget spot/perp để thay thế Entry khi Exness lỗi. Tin ghi BTCUSD/ETHUSD, loại MARKET tham chiếu, Bid/Ask lúc phát, giờ phát và hạn entry. Chỉ báo vẫn dùng nến Bitget tham chiếu; đây CHƯA phải feed tài khoản MT5.
-
-Để khớp đúng nguồn tài khoản, cần kết nối chính tài khoản bằng cầu nối terminal MT5 chỉ đọc hoặc API chính thức nếu là tài khoản Exness được hỗ trợ. Exness API hiện không hỗ trợ tài khoản MetaTrader tiêu chuẩn. Tên BTC trong app không đủ xác định mã/suffix. Không gửi mật khẩu/khóa bí mật vào chat; thông tin kết nối phải cấu hình trực tiếp trên máy chủ của chủ tài khoản.
-
-Bản1.7.4 thêm !status để xem vòng quét/nguồn/gửi; phải thấy đúng Bot1.7.4 sau cập nhật. Nhóm đã bật giữ đăng ký qua restart. !scalp BTC bật riêngBTC; !scalp bậtBTC+ETH. Mỗi10giây kiểm tra, không phải mỗi10giây đều có lệnh.
-
-!check BTC / !check ETH: thử nguồn nến và giá ngay, không đợi tín hiệu; báo tuổi tick/HTTP/lệch giờ. !status giờ có lúc khởi động và Chặn gần nhất, không bị trạng thái chờ mới che mất lý do cũ.
-
-1.7.4: tự dọn file tạm mồ côi khi khởi động/mỗi10phút; !storage xem dung lượng, !clean dọn ngay. Giữ file đang dùng, data/ và .env.
-Setup tự động mới M15/M30/H4 tag @All; H1/scalp và hỏi thủ công không tag.
-!research BTC M15 / !research ETH H4 xem đúng bộ đang cấu hình. 0/288 bộ đạt; thuật toán/TP-SL chưa đổi.
-141 kiểm tra qua bằng API giả lập; chưa cập nhật host hoặc gửi Zalo thật.
-
-1.7.4: !clean và bộ dọn tự động dọn thêm cache tải FFmpeg sau khi xác nhận binary đã cài chạy được; giữ file đang dùng/mới ghi và phiên đăng nhập. Không có dependency mới, không đổi thuật toán giao dịch.
-
-1.7.4: !scl random / !scl randoom / !nhac random chỉ chọn nhạc Việt đang hot từ bảng VN, không chuyển sang nhạc nước ngoài. Giữ lịch sử đã có qua restart, bỏ quay vòng80, tối đa5.000bài/nhóm rồi dừng thay vì phát lại. Giữ data/music-history.json khi cập nhật.
+Giữ nhạc Việt random chống trùng, tự dọn cache FFmpeg/file tạm, @All M15/M30/H4 như cũ.
+153 kiểm tra bot và 68 kiểm tra web qua; đã đọc nguồn vàng live. Chưa gửi Zalo thật hoặc cập nhật Botkeep.

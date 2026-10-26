@@ -3,7 +3,7 @@ import { ThreadType } from 'zca-js';
 import { commandPrefix, createDeduper, deadline } from './runtime.mjs';
 import { BOT_VERSION } from './version.mjs';
 import { riskCommand } from './risk-tools.mjs';
-const ASSETS=['BTC','ETH','XAUUSD'], FRAMES=['M15','M30','H1','H4'], SCALP_ASSETS=['BTC','ETH'];
+const ASSETS=['BTC','ETH','XAUUSD'], FRAMES=['M15','M30','H1','H4'], SCALP_ASSETS=['BTC','ETH','XAUUSD'], DEFAULT_SCALP=['BTC','ETH'];
 const alias=x=>({BTC:'BTC',BITCOIN:'BTC',ETH:'ETH',ETHEREUM:'ETH',XAUU:'XAUUSD',XAU:'XAUUSD',XAUUSD:'XAUUSD',GOLD:'XAUUSD'})[String(x).toUpperCase()];
 const frame=x=>({M15:'M15','15M':'M15',M30:'M30','30M':'M30',H1:'H1','1H':'H1',H4:'H4','4H':'H4',SCALP:'SCALP'})[String(x).toUpperCase()];
 const validKey=k=>ASSETS.some(a=>FRAMES.some(f=>k===a+':'+f))||SCALP_ASSETS.some(a=>k===a+':SCALP');
@@ -11,12 +11,14 @@ const vnTime=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{timeZone:'Asia/Ho_C
 const price=x=>Number(x).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 export function formatSetup(s){
  const scalp=s.frame==='SCALP',tf=scalp?'SCALP M1/M5':s.frame,hold=s.hold>=3600?Number((s.hold/3600).toFixed(1))+'h':Math.round(s.hold/60)+' phút';
- const lines=[`${s.instrument||s.asset} · ${s.side===1?'BUY':'SELL'} · ${tf}`,`Entry: ${price(s.entry)}`,`TP: ${price(s.tp)}`,`SL: ${price(s.sl)}`,`R:R 1:${Number(s.rr.toFixed(2))} · giữ ≤${hold}`,`MARKET · hạn ${vnTime(s.expires)} VN`];
+ const limit=s.asset==='XAUUSD'&&['BUY LIMIT','SELL LIMIT'].includes(s.order_type);
+ const lines=[`${s.instrument||s.asset} · ${s.side===1?'BUY':'SELL'} · ${tf}`,`Entry: ${price(s.entry)}`,`TP: ${price(s.tp)}`,`SL: ${price(s.sl)}`,`R:R 1:${Number(s.rr.toFixed(2))} · giữ ≤${hold}${limit?' sau khớp':''}`,`${s.order_type||'MARKET'} · ${limit?'hủy nếu chưa khớp trước':'hạn'} ${vnTime(s.expires)} VN`];
+ if(limit)lines.push('Đặt Expiration đúng giờ trên; giá vượt Entry thì bỏ, không đuổi.');
  if(Number.isFinite(s.quote_bid)&&Number.isFinite(s.quote_ask))lines.push(`Giá ${vnTime(s.quote_time)}: Bid ${price(s.quote_bid)} / Ask ${price(s.quote_ask)}`);
  if(s.context?.tp_beyond_obstacle)lines.push(`Cản tham chiếu: ${price(s.context.opposing.price)} trước TP · ${s.context.headroom_r.toFixed(2)}R`);
  if(s.context?.sl_inside_structure)lines.push('SL nằm trước swing tham chiếu.');
- const session={asia:'Á 07–14h',europe:'Âu 14–19h',overlap:'Âu–Mỹ 19–23h',us_late:'Mỹ 23–04h',quiet:'Rạng sáng 04–07h'}[s.session];
- lines.push(s.rule+(session?' · '+session+' VN':''),`DEMO${s.accepted?'':' · CHƯA ĐẠT KIỂM CHỨNG'}`,`${s.source}${s.candle_source?' · nến '+s.candle_source+' tham chiếu':''}`);
+ const session=s.asset==='XAUUSD'?{asia:'Á',europe:'Âu',overlap:'Âu–Mỹ',us_late:'Mỹ cuối',quiet:'Rạng sáng'}[s.session]:{asia:'Á 07–14h',europe:'Âu 14–19h',overlap:'Âu–Mỹ 19–23h',us_late:'Mỹ 23–04h',quiet:'Rạng sáng 04–07h'}[s.session];
+ lines.push(s.rule+(session?' · '+session+(s.asset==='XAUUSD'?' (DST)':' VN'):''),`DEMO${s.accepted?'':' · CHƯA ĐẠT KIỂM CHỨNG'}`,`${s.source}${s.candle_source?' · nến '+s.candle_source+' tham chiếu':''}`);
  return lines.join('\n');
 }
 export function automaticSetupMessage(s) {
@@ -41,7 +43,25 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
  const group=id=>state.groups[id]||=({enabled:[],delivered:{}});
  const paused=g=>Number.isFinite(g?.pausedUntil)&&g.pausedUntil>now()/1000;
  const pauseText=g=>'Đang nghỉ báo trade tới '+vnTime(g.pausedUntil)+' VN. !resume để tiếp tục sớm.';
- function valid(s,a,f){const t=now()/1000;return s?.status==='setup'&&s.asset===a&&s.frame===f&&(s.accepted===true||(s.accepted===false&&s.experimental===true&&s.demo===true))&&[1,-1].includes(s.side)&&typeof s.rule==='string'&&typeof s.source==='string'&&['entry','low','high','sl','tp','risk','rr','hold','candle','expires','created','quote_time'].every(k=>Number.isFinite(s[k]))&&s.candle>0&&s.quote_time<=t+3&&t-s.quote_time<=(f==='SCALP'?5:10)&&s.expires>t&&s.created<=t+3&&t-s.created<=15&&s.entry>0&&s.low<=s.entry&&s.high>=s.entry&&s.risk>0&&s.rr>0&&s.hold>0&&s.sl>0&&s.tp>0&&(s.entry-s.sl)*s.side>0&&(s.tp-s.entry)*s.side>0&&Math.abs(Math.abs(s.entry-s.sl)-s.risk)<s.risk*.00001&&Math.abs(Math.abs(s.tp-s.entry)/s.risk-s.rr)<.00001&&(f!=='SCALP'||s.hold<=180&&s.candle%60===0&&s.candle+62<=t&&s.expires<=s.candle+107)}
+ function scalpContract(s,a,t){
+  if(s.hold>180||s.candle%60!==0||s.candle+62>t||t>=s.candle+107)return false;
+  if(a!=='XAUUSD')return s.expires<=s.candle+107;
+  const type=s.side===1?'BUY LIMIT':'SELL LIMIT';
+  if(s.order_type!==type||s.expires>s.candle+240||![s.quote_bid,s.quote_ask].every(Number.isFinite)||s.quote_bid<=0||s.quote_ask<s.quote_bid)return false;
+  return (s.side===1?s.quote_ask-s.entry:s.entry-s.quote_bid)>=Math.max(.01,s.quote_ask-s.quote_bid);
+ }
+ function valid(s,a,f){
+  const t=now()/1000;
+  return s?.status==='setup'&&s.asset===a&&s.frame===f&&
+   (s.accepted===true||s.accepted===false&&s.experimental===true&&s.demo===true)&&
+   [1,-1].includes(s.side)&&typeof s.rule==='string'&&typeof s.source==='string'&&
+   ['entry','low','high','sl','tp','risk','rr','hold','candle','expires','created','quote_time'].every(k=>Number.isFinite(s[k]))&&
+   s.candle>0&&s.quote_time<=t+3&&t-s.quote_time<=(f==='SCALP'?5:10)&&s.expires>t&&s.created<=t+3&&t-s.created<=15&&
+   s.entry>0&&s.low<=s.entry&&s.high>=s.entry&&s.risk>0&&s.rr>0&&s.hold>0&&s.sl>0&&s.tp>0&&
+   (s.entry-s.sl)*s.side>0&&(s.tp-s.entry)*s.side>0&&
+   Math.abs(Math.abs(s.entry-s.sl)-s.risk)<s.risk*.00001&&Math.abs(Math.abs(s.tp-s.entry)/s.risk-s.rr)<.00001&&
+   (f!=='SCALP'||scalpContract(s,a,t));
+ }
  function reasonFor(s,a,f){
   if(s?.status!=='setup')return s?.reason||'Đang chờ tín hiệu mới.';
   const t=now()/1000;if(!Number.isFinite(s.quote_time)||t-s.quote_time>(f==='SCALP'?5:10)||s.quote_time>t+3)return 'Giá báo đã cũ hoặc sai giờ; chưa gửi setup.';
@@ -108,7 +128,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   if(Number.isFinite(result.clock_delta))lines.push('Lệch giờ host / nguồn: '+result.clock_delta.toFixed(1)+'s.');
   lines.push('Chỉ kiểm tra nguồn; không bật/tắt đăng ký và không tạo lệnh.');return lines.join('\n');
  }
- const usage='Dùng !on, !status, !check BTC, !BTC H1, !scalp, !scalp BTC, !off scalp, !off scalp BTC, !off BTC hoặc !off.';
+ const usage='Dùng !on, !status, !check BTC, !BTC H1, !scalp, !scalp BTC, !scalp XAU, !off scalp, !off scalp BTC, !off BTC hoặc !off.';
  async function handle(event){
   if(event.type!==ThreadType.Group||typeof event.data?.content!=='string')return false;
   const text=event.data.content.trim(),p=commandPrefix(text,prefix);if(!p)return false;
@@ -125,6 +145,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
     const a=args[0]?alias(args[0]):'BTC',f=args[1]?frame(args[1]):'SCALP';if(!a||!f||args.length>2){await say('Dùng !indicators hoặc !research BTC SCALP / !research ETH H1.',id);return true}
     const d=await deadline(()=>provider.research(a,f,name==='RESEARCH'),requestTimeout);
     if(name==='INDICATORS'){await say(`Danh mục tham khảo: TA-Lib ${d.catalog.talib_installed_functions} hàm; Pandas TA Classic ${d.catalog.pandas_ta_unique} mục. Có phần trùng và hàm toán, không cộng thành chỉ báo độc lập.\nThử mới: ${d.algorithms.length} thuật toán · ${d.candidates.toLocaleString('en-US')} cấu hình theo tài sản/phiên/TP-SL.\n${d.accepted} bộ mới đủ tiêu chuẩn bật. !research BTC hoặc !research ETH H1 xem chi tiết.`,id);return true}
+    if(d.gold){const p=d.gold;await say(`XAUUSD · SCALP · DEMO CHƯA ĐẠT\n${p.session.rule||p.session.reason}\nBUY/SELL LIMIT · chờ ≤3 phút · giữ ≤3 phút sau khớp.\nEntry: hồi ${p.depthATR5} ATR M5; SL theo swing, ${p.minRiskATR5}–${p.maxRiskATR5} ATR.\nTP tối đa ${p.targetR}R, giảm trước pivot; bỏ nếu dưới ${p.minimumR}R.\nGiá: ${p.price_source}; nến: ${p.candle_source}.\nChưa có kết quả kiểm chứng lợi nhuận cho bộ LIMIT và nguồn nến này.`,id);return true}
     if(d.active){
      const p=d.active,lines=[`${a} · ${f} · BỘ HIỆN TẠI`,`${p.rule} · thoát ${p.exit}`,`Mẫu: ${p.period.join(' → ')}`,`Test: ${p.test.n} lệnh · ${p.test.net.toFixed(2)}R · tăng phí ${p.stress.net.toFixed(2)}R`,`PF: ${p.test.pf.toFixed(2)}`,p.reason,'Chưa kiểm chứng riêng từng phiên hoặc khớp lệnh tài khoản Exness.',p.notifications?'Đang dùng để phát DEMO · CHƯA ĐẠT KIỂM CHỨNG.':'Chưa phát setup từ bộ này.'];
      await say(lines.filter(Boolean).join('\n'),id);return true;
@@ -136,7 +157,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
     if(d.current)lines.push('Điều kiện hiện tại: '+d.current.checks.filter(x=>x[3]===true).length+'/'+d.current.checks.length+'.');
     lines.push('CHƯA ĐẠT · chưa bật gửi setup từ bộ này. Mẫu đã khảo sát nhiều lần; cần forward mới.');await say(lines.join('\n'),id);return true;
    }
-   if(name==='CHECK'){const selected=args[0]?alias(args[0]):null;if(args.length>1||selected&&!SCALP_ASSETS.includes(selected)||args[0]&&!selected){await say('Dùng !check BTC hoặc !check ETH.',id);return true}if(!provider.check){await say('Bộ nguồn chưa hỗ trợ kiểm tra trực tiếp.',id);return true}const results=await Promise.allSettled((selected?[selected]:SCALP_ASSETS).map(a=>deadline(()=>provider.check(a),requestTimeout)));await say(results.map(r=>r.status==='fulfilled'?formatCheck(r.value):'Kiểm tra nguồn vượt thời gian chờ; chưa xác nhận được giá.').join('\n\n'),id);return true}
+   if(name==='CHECK'){const selected=args[0]?alias(args[0]):null;if(args.length>1||selected&&!SCALP_ASSETS.includes(selected)||args[0]&&!selected){await say('Dùng !check BTC, !check ETH hoặc !check XAU.',id);return true}if(!provider.check){await say('Bộ nguồn chưa hỗ trợ kiểm tra trực tiếp.',id);return true}const results=await Promise.allSettled((selected?[selected]:SCALP_ASSETS).map(a=>deadline(()=>provider.check(a),requestTimeout)));await say(results.map(r=>r.status==='fulfilled'?formatCheck(r.value):'Kiểm tra nguồn vượt thời gian chờ; chưa xác nhận được giá.').join('\n\n'),id);return true}
    if(name==='STATUS'){await say(statusMessage(id),id);return true}
    if(persistenceFailed)throw Error('storage');
    if(name==='PAUSE'||name==='RESUME'){
@@ -148,19 +169,19 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
    if((asset||name==='ON'||name==='SCALP')&&paused(state.groups[id])){await say(pauseText(state.groups[id]),id);return true}
    if(name==='SCALP'||name==='OFF'&&args[0]?.toUpperCase()==='SCALP'){
     const off=name==='OFF',words=off?args.slice(1):args,a=words[0]?alias(words[0]):null;
-    if(words.length>1||words[0]&&!SCALP_ASSETS.includes(a)){await say('Scalp hỗ trợ BTC/ETH. '+usage,id);return true}
-    const assets=a?[a]:SCALP_ASSETS,g=group(id),keys=assets.map(a=>a+':SCALP');
+    if(words.length>1||words[0]&&!SCALP_ASSETS.includes(a)){await say('Scalp hỗ trợ BTC/ETH/XAU. '+usage,id);return true}
+    const assets=a?[a]:(off?SCALP_ASSETS:DEFAULT_SCALP),g=group(id),keys=assets.map(a=>a+':SCALP');
     g.enabled=off?g.enabled.filter(k=>!keys.includes(k)):[...new Set([...g.enabled,...keys])];save();
     if(off){await say(`Đã tắt scalp ${assets.join('/')} trong nhóm này. Báo M15–H4 giữ nguyên.`,id);return true}
     const replies=(await Promise.all(assets.map(a=>currentReplies(a,['SCALP'])))).flat();
-    await sendCurrent(g,id,replies,`Đã bật SCALP DEMO ${assets.join('/')} · M1/M5 · giữ tối đa 1–3 phút.\nTheo dõi mỗi 10s · !status xem chi tiết · !off scalp để tắt.\n\n`);return true;
+    await sendCurrent(g,id,replies,`Đã bật SCALP DEMO ${assets.join('/')} · M1/M5 · ${a==='XAUUSD'?'LIMIT chờ ≤3 phút, giữ ≤3 phút sau khớp':'giữ tối đa 1–3 phút'}.\nTheo dõi mỗi 10s · !status xem chi tiết · ${a==='XAUUSD'?'!off scalp XAU':'!off scalp'} để tắt.\n\n`);return true;
    }
    const a=asset||(args[0]?alias(args[0]):null),tf=asset?(args[0]?frame(args[0]):null):(args[1]?frame(args[1]):null);
    if((!asset&&args[0]&&!a)||(asset&&args[0]&&!tf)||(!asset&&args[1]&&!tf)||args.length>(asset?1:2)||tf==='SCALP'&&a&&!SCALP_ASSETS.includes(a)){await say(usage,id);return true}
    const g=group(id),assets=a?[a]:ASSETS,frames=tf?[tf]:name==='OFF'?[...FRAMES,'SCALP']:FRAMES,keys=assets.flatMap(a=>frames.map(f=>a+':'+f)).filter(validKey);
    if(name==='OFF'){g.enabled=g.enabled.filter(k=>!keys.includes(k));save();await say(`Đã tắt báo ${a||'tất cả tài sản'}${tf?' '+tf:''} trong nhóm này.`,id);return true}
    g.enabled=[...new Set([...g.enabled,...keys])];save();
-   if(!asset){await say(`Đã bật báo ${a||'BTC, ETH, XAUUSD'} · ${tf||'M15/M30/H1/H4'} trong nhóm này.\nTự gửi setup DEMO mới · kiểm tra 30s.\n!scalp: thêm scalp · !status: chi tiết · !off: tắt.\nVàng chưa có nguồn live; chưa báo setup vàng.`,id);return true}
+   if(!asset){await say(`Đã bật báo ${a||'BTC, ETH, XAUUSD'} · ${tf||'M15/M30/H1/H4'} trong nhóm này.\nTự gửi setup DEMO mới · kiểm tra 30s.\n!scalp: thêm scalp · !status: chi tiết · !off: tắt.\nVàng khung lớn chưa có feed; !scalp XAU bật riêng scalp vàng.`,id);return true}
    await sendCurrent(g,id,await currentReplies(a,frames));
   }catch{await say('Chưa cập nhật được. Kiểm tra file trading-subscriptions.json, dung lượng và kết nối host; không tự gửi lại lệnh.',id)}
   return true;
@@ -170,7 +191,7 @@ export function createTrading(api,{statePath,prefix='!',provider,now=Date.now,po
   try{
    const keys=[...new Set(Object.values(state.groups).flatMap(g=>paused(g)?[]:g.enabled))].filter(k=>k.endsWith(':SCALP')===scalp);
    // BTC and ETH progress independently; a slow feed must not consume the other scalp's entry window.
-   await parallel(keys,2,async key=>{
+   await parallel(keys,3,async key=>{
     if(token!==generation||persistenceFailed)return;const[a,f]=key.split(':');let s;
     try{s=await snapshot(a,f,token)}catch{return}
     if(token!==generation||persistenceFailed||!valid(s,a,f))return;

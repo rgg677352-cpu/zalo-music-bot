@@ -1,3 +1,11 @@
+## 1.7.5 — 2026-10-26
+
+- Thêm `!scalp XAU` (XAUUSD/XAUU/GOLD), `!off scalp XAU`, `!check XAU`, `!research XAU`. Mỗi nhóm tự bật riêng, giữ qua restart và chống gửi trùng. `!scalp` không tham số giữ BTC/ETH.
+- Nến M1 XAUUSDT perpetual Bitget, Bid/Ask XAUUSD Exness công khai qua HTTP/SSE cùng relay của web. Kiểm tra đúng mã XAUUSD (không ghép thành XAUUSDUSD), độ mới, basis và spread; thiếu Exness thì dừng. M15–H4 vàng vẫn chưa có feed.
+- Bộ riêng vàng: Bollinger hồi vào dải phiên Á, EMA 8/34 phiên Âu/Âu–Mỹ, quét 20 nến phiên Mỹ cuối; DST London/New York riêng, nghỉ cuối tuần/rollover. Đây là các giả thuyết DEMO, chưa đạt kiểm chứng lợi nhuận.
+- Tin vàng là LIMIT chờ khoảng 3 phút, giữ tối đa 3 phút sau khớp, SL theo swing/ATR M5 và TP giảm trước pivot đã xác nhận. Không đuổi giá, không phát tín hiệu cũ, không tự thao tác tài khoản. Không thay công thức BTC/ETH.
+- 153 test bot và 68 test web qua, gồm BUY/SELL, causal prefix, dữ liệu sai/cũ, limit bị vượt, phát thông báo giả lập và chống trùng sau restart. Kiểm tra live đọc được cả nến và Bid/Ask vàng; không gửi Zalo thật và chưa cập nhật host Botkeep.
+
 ## 1.7.4 — 2026-10-25
 
 - !scl random / !scl randoom và !nhac random chỉ lấy bảng Apple Music VN, lọc thêm tên/thể loại có bằng chứng nhạc Việt. Bỏ luân phiên và mọi nguồn quốc tế US/GB/KR, kể cả cache quốc tế cũ; hết bài phù hợp thì báo chờ. Bộ lọc dựa trên metadata, có thể bỏ qua bài Việt mang tên tiếng Anh thiếu bằng chứng.
