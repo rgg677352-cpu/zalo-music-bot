@@ -1,6 +1,6 @@
 {
   "name": "zalo-music-voice-bot",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "private": true,
   "type": "module",
   "description": "Bot Zalo nhạc, lịch gửi mọi nhóm và thông báo setup demo đã kiểm tra",

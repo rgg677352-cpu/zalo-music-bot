@@ -1,3 +1,10 @@
+## 1.7.6 — 2026-10-26
+
+- `!test` bật riêng thử nghiệm vàng M5 Pivot + hợp lưu 2/3 nhóm RSI/TDF, Stoch phân kỳ đã xác nhận, CCI; `!test M1/M5/M15` chuyển khung, `!test off`/`!off test` tắt riêng. Tự quét10giây, giữ đăng ký/nến đã xử lý qua restart, tuân thủ pause/off và chống trùng khi Zalo chưa xác nhận.
+- LIMIT cố định theo nến, SL và TP trước Pivot giữa, hạn chờ3/5/15phút; chỉ báo trong45giây và còn ít nhất60giây nhập lệnh. Có SL, không thêm basket/bồi tăng lot. M15 TEST tự động có @All; M1/M5/phản hồi thủ công không tag.
+- `!test report` hiển thị kết quả nghiên cứu tick đã hoàn thành, không chạy tối ưu trên VPS. Không nhầm hiệu quả bộ `pivot_touch` cũ với hợp lưu live dùng nến Bitget vàng + mức Exness công khai. Không bộ nào được nâng nhãn đủ kiểm chứng; nguồn lỗi không dùng giá sàn thay Entry Exness.
+- Pivot UTC dùng Bitget `1Dutc`, bỏ ngày cuối tuần; không dùng nhầm `1D` UTC+8. Bổ sung đối chiếu TA-Lib, prefix causality, BUY/SELL, nguồn live và kiểm thử thông báo giả lập. Không thêm dependency hoặc lưu kho giá lên ổ đĩa.
+
 ## 1.7.5 — 2026-10-26
 
 - Thêm `!scalp XAU` (XAUUSD/XAUU/GOLD), `!off scalp XAU`, `!check XAU`, `!research XAU`. Mỗi nhóm tự bật riêng, giữ qua restart và chống gửi trùng. `!scalp` không tham số giữ BTC/ETH.

@@ -1,6 +1,8 @@
-Bot 1.7.5 — 2026-10-26
+Bản 1.7.6: !test bật thử vàng M5; !test M1/M15 đổi khung; !test status/report; !test off. Nến Bitget vàng tham chiếu + giá lệnh Exness công khai, chưa đạt kiểm chứng. Xem assets/video-test.md.
+
+Bot 1.7.6 — 2026-10-26
 Stop bot, giải nén ZIP ghi đè code, giữ data/ và .env, rồi Start.
-Console và !status phải ghi Bot 1.7.5. Không cần !setup/?setup.
+Console và !status phải ghi Bot 1.7.6. Không cần !setup/?setup.
 
 !scalp XAU — bật scalp vàng tự động mỗi 10 giây trong nhóm hiện tại.
 !off scalp XAU — tắt riêng scalp vàng; !off XAU — tắt mọi khung vàng.

@@ -8,13 +8,19 @@ import{algorithmSeries,ALGORITHMS}from'./algorithm-lab.mjs';
 import{exnessPlan}from'./exness-plan.mjs';
 import{priceActionContext}from'./risk-tools.mjs';
 import{createGoldScalpClient,GOLD_SCALP,goldSession}from'./gold-scalp.mjs';
+import{createVideoTestClient,VIDEO_TEST}from'./video-test.mjs';
 export function createTradeProvider({mode='demo',exnessFetcher,quoteTransport='pulse',...options}={}){
  if(!['demo','qualified'].includes(mode))throw Error('Unknown trade notification mode');
  const study=JSON.parse(readFileSync(new URL('../assets/htf-study.json',import.meta.url),'utf8')),fast=JSON.parse(readFileSync(new URL('../assets/fast-study.json',import.meta.url),'utf8')),market=createHTFClient(options),exness=createExnessQuotes({...options,fetcher:exnessFetcher||options.fetcher||fetch,now:market.clock,transport:quoteTransport}),scalp=createScalpClient({market,study:fast,referenceQuote:a=>exness.quote(a)});
  const gold=createGoldScalpClient({market,referenceQuote:a=>exness.quote(a)});
+ const video=createVideoTestClient({...options,market,referenceQuote:a=>exness.quote(a),now:market.clock});
  const lab=JSON.parse(readFileSync(new URL('../assets/optimizer-study.json',import.meta.url),'utf8'));
  const pending=new Map();
  async function snapshot(asset,frame){
+  if(Object.hasOwn(VIDEO_TEST.frames,frame)){
+   if(asset!=='XAUUSD'||mode!=='demo')return{status:'research',reason:'TEST chỉ hỗ trợ vàng DEMO; chưa đạt kiểm chứng.'};
+   try{return await video.snapshot(frame)}catch(e){return{status:'stale',asset,frame,reason:/^(Nguồn TEST|Nến TEST|Nguồn nến TEST)/.test(e.message||'')?e.message:'TEST chưa đọc được nến/giá vàng; sẽ thử ở lần quét sau.'}}
+  }
   if(frame==='SCALP')return mode==='demo'?(asset==='XAUUSD'?gold:scalp).snapshot(asset):{status:'research',reason:'Scalp chưa đạt kiểm chứng; chế độ hiện tại chỉ nhận bộ đã đạt.'};
   const plan=await market.snapshot(asset,frame,study.profiles[asset]?.[frame],mode==='demo');
   if(plan.status!=='setup')return plan;

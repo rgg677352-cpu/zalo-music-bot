@@ -28,9 +28,12 @@ Thông báo setup · chỉ demo
 !BTC H1 hoặc !on ETH M30 — chọn riêng khung.
 !scalp — bật thêm scalp BTC/ETH M1/M5, giữ tối đa 1–3 phút.
 !scalp BTC / !scalp ETH / !scalp XAU — bật riêng và xem setup scalp mới.
+!test — bật thử vàng M5: Pivot + hợp lưu, LIMIT có Entry/TP/SL; chưa đạt kiểm chứng.
+!test M1 / !test M15 — đổi khung thử; !test status / !test report — trạng thái/kết quả nghiên cứu cũ.
+!test off hoặc !off test — tắt riêng TEST, giữ các báo cũ.
 !off scalp — tắt scalp, giữ M15–H4; !off scalp BTC — tắt scalp BTC.
 !off BTC — tắt riêng BTC trong nhóm; !off — tắt tất cả báo trade nhóm này.
-Tự gửi setup DEMO mới có entry/TP/SL, kể cả bộ chưa đạt kiểm chứng; tin nhắn ghi rõ trạng thái. Chỉ dùng nến đóng và giá mới, không gửi bù setup hết hạn. Vàng chưa có nguồn live, chưa báo setup vàng.
+Tự gửi setup DEMO mới có entry/TP/SL, kể cả bộ chưa đạt kiểm chứng; tin nhắn ghi rõ trạng thái. Chỉ dùng nến đóng và giá mới, không gửi bù setup hết hạn. Vàng scalp/TEST dùng nến Bitget XAUUSDT tham chiếu và giá lệnh Exness công khai; vàng M15–H4 thường chưa có nguồn nến live phù hợp.
 
 Gửi tự động · 10 phút/lần
 ?pr ID_NHOM | Nội dung
