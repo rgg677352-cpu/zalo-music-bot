@@ -1,0 +1,45 @@
+{
+  "study": "gold-video-study-2026-10-26",
+  "period": [
+    "2026-09-24",
+    "2026-10-23"
+  ],
+  "test_period": [
+    "2026-10-16",
+    "2026-10-23"
+  ],
+  "configurations": 120,
+  "ticks": 11035912,
+  "qualified": 0,
+  "manual_delay": 40,
+  "source": "Exness XAUUSDm Standard public indicative archive",
+  "prior_exposure": true,
+  "live_strategy_equivalent": false,
+  "summary_sha256": "f6f7359e54d8fb17bbaf586c7edadb6f027793a678ae00ca104c8af43a6c77d4",
+  "singles": [
+    {
+      "frame": "M1",
+      "config": "60-UTC_full_day-pivot_touch-1",
+      "trades": 10,
+      "net_R": -0.6038548769370258,
+      "stress_trades": 8,
+      "stress_net_R": -2.191011732967698
+    },
+    {
+      "frame": "M5",
+      "config": "300-NY17_full_day-pivot_touch-1",
+      "trades": 17,
+      "net_R": -1.7138626035268973,
+      "stress_trades": 19,
+      "stress_net_R": -7.244756994682154
+    },
+    {
+      "frame": "M15",
+      "config": "900-NY17_full_day-pivot_touch-0",
+      "trades": 9,
+      "net_R": -0.719559477636074,
+      "stress_trades": 10,
+      "stress_net_R": -2.5495203300269065
+    }
+  ]
+}

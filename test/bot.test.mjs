@@ -122,11 +122,12 @@ test('bot không tự nhận tin help vừa gửi thành một lệnh nhạc m�
   assert.equal(sent.length, 1);
 });
 
-test('giới hạn nhóm và người dùng trước khi tải nhạc', async () => {
-  const api = { sendMessage: async () => assert.fail('Không được phản hồi') };
-  const prepare = async () => assert.fail('Không được tải nhạc');
-  await createHandler(api, { ...config, groups: new Set(['other']) }, prepare)(message('!nhac test'));
-  await createHandler(api, { ...config, users: new Set(['other']) }, prepare)(message('!nhac test'));
+test('allowlist nhóm và UID cũ không còn chặn chức năng cũ', async () => {
+  const sent = []; const api = { sendMessage: async text => sent.push(text) };
+  for (const old of [{ groups: new Set(['other']) }, { users: new Set(['other']) }]) {
+    await createHandler(api, { ...config, ...old })(message('!id'));
+  }
+  assert.equal(sent.length, 2); assert.ok(sent.every(text => /ID nhóm/.test(text)));
 });
 
 test('chỉ nhận SoundCloud HTTPS và không truyền đầu vào qua shell', () => {

@@ -12,9 +12,28 @@ export function controlHelp(p = '?', maxDuration = 600) {
   return `BOT · Hướng dẫn
 
 Bắt đầu
-?setup — tài khoản đăng nhập bot chọn nhóm điều khiển.
-Mọi thành viên nhóm này đều dùng được lệnh.
+Bot có mặt trong nhóm là mọi thành viên dùng được lệnh, không cần !setup hay ?setup.
 ?list — xem tên và ID nhóm. ?list 2 — trang tiếp.
+
+Thông báo setup · chỉ demo
+!indicators — danh mục và số cấu hình đã kiểm tra.
+!research BTC / !research ETH H1 — bộ thử theo phiên, chưa bật nếu không đạt.
+!risk 1000 0.5 100 2 — ngân sách rủi ro/khối lượng, không tự đoán lot.
+!rr 80000 79900 80150 2 — R:R và tỷ lệ hòa vốn sau phí đã nhập.
+!pause 15m / !resume — nghỉ báo trade trong nhóm, giữ đăng ký qua restart.
+!status — bản bot, giờ khởi động, lần quét và lần chặn setup gần nhất.
+!check BTC / !check ETH / !check XAU — thử nguồn nến và giá ngay, không cần đợi tín hiệu.
+!on — bật BTC/ETH/XAUUSD trong nhóm hiện tại, M15/M30/H1/H4.
+!BTC, !ETH, !XAUU — bật riêng tài sản và xem setup hiện có.
+!BTC H1 hoặc !on ETH M30 — chọn riêng khung.
+!scalp — bật thêm scalp BTC/ETH M1/M5, giữ tối đa 1–3 phút.
+!scalp BTC / !scalp ETH / !scalp XAU — bật riêng và xem setup scalp mới.
+!test — bật thử vàng M5: Pivot + hợp lưu, LIMIT có Entry/TP/SL; chưa đạt kiểm chứng.
+!test M1 / !test M15 — đổi khung thử; !test status / !test report — trạng thái/kết quả nghiên cứu cũ.
+!test off hoặc !off test — tắt riêng TEST, giữ các báo cũ.
+!off scalp — tắt scalp, giữ M15–H4; !off scalp BTC — tắt scalp BTC.
+!off BTC — tắt riêng BTC trong nhóm; !off — tắt tất cả báo trade nhóm này.
+Tự gửi setup DEMO mới có entry/TP/SL, kể cả bộ chưa đạt kiểm chứng; tin nhắn ghi rõ trạng thái. Chỉ dùng nến đóng và giá mới, không gửi bù setup hết hạn. Vàng scalp/TEST dùng nến Bitget XAUUSDT tham chiếu và giá lệnh Exness công khai; vàng M15–H4 thường chưa có nguồn nến live phù hợp.
 
 Gửi tự động · 10 phút/lần
 ?pr ID_NHOM | Nội dung
@@ -25,6 +44,8 @@ Mỗi lượt chỉ gửi một câu, lần lượt từ đầu đến cuối r�
 Dùng một dấu | để tách các câu; mỗi câu không chứa dấu |. Tối đa 50 câu, mỗi câu 1–4000 ký tự, tổng đầu vào 20000 ký tự. Nhập ID đầy đủ, không dùng số thứ tự trong danh sách. Bot phải có quyền nhắn ở nhóm đích.
 
 Quản lý
+!storage — dung lượng file tạm/thư viện/cache; RAM hiện riêng.
+!clean — dọn file tạm/cache tải FFmpeg đã cài, giữ đăng nhập và cấu hình.
 ?lich — xem lịch đang có; ?lich L1 — chi tiết.
 ?dung L1 — dừng một lịch; ?dung all — dừng tất cả.
 ?tieptuc L1 — chạy lại sau 10 phút (với lịch PR).
@@ -34,13 +55,13 @@ Lịch giữ qua restart, không gửi bù dồn khi host tắt. Gửi lỗi th�
 
 Nhạc
 ?nhac tên bài hoặc ?scl link SoundCloud — voice kèm ảnh, tối đa ${Math.floor(maxDuration / 60)} phút.
-!scl randoom hoặc !scl random — bài trong bảng xếp hạng VN/quốc tế, tìm bản SoundCloud đủ dài, tránh lặp 80 lượt random gần đây. Không tải được nguồn thì báo lỗi, không dùng danh sách cố định.\n?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
+!scl randoom hoặc !scl random — chỉ nhạc Việt đang hot, nhớ bài đã phát theo nhóm qua restart. Hết bài phù hợp thì báo, không tự phát lại hoặc đổi sang nhạc nước ngoài.\n?kiemtra — kiểm tra công cụ. ?help — hướng dẫn này.
 Các lệnh cũ vẫn được giữ để tương thích.`;
 }
-export function createControl(api, { statePath, prefix = '!', now = Date.now, ownerId = String(api.getOwnId()), autoStart = true, requestTimeout = 30000, maxDuration = 600 }) {
+export function createControl(api, { statePath, prefix = '!', now = Date.now, autoStart = true, requestTimeout = 30000, maxDuration = 600 }) {
   let state = { version: 1, mainGroup: null, nextId: 1, jobs: [] };
   function validateState(value) {
-    if (!value || value.version !== 1 || !Array.isArray(value.jobs) || value.jobs.length > 100 ||
+    if (!value || value.version !== 1 || !Array.isArray(value.jobs) ||
         !Number.isSafeInteger(value.nextId) || value.nextId < 1 ||
         !(value.mainGroup === null || /^\d+$/.test(value.mainGroup) && typeof value.mainGroup === 'string')) return false;
     const ids = new Set();
@@ -52,6 +73,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
           !Number.isInteger(j.count) || j.count < 1 || j.count > 1000 || !Number.isInteger(j.sent) || j.sent < 0 || j.sent >= j.count ||
           !Number.isSafeInteger(j.nextAt) || j.nextAt < 0 || typeof j.paused !== 'boolean') return false;
       if (j.kind !== undefined && j.kind !== 'pr') return false;
+      if (j.originGroup !== undefined && (typeof j.originGroup !== 'string' || !/^\d+$/.test(j.originGroup))) return false;
       if (j.kind === 'pr' && (j.interval !== 600000 || j.count !== 1 || j.rest !== 0)) return false;
       ids.add(j.id);
       if (j.messages !== undefined && (!Array.isArray(j.messages) || !j.messages.length || j.messages.length > 50 ||
@@ -79,7 +101,8 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
     }
   };
   const send = (text, group) => deadline(() => api.sendMessage(text, group, ThreadType.Group), requestTimeout);
-  const isMain = group => state.mainGroup === String(group);
+  // Giữ tên API cũ để tương thích; không còn nhóm điều khiển độc quyền.
+  const isMain = () => true;
   const commands = new Set(['setup', 'help', 'list', 'gui', 'tudong', 'lich', 'dung', 'tieptuc', 'xoa', 'mau', 'pr']);
   const duplicate = createDeduper();
   const readCooldown = new Map();
@@ -104,29 +127,9 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
     const m = /^(\S+)(?:\s+([\s\S]*))?$/.exec(text.slice(activePrefix.length)); if (!m) return false;
     const name = m[1].toLowerCase(), arg = m[2] || '', group = String(event.threadId);
     if (!commands.has(name)) return false;
-    if (name === 'setup' && String(event.data.uidFrom) !== ownerId) {
-      const key = `setup-denied:${group}`;
-      if (!readCooldown.has(key) || now() - readCooldown.get(key) >= 30000) {
-        readCooldown.set(key, now());
-        if (readCooldown.size > 500) readCooldown.delete(readCooldown.keys().next().value);
-        await send('Dùng chính tài khoản Zalo đã đăng nhập bot để nhắn ?setup trong nhóm này. Sau đó mọi thành viên ở đây đều điều khiển được.', group);
-      }
-      return true;
-    }
-    if (name !== 'setup' && !isMain(group)) {
-      if (name === 'help' && (String(event.data.uidFrom) === ownerId || !state.mainGroup)) {
-        const key = `help-setup:${group}`;
-        if (!readCooldown.has(key) || now() - readCooldown.get(key) >= 30000) {
-          readCooldown.set(key, now());
-          if (readCooldown.size > 500) readCooldown.delete(readCooldown.keys().next().value);
-          await send('Chưa ở nhóm điều khiển. Tài khoản Zalo đã đăng nhập bot cần nhắn ?setup trong nhóm muốn dùng, rồi nhắn ?help.', group);
-        }
-      }
-      return true;
-    }
     if (duplicate(event)) return true;
     const token = generation;
-    if (['help', 'list', 'lich', 'mau'].includes(name)) {
+    if (['setup', 'help', 'list', 'lich', 'mau'].includes(name)) {
       const key = `${group}:${event.data.uidFrom}:${name}`;
       if (readCooldown.has(key) && now() - readCooldown.get(key) < 1500) return true;
       readCooldown.set(key, now());
@@ -135,8 +138,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
     const say = msg => send(msg, group);
     try {
       if (name === 'setup') {
-        if (!isMain(group)) { state.mainGroup = group; generation++; state.jobs.forEach(j => { j.paused = true; }); save(); }
-        await say(`Nhóm điều khiển đã sẵn sàng.\nMọi thành viên tại đây đều dùng được lệnh.\n?help — hướng dẫn · ?list — danh sách nhóm`);
+        await say('Bot dùng được ngay trong mọi nhóm đã tham gia, không cần setup.\n?help — hướng dẫn · ?list — danh sách nhóm');
       } else if (name === 'help') await say(controlHelp('?', maxDuration));
       else if (name === 'mau') {
         await say(`Nội dung luân phiên\nSoạn các câu, ngăn bằng ||.\nVí dụ: ?tudong ID_NHOM | 30m | 4 | 2h | Câu một || Câu hai\nBot chỉ gửi nội dung bạn nhập.`);
@@ -159,10 +161,9 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         await targetExists(target);
         if (!isMain(group) || token !== generation) return true;
         const previous = state.jobs.find(j => j.kind === 'pr' && j.target === target);
-        if (!previous && state.jobs.length >= 100) throw new Error('Đã có 100 lịch. Xóa lịch cũ trước khi thêm.');
         const existed = !!previous;
         // Thay object để kết quả gửi của lịch cũ không ghi đè lịch vừa cập nhật.
-        const job = { id: previous?.id || `L${state.nextId++}`, target, kind: 'pr', text: messages[0], messages, cursor: 0, interval: 600000, rest: 0, count: 1, sent: 0, nextAt: now() + 600000, paused: false };
+        const job = { id: previous?.id || `L${state.nextId++}`, target, originGroup: group, kind: 'pr', text: messages[0], messages, cursor: 0, interval: 600000, rest: 0, count: 1, sent: 0, nextAt: now() + 600000, paused: false };
         if (previous) state.jobs[state.jobs.indexOf(previous)] = job;
         else state.jobs.push(job);
         save();
@@ -177,8 +178,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         if (!/^\d+$/.test(countText) || !Number.isInteger(count) || count < 1 || count > 1000) throw new Error('Số lần mỗi đợt cần từ 1 đến 1000.');
         const messages = resolveMessages(content, prefix); await targetExists(target);
         if (!isMain(group) || token !== generation) return true;
-        if (state.jobs.length >= 100) throw new Error('Đã có 100 lịch. Xóa lịch cũ trước khi thêm.');
-        const job = { id: `L${state.nextId++}`, target, text: messages[0], messages, cursor: 0, interval, rest, count, sent: 0, nextAt: now() + interval, paused: false };
+        const job = { id: `L${state.nextId++}`, target, originGroup: group, text: messages[0], messages, cursor: 0, interval, rest, count, sent: 0, nextAt: now() + interval, paused: false };
         state.jobs.push(job); save();
         await say(`Lịch ${job.id} · Đang chạy\nNhóm: ${target}\nMỗi ${durationText(interval)} · ${count} lượt/đợt\nNghỉ: ${durationText(rest)} · ${messages.length} câu luân phiên\nLần đầu sau ${durationText(interval)}.\n?dung ${job.id} — tạm dừng`);
       } else if (name === 'lich') {
@@ -212,7 +212,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
   }
   let busy = false, timer;
   async function tick() {
-    if (busy || !state.mainGroup) return;
+    if (busy) return;
     const token = generation;
     busy = true;
     try {
@@ -223,7 +223,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
         const content = messages[job.cursor || 0];
         if (content.trimStart().startsWith(prefix) || content.trimStart().startsWith('?') || content.trimStart().startsWith('!')) {
           job.paused = true; save();
-          try { await send(`${job.id} đã dừng: nội dung bắt đầu bằng tiền tố lệnh hiện tại. Xóa lịch và sửa nội dung trước khi tạo lại.`, state.mainGroup); } catch {}
+          try { await send(`${job.id} đã dừng: nội dung bắt đầu bằng tiền tố lệnh hiện tại. Xóa lịch và sửa nội dung trước khi tạo lại.`, job.originGroup || state.mainGroup || job.target); } catch {}
           continue;
         }
         job.cursor = ((job.cursor || 0) + 1) % messages.length;
@@ -234,7 +234,7 @@ export function createControl(api, { statePath, prefix = '!', now = Date.now, ow
           if (!state.jobs.includes(job)) continue;
           job.paused = true; save();
           if (token !== generation) continue;
-          try { await send(`${job.id} đã dừng vì gửi tin không thành công. Kiểm tra nhóm đích rồi dùng ?tieptuc ${job.id}.`, state.mainGroup); } catch {}
+          try { await send(`${job.id} đã dừng vì gửi tin không thành công. Kiểm tra nhóm đích rồi dùng ?tieptuc ${job.id}.`, job.originGroup || state.mainGroup || job.target); } catch {}
         }
       }
     } finally { busy = false; }

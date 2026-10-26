@@ -1,11 +1,21 @@
-Bản 1.5.0 — 2026-10-23
-Console cần hiện Zalo Music Bot 1.5.0.
-Giữ data và .env khi giải nén/ghi đè toàn bộ code.
-Tài khoản đăng nhập bot gõ ?setup trong nhóm điều khiển.
-?list để lấy ID nhóm.
-?pr ID_NHOM | Nội dung một | Nội dung hai
-Mỗi 10 phút gửi một nội dung; lần đầu sau 10 phút.
-?dung all để dừng mọi lịch. ?help để xem hướng dẫn.
+Bản 1.7.6: !test bật thử vàng M5; !test M1/M15 đổi khung; !test status/report; !test off. Nến Bitget vàng tham chiếu + giá lệnh Exness công khai, chưa đạt kiểm chứng. Xem assets/video-test.md.
 
-!scl randoom hoặc !scl random: nhạc theo bảng xếp hạng VN/quốc tế, phát từ SoundCloud.
-Giữ data để còn lịch và lịch sử nhạc qua restart.
+Bot 1.7.6 — 2026-10-26
+Stop bot, giải nén ZIP ghi đè code, giữ data/ và .env, rồi Start.
+Console và !status phải ghi Bot 1.7.6. Không cần !setup/?setup.
+
+!scalp XAU — bật scalp vàng tự động mỗi 10 giây trong nhóm hiện tại.
+!off scalp XAU — tắt riêng scalp vàng; !off XAU — tắt mọi khung vàng.
+!check XAU — nến vàng M1 + giá Bitget tham chiếu + giá Exness phải OK.
+!research XAU — cách tính bộ vàng DEMO chưa đạt kiểm chứng lợi nhuận.
+!scalp — vẫn bật BTC/ETH như trước, không tự bật vàng.
+
+Tin vàng có BUY LIMIT/SELL LIMIT, Entry/TP/SL và giờ hủy nếu chưa khớp.
+Đặt Expiration đúng giờ hoặc tự hủy; giá đã vượt Entry/TP thì bỏ, không đuổi.
+Lệnh chờ khoảng 3 phút; giữ tối đa 3 phút SAU KHỚP. Bot không đặt/hủy/đóng lệnh thật.
+Giá: XAUUSD Exness công khai. Nến: XAUUSDT perpetual Bitget tham chiếu, không phải nến tài khoản MT5.
+M15–H4 vàng chưa có feed. Scalp dùng bộ riêng vàng theo phiên, London/New York tự tính DST.
+Nghỉ cuối tuần/rollover; đây không phải lịch nghỉ lễ tài khoản.
+
+Giữ nhạc Việt random chống trùng, tự dọn cache FFmpeg/file tạm, @All M15/M30/H4 như cũ.
+153 kiểm tra bot và 68 kiểm tra web qua; đã đọc nguồn vàng live. Chưa gửi Zalo thật hoặc cập nhật Botkeep.
